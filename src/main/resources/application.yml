@@ -1,0 +1,31 @@
+spring:
+
+  profiles:
+    active: "production"
+
+  application:
+    name: "linda"
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/linda-data
+    username: linda-data
+    password: linda-data
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    hibernate:
+      ddl-auto: none # required for liquibase migrations
+
+  liquibase:
+    change-log: db/changelog/db.changelog-linda.xml
+
+  main:
+    allow-circular-references: true # don't do it at home
+
+springdoc:
+  api-docs:
+    path: /docs-specifications
+
+  swagger-ui:
+    path: /docs

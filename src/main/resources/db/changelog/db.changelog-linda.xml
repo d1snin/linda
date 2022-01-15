@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1641754681366-1" author="d1snin (generated)">
+        <createTable tableName="short_link">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link"/>
+            </column>
+            <column name="url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alias" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_time" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1641754681366-2" author="d1snin (generated)">
+        <addUniqueConstraint columnNames="alias" constraintName="uc_short_link_alias" tableName="short_link"/>
+    </changeSet>
+    <changeSet id="1641754681366-3" author="d1snin (generated)">
+        <addUniqueConstraint columnNames="url" constraintName="uc_short_link_url" tableName="short_link"/>
+    </changeSet>
+
+</databaseChangeLog>
