@@ -47,7 +47,7 @@ jobs:
           command: |
             ./gradlew bootJar
       - store_artifacts:
-          path: ./pulseq/build/libs
+          path: ./linda/build/libs
 
       - run:
           name: Creating the sha512 checksum
