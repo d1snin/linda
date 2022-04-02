@@ -16,17 +16,17 @@
 
 package dev.d1s.linda.service.impl
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
 import dev.d1s.linda.exception.impl.AliasGeneratorNotFoundException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.AliasGeneratorService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 
 @Service
 class AliasGeneratorServiceImpl : AliasGeneratorService {
 
     @Autowired
-    private lateinit var aliasGenerators: List<AliasGenerator>
+    private lateinit var aliasGenerators: Set<AliasGenerator>
 
     override fun getAliasGenerator(identifier: String): AliasGenerator = aliasGenerators.firstOrNull {
         it.identity == identifier

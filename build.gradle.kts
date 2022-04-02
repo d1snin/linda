@@ -15,6 +15,7 @@ repositories {
     maven(url = "https://repo.spring.io/release")
 }
 
+val teabagsVersion: String by project
 val springdocVersion: String by project
 val starterCachingVersion: String by project
 val starterAdviceVersion: String by project
@@ -26,6 +27,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib"))
+    implementation("dev.d1s.teabags:teabag-spring-web:$teabagsVersion")
+    implementation("dev.d1s.teabags:teabag-spring-data:$teabagsVersion")
+    implementation("dev.d1s.teabags:teabag-dto:$teabagsVersion")
+    implementation("dev.d1s.teabags:teabag-stdlib:$teabagsVersion")
     implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
     implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
     implementation("com.github.d1snin:spring-boot-starter-caching:$starterCachingVersion")

@@ -16,6 +16,10 @@
 
 package dev.d1s.linda.dto
 
-interface BulkRemovalDto {
-    val identifiers: List<String>
-}
+import org.springframework.boot.context.properties.ConstructorBinding
+import javax.validation.constraints.NotEmpty
+
+@ConstructorBinding
+data class BulkRemovalDto(
+    @NotEmpty val identifiers: Set<String>
+)

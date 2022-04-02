@@ -17,7 +17,7 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
-import dev.d1s.linda.dto.redirect.BulkRedirectRemovalDto
+import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import org.springframework.data.domain.Page
@@ -61,7 +61,7 @@ interface RedirectController {
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun removeAll(@RequestBody bulkRedirectRemovalDto: BulkRedirectRemovalDto): ResponseEntity<*>
+    fun removeAll(@RequestBody bulkRedirectRemovalDto: BulkRemovalDto): ResponseEntity<*>
 
     @DeleteMapping(REDIRECTS_REMOVE_ALL_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     fun removeAll(): ResponseEntity<*>

@@ -17,6 +17,6 @@
 package dev.d1s.linda.domain.alias
 
 data class FriendlyAliases(
-    val adjectives: List<String>,
-    val animals: List<String>
+    val adjectives: Set<String>,
+    val animals: Set<String>
 )

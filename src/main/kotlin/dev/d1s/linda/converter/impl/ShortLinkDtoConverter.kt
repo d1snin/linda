@@ -16,16 +16,17 @@
 
 package dev.d1s.linda.converter.impl
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
-import dev.d1s.linda.converter.AbstractDtoConverter
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.util.checkNotNull
+import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.stdlib.checks.checkNotNull
+import dev.d1s.teabag.stdlib.collection.mapToSet
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
 @Component
-class ShortLinkDtoConverter : AbstractDtoConverter<ShortLink, ShortLinkDto>() {
+class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
 
     @Autowired
     private lateinit var redirectService: RedirectService
@@ -36,7 +37,7 @@ class ShortLinkDtoConverter : AbstractDtoConverter<ShortLink, ShortLinkDto>() {
             entity.url,
             entity.alias,
             entity.creationTime.checkNotNull("creation time"),
-            entity.redirects.map {
+            entity.redirects.mapToSet {
                 it.id.checkNotNull("redirect id")
             })
 
@@ -44,7 +45,7 @@ class ShortLinkDtoConverter : AbstractDtoConverter<ShortLink, ShortLinkDto>() {
         ShortLink(dto.url, dto.alias).apply {
             id = dto.id
             creationTime = dto.creationTime
-            redirects = dto.redirects.map {
+            redirects = dto.redirects.mapToSet {
                 redirectService.findById(it)
             }
         }

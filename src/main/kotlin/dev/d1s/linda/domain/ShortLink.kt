@@ -42,5 +42,5 @@ class ShortLink(
     var creationTime: Instant? = null
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    lateinit var redirects: List<Redirect>
+    lateinit var redirects: Set<Redirect>
 }

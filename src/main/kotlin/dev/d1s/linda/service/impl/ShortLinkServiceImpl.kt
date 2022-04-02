@@ -16,17 +16,13 @@
 
 package dev.d1s.linda.service.impl
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Lazy
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import dev.d1s.caching.annotation.CacheEvictByIdProvider
 import dev.d1s.caching.annotation.CachePutByIdProvider
 import dev.d1s.caching.annotation.CacheableList
 import dev.d1s.linda.cache.idProvider.ShortLinkIdProvider
 import dev.d1s.linda.constant.cache.SHORT_LINKS_CACHE
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.shortLink.BulkShortLinkRemovalDto
+import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.exception.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
@@ -35,6 +31,11 @@ import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
+import dev.d1s.teabag.stdlib.collection.mapToSet
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ShortLinkServiceImpl : ShortLinkService {
@@ -51,8 +52,8 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @Transactional(readOnly = true)
     @CacheableList(cacheName = SHORT_LINKS_CACHE, idProvider = ShortLinkIdProvider::class)
-    override fun findAll(): List<ShortLink> =
-        shortLinkRepository.findAll()
+    override fun findAll(): Set<ShortLink> =
+        shortLinkRepository.findAll().toSet()
 
     @Transactional(readOnly = true)
     @CacheableList(cacheName = SHORT_LINKS_CACHE, idProvider = ShortLinkIdProvider::class)
@@ -90,16 +91,16 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun remove(shortLinkFindingStrategy: ShortLinkFindingStrategy) =
         shortLinkService.remove(shortLinkService.find(shortLinkFindingStrategy))
 
-    override fun removeAll(): List<ShortLink> =
+    override fun removeAll(): Set<ShortLink> =
         shortLinkService.removeAll(shortLinkService.findAll())
 
-    override fun removeAll(shortLinks: List<ShortLink>): List<ShortLink> =
+    override fun removeAll(shortLinks: Set<ShortLink>): Set<ShortLink> =
         shortLinks.onEach {
             shortLinkService.remove(it)
         }
 
-    override fun removeAll(bulkShortLinkRemovalDto: BulkShortLinkRemovalDto): List<ShortLink> =
-        bulkShortLinkRemovalDto.identifiers.map {
+    override fun removeAll(bulkShortLinkRemovalDto: BulkRemovalDto): Set<ShortLink> =
+        bulkShortLinkRemovalDto.identifiers.mapToSet {
             shortLinkService.remove(byId(it))
         }
 

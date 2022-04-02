@@ -16,17 +16,17 @@
 
 package dev.d1s.linda.converter.impl
 
-import dev.d1s.linda.converter.AbstractDtoConverter
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.byId
-import dev.d1s.linda.util.checkNotNull
+import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.stdlib.checks.checkNotNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class RedirectDtoConverter : AbstractDtoConverter<Redirect, RedirectDto>() {
+class RedirectDtoConverter : DtoConverter<RedirectDto, Redirect> {
 
     @Autowired
     private lateinit var shortLinkService: ShortLinkService

@@ -16,11 +16,6 @@
 
 package dev.d1s.linda.service.impl
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.annotation.Cacheable
-import org.springframework.context.annotation.Lazy
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import dev.d1s.caching.annotation.CacheEvictByIdProvider
 import dev.d1s.caching.annotation.CachePutByIdProvider
 import dev.d1s.caching.annotation.CacheableList
@@ -28,12 +23,18 @@ import dev.d1s.linda.cache.idProvider.RedirectIdProvider
 import dev.d1s.linda.constant.cache.REDIRECTS_CACHE
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.redirect.BulkRedirectRemovalDto
+import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.exception.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
+import dev.d1s.teabag.stdlib.collection.mapToSet
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.context.annotation.Lazy
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class RedirectServiceImpl : RedirectService {
@@ -50,10 +51,10 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional(readOnly = true)
     @CacheableList(cacheName = REDIRECTS_CACHE, idProvider = RedirectIdProvider::class)
-    override fun findAll(): List<Redirect> =
-        redirectRepository.findAll()
+    override fun findAll(): Set<Redirect> =
+        redirectRepository.findAll().toSet()
 
-    override fun findAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): List<Redirect> =
+    override fun findAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect> =
         shortLinkService.find(shortLinkFindingStrategy).redirects
 
     @Transactional(readOnly = true)
@@ -83,18 +84,18 @@ class RedirectServiceImpl : RedirectService {
     override fun remove(id: String): Redirect =
         redirectService.remove(redirectService.findById(id))
 
-    override fun removeAll(redirects: List<Redirect>): List<Redirect> = redirects.onEach {
+    override fun removeAll(redirects: Set<Redirect>): Set<Redirect> = redirects.onEach {
         redirectService.remove(it)
     }
 
-    override fun removeAll(bulkRedirectRemovalDto: BulkRedirectRemovalDto): List<Redirect> =
-        bulkRedirectRemovalDto.identifiers.map {
+    override fun removeAll(bulkRedirectRemovalDto: BulkRemovalDto): Set<Redirect> =
+        bulkRedirectRemovalDto.identifiers.mapToSet {
             redirectService.remove(it)
         }
 
-    override fun removeAll(): List<Redirect> =
+    override fun removeAll(): Set<Redirect> =
         redirectService.removeAll(redirectService.findAll())
 
-    override fun removeAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): List<Redirect> =
+    override fun removeAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect> =
         redirectService.removeAll(redirectService.findAllByShortLink(shortLinkFindingStrategy))
 }

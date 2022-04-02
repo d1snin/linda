@@ -19,5 +19,4 @@ package dev.d1s.linda.util
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 
 val ShortLinkFindingStrategyType?.thisOrDefaultType
-    get() =
-        this ?: ShortLinkFindingStrategyType.BY_ID
+    get() = this ?: ShortLinkFindingStrategyType.BY_ID

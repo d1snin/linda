@@ -17,20 +17,21 @@
 package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.controller.ShortLinkController
-import dev.d1s.linda.converter.DtoConverter
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.shortLink.BulkShortLinkRemovalDto
+import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType
-import dev.d1s.linda.util.noContent
-import dev.d1s.linda.util.ok
-import dev.d1s.linda.util.pagination.toPage
+import dev.d1s.teabag.data.toPage
+import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.util.converterForSet
+import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -40,26 +41,31 @@ class ShortLinkControllerImpl : ShortLinkController {
     private lateinit var shortLinkService: ShortLinkService
 
     @Autowired
-    private lateinit var shortLinkDtoConverter: DtoConverter<ShortLink, ShortLinkDto>
+    private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
+
+    private val shortLinkDtoSetConverter = shortLinkDtoConverter.converterForSet()
 
     private val ShortLink.dto get() = shortLinkDtoConverter.convertToDto(this)
 
-    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<ShortLinkDto>> =
-        shortLinkDtoConverter.convertToDtoList(
+    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<ShortLinkDto>> = ok(
+        shortLinkDtoSetConverter.convertToDtoSet(
             shortLinkService.findAll()
-        ).toPage(page, size).ok()
+        ).toPage(page, size)
+    )
 
     override fun find(
         identifier: String,
         shortLinkFindingStrategy: ShortLinkFindingStrategyType?
-    ): ResponseEntity<ShortLinkDto> =
+    ): ResponseEntity<ShortLinkDto> = ok(
         shortLinkService.find(
             byType(shortLinkFindingStrategy, identifier)
-        ).dto.ok()
+        ).dto
+    )
 
     override fun create(shortLinkCreationDto: ShortLinkCreationDto):
-            ResponseEntity<ShortLinkDto> =
-        shortLinkService.create(shortLinkCreationDto).dto.ok()
+            ResponseEntity<ShortLinkDto> = ok(
+        shortLinkService.create(shortLinkCreationDto).dto
+    )
 
     override fun remove(
         identifier: String,
@@ -77,7 +83,7 @@ class ShortLinkControllerImpl : ShortLinkController {
     }
 
     override fun removeAll(
-        bulkShortLinkRemovalDto: BulkShortLinkRemovalDto
+        bulkShortLinkRemovalDto: BulkRemovalDto
     ): ResponseEntity<*> {
         shortLinkService.removeAll(bulkShortLinkRemovalDto)
         return noContent

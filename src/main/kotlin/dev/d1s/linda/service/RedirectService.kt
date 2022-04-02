@@ -18,14 +18,14 @@ package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.redirect.BulkRedirectRemovalDto
+import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 
 interface RedirectService {
 
-    fun findAll(): List<Redirect>
+    fun findAll(): Set<Redirect>
 
-    fun findAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): List<Redirect>
+    fun findAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect>
 
     fun findById(id: String): Redirect
 
@@ -37,11 +37,11 @@ interface RedirectService {
 
     fun remove(id: String): Redirect
 
-    fun removeAll(redirects: List<Redirect>): List<Redirect>
+    fun removeAll(redirects: Set<Redirect>): Set<Redirect>
 
-    fun removeAll(bulkRedirectRemovalDto: BulkRedirectRemovalDto): List<Redirect>
+    fun removeAll(bulkRedirectRemovalDto: BulkRemovalDto): Set<Redirect>
 
-    fun removeAll(): List<Redirect>
+    fun removeAll(): Set<Redirect>
 
-    fun removeAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): List<Redirect>
+    fun removeAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect>
 }

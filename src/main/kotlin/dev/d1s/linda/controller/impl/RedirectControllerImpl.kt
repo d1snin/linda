@@ -17,19 +17,20 @@
 package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.controller.RedirectController
-import dev.d1s.linda.converter.DtoConverter
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.dto.redirect.BulkRedirectRemovalDto
+import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType
-import dev.d1s.linda.util.noContent
-import dev.d1s.linda.util.ok
-import dev.d1s.linda.util.pagination.toPage
+import dev.d1s.teabag.data.toPage
+import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.util.converterForSet
+import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -39,35 +40,40 @@ class RedirectControllerImpl : RedirectController {
     private lateinit var redirectService: RedirectService
 
     @Autowired
-    private lateinit var redirectDtoConverter: DtoConverter<Redirect, RedirectDto>
+    private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
+
+    private val redirectSetDtoConverter = redirectDtoConverter.converterForSet()
 
     private val Redirect.dto get() = redirectDtoConverter.convertToDto(this)
-    private val List<Redirect>.dtoList get() = redirectDtoConverter.convertToDtoList(this)
+    private val Set<Redirect>.dtoSet get() = redirectSetDtoConverter.convertToDtoSet(this)
 
-    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<RedirectDto>> =
-        redirectService.findAll().dtoList.toPage(page, size).ok()
+    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<RedirectDto>> = ok(
+        redirectService.findAll().dtoSet.toPage(page, size)
+    )
 
     override fun findAllByShortLink(
         identifier: String,
         shortLinkFindingStrategyType: ShortLinkFindingStrategyType?,
         page: Int?,
         size: Int?
-    ): ResponseEntity<Page<RedirectDto>> =
+    ): ResponseEntity<Page<RedirectDto>> = ok(
         redirectService.findAllByShortLink(
             byType(shortLinkFindingStrategyType, identifier)
-        ).dtoList.toPage(
+        ).dtoSet.toPage(
             page, size
-        ).ok()
+        )
+    )
 
-    override fun findById(identifier: String): ResponseEntity<RedirectDto> =
-        redirectService.findById(identifier).dto.ok()
+    override fun findById(identifier: String): ResponseEntity<RedirectDto> = ok(
+        redirectService.findById(identifier).dto
+    )
 
     override fun remove(identifier: String): ResponseEntity<*> {
         redirectService.remove(identifier)
         return noContent
     }
 
-    override fun removeAll(bulkRedirectRemovalDto: BulkRedirectRemovalDto): ResponseEntity<*> {
+    override fun removeAll(bulkRedirectRemovalDto: BulkRemovalDto): ResponseEntity<*> {
         redirectService.removeAll(bulkRedirectRemovalDto)
         return noContent
     }
