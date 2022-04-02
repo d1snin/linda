@@ -21,7 +21,7 @@ spring:
     change-log: db/changelog/db.changelog-linda.xml
 
   main:
-    allow-circular-references: true # don't do it at home
+    allow-circular-references: true
 
 springdoc:
   api-docs:
