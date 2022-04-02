@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.spring") version "1.6.10"
 }
 
-group = "uno.d1s"
+group = "dev.d1s"
 version = "0.0.1-alpha.0"
 
 repositories {
@@ -15,35 +15,32 @@ repositories {
     maven(url = "https://repo.spring.io/release")
 }
 
-extra["dokkaVersion"] = "1.6.0"
-extra["springMockkVersion"] = "3.1.0"
-extra["discordWebhooksVersion"] = "0.7.4"
-extra["commonsIOVersion"] = "2.11.0"
-extra["caffeineVersion"] = "3.0.5"
-extra["springdocVersion"] = "1.6.3"
-extra["liquibaseVersion"] = "4.6.2"
-extra["starterCachingVersion"] = "1.0.0-stable.0"
-extra["starterAdviceVersion"] = "1.0.1-stable.0"
+val springdocVersion: String by project
+val starterCachingVersion: String by project
+val starterAdviceVersion: String by project
+val liquibaseVersion: String by project
+val caffeineVersion: String by project
+val springMockkVersion: String by project
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib"))
-    implementation("org.springdoc:springdoc-openapi-ui:${property("springdocVersion")}")
-    implementation("org.springdoc:springdoc-openapi-kotlin:${property("springdocVersion")}")
-    implementation("com.github.d1snin:spring-boot-starter-caching:${property("starterCachingVersion")}")
-    implementation("com.github.d1snin:spring-boot-starter-advice:${property("starterAdviceVersion")}")
+    implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
+    implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
+    implementation("com.github.d1snin:spring-boot-starter-caching:$starterCachingVersion")
+    implementation("com.github.d1snin:spring-boot-starter-advice:$starterAdviceVersion")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
-    implementation("org.liquibase:liquibase-core:${property("liquibaseVersion")}")
+    implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.github.ben-manes.caffeine:caffeine:${property("caffeineVersion")}")
+    implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.ninja-squad:springmockk:${property("springMockkVersion")}")
+    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
