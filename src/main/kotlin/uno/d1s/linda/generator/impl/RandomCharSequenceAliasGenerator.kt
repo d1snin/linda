@@ -23,10 +23,10 @@ class RandomCharSequenceAliasGenerator : AliasGenerator {
         var aliasCandidate = this.getRandomCharSequence(length)
 
         while (true) {
-            if (shortLinkService.isAliasExist(aliasCandidate)) {
+            if (shortLinkService.doesAliasExist(aliasCandidate)) {
                 aliasCandidate = this.getRandomCharSequence(++length)
             } else {
-                return aliasCandidate;
+                return aliasCandidate
             }
         }
     }

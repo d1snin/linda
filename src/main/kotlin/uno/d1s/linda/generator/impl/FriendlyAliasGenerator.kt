@@ -31,7 +31,7 @@ class FriendlyAliasGenerator : AliasGenerator {
         while (true) {
             val builtAlias = adjectiveCandidate.appendAnimal()
 
-            if (shortLinkService.isAliasExist(builtAlias)) {
+            if (shortLinkService.doesAliasExist(builtAlias)) {
                 adjectiveCandidate = adjectiveCandidate.appendAdjective()
             } else {
                 return builtAlias

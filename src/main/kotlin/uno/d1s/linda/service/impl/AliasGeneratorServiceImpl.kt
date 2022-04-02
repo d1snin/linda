@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 import uno.d1s.linda.exception.impl.AliasGeneratorNotFoundException
 import uno.d1s.linda.generator.AliasGenerator
 import uno.d1s.linda.service.AliasGeneratorService
-import uno.d1s.linda.service.ShortLinkService
 
 @Service
 class AliasGeneratorServiceImpl : AliasGeneratorService {

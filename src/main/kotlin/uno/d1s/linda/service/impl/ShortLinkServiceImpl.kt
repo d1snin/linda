@@ -87,7 +87,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLinkService.remove(byId(it))
         }
 
-    override fun isAliasExist(alias: String): Boolean = try {
+    override fun doesAliasExist(alias: String): Boolean = try {
         shortLinkService.find(byAlias(alias))
         true
     } catch (_: ShortLinkNotFoundException) {

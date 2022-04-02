@@ -25,5 +25,5 @@ interface ShortLinkService {
 
     fun removeAll(bulkShortLinkRemovalDto: BulkShortLinkRemovalDto): List<ShortLink>
 
-    fun isAliasExist(alias: String): Boolean
+    fun doesAliasExist(alias: String): Boolean
 }
