@@ -1,5 +1,4 @@
 plugins {
-    id("org.jetbrains.dokka") version "1.6.0"
     id("org.springframework.boot") version "2.6.1"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.jetbrains.kotlin.plugin.jpa") version "1.6.10"
@@ -27,13 +26,11 @@ extra["starterCachingVersion"] = "1.0.0-stable.0"
 extra["starterAdviceVersion"] = "1.0.1-stable.0"
 
 dependencies {
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:${property("dokkaVersion")}")
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation(kotlin("reflect"))
+    implementation(kotlin("stdlib"))
     implementation("org.springdoc:springdoc-openapi-ui:${property("springdocVersion")}")
     implementation("org.springdoc:springdoc-openapi-kotlin:${property("springdocVersion")}")
-    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.github.d1snin:spring-boot-starter-caching:${property("starterCachingVersion")}")
     implementation("com.github.d1snin:spring-boot-starter-advice:${property("starterAdviceVersion")}")
     implementation("org.springframework.boot:spring-boot-starter-validation")
