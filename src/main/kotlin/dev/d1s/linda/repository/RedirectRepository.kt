@@ -19,14 +19,6 @@ package dev.d1s.linda.repository
 import dev.d1s.linda.domain.Redirect
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
-interface RedirectRepository : JpaRepository<Redirect, String> {
-
-    fun findAllByShortLinkIdEquals(shortLinkId: String): Optional<Set<Redirect>>
-
-    fun findAllByShortLinkAliasEquals(shortLinkAlias: String): Optional<Set<Redirect>>
-
-    fun findAllByShortLinkUrlEquals(shortLinkUrl: String): Optional<Set<Redirect>>
-}
+interface RedirectRepository : JpaRepository<Redirect, String>
