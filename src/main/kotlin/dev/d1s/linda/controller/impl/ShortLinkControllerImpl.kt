@@ -43,7 +43,9 @@ class ShortLinkControllerImpl : ShortLinkController {
     @Autowired
     private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
 
-    private val shortLinkDtoSetConverter = shortLinkDtoConverter.converterForSet()
+    private val shortLinkDtoSetConverter by lazy {
+        shortLinkDtoConverter.converterForSet()
+    }
 
     private val ShortLink.dto get() = shortLinkDtoConverter.convertToDto(this)
 

@@ -42,7 +42,9 @@ class RedirectControllerImpl : RedirectController {
     @Autowired
     private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
 
-    private val redirectSetDtoConverter = redirectDtoConverter.converterForSet()
+    private val redirectSetDtoConverter by lazy {
+        redirectDtoConverter.converterForSet()
+    }
 
     private val Redirect.dto get() = redirectDtoConverter.convertToDto(this)
     private val Set<Redirect>.dtoSet get() = redirectSetDtoConverter.convertToDtoSet(this)
