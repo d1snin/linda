@@ -17,6 +17,7 @@
 package uno.d1s.linda.controller.impl
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Controller
 import org.springframework.web.servlet.view.RedirectView
 import uno.d1s.linda.controller.BaseInterfaceController
@@ -25,6 +26,7 @@ import uno.d1s.linda.service.ShortLinkService
 import uno.d1s.linda.strategy.shortLink.byAlias
 
 @Controller
+@ConditionalOnProperty("linda.base-interface.enabled", matchIfMissing = true)
 class BaseInterfaceControllerImpl : BaseInterfaceController {
 
     @Autowired
