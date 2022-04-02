@@ -17,8 +17,10 @@
 package uno.d1s.linda.configuration.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConfigurationProperties("linda.base")
-class BaseInterfaceConfigurationProperties(
-    var enabled: Boolean = true
+@ConstructorBinding
+@ConfigurationProperties("linda.base-interface")
+data class BaseInterfaceConfigurationProperties(
+    val enabled: Boolean = true
 )
