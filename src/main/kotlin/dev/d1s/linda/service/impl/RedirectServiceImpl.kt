@@ -20,6 +20,7 @@ import dev.d1s.caching.annotation.CacheEvictByIdProvider
 import dev.d1s.caching.annotation.CachePutByIdProvider
 import dev.d1s.caching.annotation.CacheableList
 import dev.d1s.linda.cache.idProvider.RedirectIdProvider
+import dev.d1s.linda.constant.cache.REDIRECTS_BY_SHORT_LINK_TAG
 import dev.d1s.linda.constant.cache.REDIRECTS_CACHE
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
@@ -54,12 +55,16 @@ class RedirectServiceImpl : RedirectService {
     override fun findAll(): Set<Redirect> =
         redirectRepository.findAll().toSet()
 
+    @CacheableList(
+        cacheName = REDIRECTS_CACHE,
+        idProvider = RedirectIdProvider::class,
+        tags = [REDIRECTS_BY_SHORT_LINK_TAG]
+    )
     override fun findAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect> =
         shortLinkService.find(shortLinkFindingStrategy).redirects
 
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = [REDIRECTS_CACHE])
-    @CachePutByIdProvider(cacheName = REDIRECTS_CACHE, idProvider = RedirectIdProvider::class)
     override fun findById(id: String): Redirect =
         redirectRepository.findById(id).orElseThrow {
             RedirectNotFoundException

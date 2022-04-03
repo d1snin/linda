@@ -27,8 +27,6 @@ interface ShortLinkService {
 
     fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink
 
-    fun create(url: String, aliasGeneratorId: String): ShortLink
-
     fun create(shortLinkCreationDto: ShortLinkCreationDto): ShortLink
 
     fun remove(shortLink: ShortLink): ShortLink

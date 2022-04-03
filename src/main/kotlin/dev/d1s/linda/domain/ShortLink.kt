@@ -24,13 +24,12 @@ import javax.persistence.*
 @Entity
 @Table(name = "short_link")
 class ShortLink(
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     val url: String,
 
     @Column(nullable = false, unique = true)
     val alias: String
 ) {
-
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
@@ -42,5 +41,5 @@ class ShortLink(
     var creationTime: Instant? = null
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    lateinit var redirects: Set<Redirect>
+    var redirects: Set<Redirect> = setOf()
 }

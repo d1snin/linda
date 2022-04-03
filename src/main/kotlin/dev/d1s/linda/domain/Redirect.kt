@@ -27,7 +27,6 @@ class Redirect(
     @ManyToOne(cascade = [CascadeType.ALL])
     val shortLink: ShortLink
 ) {
-
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")

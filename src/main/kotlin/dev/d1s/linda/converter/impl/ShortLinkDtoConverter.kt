@@ -39,7 +39,8 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
             entity.creationTime.checkNotNull("creation time"),
             entity.redirects.mapToSet {
                 it.id.checkNotNull("redirect id")
-            })
+            }
+        )
 
     override fun convertToEntity(dto: ShortLinkDto): ShortLink =
         ShortLink(dto.url, dto.alias).apply {

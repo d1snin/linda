@@ -33,8 +33,10 @@ import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -56,7 +58,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLinkRepository.findAll().toSet()
 
     @Transactional(readOnly = true)
-    @CacheableList(cacheName = SHORT_LINKS_CACHE, idProvider = ShortLinkIdProvider::class)
+    @Cacheable(cacheNames = [SHORT_LINKS_CACHE])
     override fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink =
         when (shortLinkFindingStrategy) {
             is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(shortLinkFindingStrategy.id)
@@ -68,16 +70,14 @@ class ShortLinkServiceImpl : ShortLinkService {
             ShortLinkNotFoundException
         }
 
-    override fun create(url: String, aliasGeneratorId: String): ShortLink =
-        shortLinkService.create(ShortLinkCreationDto(url, aliasGeneratorId))
-
-    @Transactional
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @CachePutByIdProvider(cacheName = SHORT_LINKS_CACHE, idProvider = ShortLinkIdProvider::class)
     override fun create(shortLinkCreationDto: ShortLinkCreationDto): ShortLink =
         shortLinkRepository.save(
             ShortLink(
                 shortLinkCreationDto.url,
-                aliasGeneratorService.getAliasGenerator(shortLinkCreationDto.aliasGeneratorId).generateAlias()
+                aliasGeneratorService.getAliasGenerator(shortLinkCreationDto.aliasGeneratorId)
+                    .generateAlias()
             )
         )
 
