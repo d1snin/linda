@@ -16,4 +16,10 @@
 
 package dev.d1s.linda.exception
 
-open class DomainNotFoundException(message: String) : RuntimeException(message)
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
+
+open class DomainNotFoundException(message: String) : HttpStatusException(
+    ErrorResponseData(HttpStatus.NOT_FOUND, message)
+)
