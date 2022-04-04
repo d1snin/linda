@@ -24,7 +24,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "redirect")
 class Redirect(
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne(cascade = [CascadeType.MERGE])
     val shortLink: ShortLink
 ) {
     @Id
