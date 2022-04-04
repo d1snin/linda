@@ -43,7 +43,7 @@ interface RedirectController {
     fun findAllByShortLink(
         @PathVariable @NotBlank identifier: String,
         @RequestParam(
-            "shortLinkFindingStrategyType",
+            "strategy",
             required = false
         ) shortLinkFindingStrategyType: ShortLinkFindingStrategyType?,
         @RequestParam(required = false) page: Int?,
