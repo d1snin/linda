@@ -1,9 +1,9 @@
 plugins {
     id("org.springframework.boot") version "2.6.1"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.6.10"
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.6.20"
+    kotlin("jvm") version "1.6.20"
+    kotlin("plugin.spring") version "1.6.20"
 }
 
 group = "dev.d1s"
@@ -24,7 +24,6 @@ val caffeineVersion: String by project
 val springMockkVersion: String by project
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib"))
     implementation("dev.d1s.teabags:teabag-spring-web:$teabagsVersion")
