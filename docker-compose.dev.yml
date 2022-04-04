@@ -28,7 +28,7 @@ services:
       - db-data-postgres:/var/lib/postgresql/data
 
   linda:
-    image: linda:0.0.1-alpha.0
+    image: linda:0.0.2-alpha.0
     container_name: linda
     networks:
       - linda-net
