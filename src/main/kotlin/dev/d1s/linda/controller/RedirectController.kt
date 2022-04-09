@@ -53,8 +53,8 @@ interface RedirectController {
     @GetMapping(REDIRECTS_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     fun findById(@PathVariable @NotBlank identifier: String): ResponseEntity<RedirectDto>
 
-    @DeleteMapping(REDIRECTS_REMOVE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun remove(@PathVariable @NotBlank identifier: String): ResponseEntity<*>
+    @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun removeById(@PathVariable @NotBlank identifier: String): ResponseEntity<*>
 
     @DeleteMapping(
         REDIRECTS_BULK_REMOVE_MAPPING,

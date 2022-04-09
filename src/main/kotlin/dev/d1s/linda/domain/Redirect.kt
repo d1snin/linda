@@ -36,4 +36,26 @@ class Redirect(
     @Column
     @CreationTimestamp
     var creationTime: Instant? = null
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Redirect) return false
+
+        if (shortLink != other.shortLink) return false
+        if (id != other.id) return false
+        if (creationTime != other.creationTime) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = shortLink.hashCode()
+        result = 31 * result + (id?.hashCode() ?: 0)
+        result = 31 * result + (creationTime?.hashCode() ?: 0)
+        return result
+    }
+
+    override fun toString(): String {
+        return "Redirect(shortLink=$shortLink, id=$id, creationTime=$creationTime)"
+    }
 }

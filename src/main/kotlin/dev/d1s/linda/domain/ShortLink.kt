@@ -42,4 +42,28 @@ class ShortLink(
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
     var redirects: Set<Redirect> = setOf()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ShortLink) return false
+
+        if (url != other.url) return false
+        if (alias != other.alias) return false
+        if (id != other.id) return false
+        if (creationTime != other.creationTime) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = url.hashCode()
+        result = 31 * result + alias.hashCode()
+        result = 31 * result + (id?.hashCode() ?: 0)
+        result = 31 * result + (creationTime?.hashCode() ?: 0)
+        return result
+    }
+
+    override fun toString(): String {
+        return "ShortLink(url='$url', alias='$alias', id=$id, creationTime=$creationTime, redirects=$redirects)"
+    }
 }

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.d1s"
-version = "0.0.3-alpha.1"
+version = "0.1.0-beta.0"
 
 repositories {
     mavenCentral()
@@ -21,6 +21,7 @@ val starterCachingVersion: String by project
 val starterAdviceVersion: String by project
 val liquibaseVersion: String by project
 val caffeineVersion: String by project
+val striktVersion: String by project
 val springMockkVersion: String by project
 
 dependencies {
@@ -44,6 +45,8 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.strikt:strikt-jvm:$striktVersion")
+    testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 }
 

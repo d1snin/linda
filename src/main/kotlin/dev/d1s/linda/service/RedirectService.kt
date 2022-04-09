@@ -18,7 +18,6 @@ package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 
 interface RedirectService {
@@ -39,9 +38,7 @@ interface RedirectService {
 
     fun removeAll(redirects: Set<Redirect>): Set<Redirect>
 
-    fun removeAll(bulkRedirectRemovalDto: BulkRemovalDto): Set<Redirect>
-
-    fun removeAll(): Set<Redirect>
+    fun removeAll()
 
     fun removeAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect>
 }

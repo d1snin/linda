@@ -43,6 +43,13 @@ class ShortLinkControllerImpl : ShortLinkController {
     @Autowired
     private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
 
+    @Autowired
+    private lateinit var shortLinkCreationDtoConverter: DtoConverter<ShortLinkCreationDto, ShortLink>
+
+    @Autowired
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    private lateinit var bulkShortLinkRemovalDtoConverter: DtoConverter<BulkRemovalDto, Set<ShortLink>>
+
     private val shortLinkDtoSetConverter by lazy {
         shortLinkDtoConverter.converterForSet()
     }
@@ -66,7 +73,11 @@ class ShortLinkControllerImpl : ShortLinkController {
 
     override fun create(shortLinkCreationDto: ShortLinkCreationDto):
             ResponseEntity<ShortLinkDto> = ok(
-        shortLinkService.create(shortLinkCreationDto).dto
+        shortLinkService.create(
+            shortLinkCreationDtoConverter.convertToEntity(
+                shortLinkCreationDto
+            )
+        ).dto
     )
 
     override fun remove(
@@ -74,7 +85,7 @@ class ShortLinkControllerImpl : ShortLinkController {
         shortLinkFindingStrategy: ShortLinkFindingStrategyType?
     ): ResponseEntity<Any> {
         shortLinkService.remove(
-            shortLinkService.find(byType(shortLinkFindingStrategy, identifier))
+            byType(shortLinkFindingStrategy, identifier)
         )
         return noContent
     }
@@ -87,7 +98,11 @@ class ShortLinkControllerImpl : ShortLinkController {
     override fun removeAll(
         bulkShortLinkRemovalDto: BulkRemovalDto
     ): ResponseEntity<*> {
-        shortLinkService.removeAll(bulkShortLinkRemovalDto)
+        shortLinkService.removeAll(
+            bulkShortLinkRemovalDtoConverter.convertToEntity(
+                bulkShortLinkRemovalDto
+            )
+        )
         return noContent
     }
 }
