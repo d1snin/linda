@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.repository
+package dev.d1s.linda.constant.mapping.api
 
-import dev.d1s.linda.domain.ShortLink
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
-import java.util.*
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-@Repository
-interface ShortLinkRepository : JpaRepository<ShortLink, String> {
+internal class ApiMappingConstantsTest {
 
-    fun findShortLinkByAliasEquals(alias: String): Optional<ShortLink>
+    @Test
+    fun `should return valid mapping`() {
+        expectThat(API_BASE) isEqualTo "api"
+        expectThat(API_BASE_MAPPING) isEqualTo "/api"
+    }
 }

@@ -14,33 +14,40 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.impl
+package dev.d1s.linda.converter.impl.shortLink
 
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.dto.redirect.RedirectDto
-import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.strategy.shortLink.byId
+import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.service.RedirectService
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
+import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class RedirectDtoConverter : DtoConverter<RedirectDto, Redirect> {
+class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
 
     @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    private lateinit var redirectService: RedirectService
 
-    override fun convertToDto(entity: Redirect): RedirectDto =
-        RedirectDto(
+    override fun convertToDto(entity: ShortLink): ShortLinkDto =
+        ShortLinkDto(
             entity.id.checkNotNull("id"),
-            entity.shortLink.id.checkNotNull("short link id"),
-            entity.creationTime.checkNotNull("creation time")
+            entity.url,
+            entity.alias,
+            entity.creationTime.checkNotNull("creation time"),
+            entity.redirects.mapToSet {
+                it.id.checkNotNull("redirect id")
+            }
         )
 
-    override fun convertToEntity(dto: RedirectDto): Redirect =
-        Redirect(shortLinkService.find(byId(dto.shortLink))).apply {
+    override fun convertToEntity(dto: ShortLinkDto): ShortLink =
+        ShortLink(dto.url, dto.alias).apply {
             id = dto.id
             creationTime = dto.creationTime
+            redirects = dto.redirects.mapToSet {
+                redirectService.findById(it)
+            }
         }
 }

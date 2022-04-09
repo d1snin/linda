@@ -17,12 +17,12 @@
 package dev.d1s.linda.generator.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.io.ResourceLoader
-import org.springframework.stereotype.Component
 import dev.d1s.linda.domain.alias.FriendlyAliases
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ResourceLoader
+import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 
 @Component
@@ -58,7 +58,7 @@ class FriendlyAliasGenerator : AliasGenerator {
     @PostConstruct
     private fun initAliases() {
         aliases = objectMapper.readValue(
-            resourceLoader.getResource("classpath:wordlist.json").file.readText(),
+            resourceLoader.getResource("classpath:wordlist.json").file,
             FriendlyAliases::class.java
         )
     }
@@ -66,7 +66,7 @@ class FriendlyAliasGenerator : AliasGenerator {
     private fun String.appendAnimal() = "$this-${aliases.animals.random()}"
 
     private fun String.appendAdjective() = "$this-${
-        aliases.adjectives.filter { adjective ->
+        aliases.adjectives.first { adjective ->
             this.split("-").any {
                 it == adjective
             }

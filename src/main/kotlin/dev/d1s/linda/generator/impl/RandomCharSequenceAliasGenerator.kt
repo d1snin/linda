@@ -16,10 +16,10 @@
 
 package dev.d1s.linda.generator.impl
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import java.util.concurrent.ThreadLocalRandom
 
 @Component
@@ -27,8 +27,8 @@ class RandomCharSequenceAliasGenerator : AliasGenerator {
 
     override val identity = "random-char-sequence"
 
-    companion object {
-        const val INITIAL_LENGTH = 4
+    private companion object {
+        private const val INITIAL_LENGTH = 4
     }
 
     @Autowired
@@ -48,14 +48,12 @@ class RandomCharSequenceAliasGenerator : AliasGenerator {
     }
 
     private fun getRandomCharSequence(length: Int) = buildString {
-        // thread safe random
         val rnd = ThreadLocalRandom.current()
 
         for (i in 0 until length) {
             // a-z
             val randomChar = 'a' + rnd.nextInt(26)
 
-            // 1-9
             val randomInt = rnd.nextInt(10)
 
             if (rnd.nextBoolean()) {

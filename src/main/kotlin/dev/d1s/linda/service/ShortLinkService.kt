@@ -17,8 +17,6 @@
 package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.BulkRemovalDto
-import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 
 interface ShortLinkService {
@@ -27,7 +25,7 @@ interface ShortLinkService {
 
     fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink
 
-    fun create(shortLinkCreationDto: ShortLinkCreationDto): ShortLink
+    fun create(shortLink: ShortLink): ShortLink
 
     fun remove(shortLink: ShortLink): ShortLink
 
@@ -36,8 +34,6 @@ interface ShortLinkService {
     fun removeAll(): Set<ShortLink>
 
     fun removeAll(shortLinks: Set<ShortLink>): Set<ShortLink>
-
-    fun removeAll(bulkShortLinkRemovalDto: BulkRemovalDto): Set<ShortLink>
 
     fun doesAliasExist(alias: String): Boolean
 }

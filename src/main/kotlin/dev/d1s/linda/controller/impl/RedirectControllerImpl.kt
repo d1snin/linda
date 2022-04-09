@@ -42,15 +42,20 @@ class RedirectControllerImpl : RedirectController {
     @Autowired
     private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
 
+    @Autowired
+    // I have no idea why does intellij complain about it, but the property is being autowired successfully. Tests are passing.
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    private lateinit var bulkRedirectRemovalDtoConverter: DtoConverter<BulkRemovalDto, Set<Redirect>>
+
     private val redirectSetDtoConverter by lazy {
         redirectDtoConverter.converterForSet()
     }
 
-    private val Redirect.dto get() = redirectDtoConverter.convertToDto(this)
-    private val Set<Redirect>.dtoSet get() = redirectSetDtoConverter.convertToDtoSet(this)
+    private fun Redirect.toDto() = redirectDtoConverter.convertToDto(this)
+    private fun Set<Redirect>.toDtoSet() = redirectSetDtoConverter.convertToDtoSet(this)
 
     override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<RedirectDto>> = ok(
-        redirectService.findAll().dtoSet.toPage(page, size)
+        redirectService.findAll().toDtoSet().toPage(page, size)
     )
 
     override fun findAllByShortLink(
@@ -61,22 +66,26 @@ class RedirectControllerImpl : RedirectController {
     ): ResponseEntity<Page<RedirectDto>> = ok(
         redirectService.findAllByShortLink(
             byType(shortLinkFindingStrategyType, identifier)
-        ).dtoSet.toPage(
+        ).toDtoSet().toPage(
             page, size
         )
     )
 
     override fun findById(identifier: String): ResponseEntity<RedirectDto> = ok(
-        redirectService.findById(identifier).dto
+        redirectService.findById(identifier).toDto()
     )
 
-    override fun remove(identifier: String): ResponseEntity<*> {
+    override fun removeById(identifier: String): ResponseEntity<*> {
         redirectService.remove(identifier)
         return noContent
     }
 
     override fun removeAll(bulkRedirectRemovalDto: BulkRemovalDto): ResponseEntity<*> {
-        redirectService.removeAll(bulkRedirectRemovalDto)
+        redirectService.removeAll(
+            bulkRedirectRemovalDtoConverter.convertToEntity(
+                bulkRedirectRemovalDto
+            )
+        )
         return noContent
     }
 

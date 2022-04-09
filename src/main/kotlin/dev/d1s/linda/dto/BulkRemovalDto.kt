@@ -21,5 +21,5 @@ import javax.validation.constraints.NotEmpty
 
 @ConstructorBinding
 data class BulkRemovalDto(
-    @NotEmpty val identifiers: Set<String>
+    @field:NotEmpty val identifiers: Set<String>
 )

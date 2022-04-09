@@ -24,13 +24,11 @@ import dev.d1s.linda.constant.cache.REDIRECTS_BY_SHORT_LINK_TAG
 import dev.d1s.linda.constant.cache.REDIRECTS_CACHE
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.exception.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
-import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
@@ -93,13 +91,8 @@ class RedirectServiceImpl : RedirectService {
         redirectService.remove(it)
     }
 
-    override fun removeAll(bulkRedirectRemovalDto: BulkRemovalDto): Set<Redirect> =
-        bulkRedirectRemovalDto.identifiers.mapToSet {
-            redirectService.remove(it)
-        }
-
-    override fun removeAll(): Set<Redirect> =
-        redirectService.removeAll(redirectService.findAll())
+    override fun removeAll() =
+        redirectRepository.deleteAll()
 
     override fun removeAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect> =
         redirectService.removeAll(redirectService.findAllByShortLink(shortLinkFindingStrategy))
