@@ -18,7 +18,6 @@ package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.controller.ShortLinkController
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.service.ShortLinkService
@@ -45,10 +44,6 @@ class ShortLinkControllerImpl : ShortLinkController {
 
     @Autowired
     private lateinit var shortLinkCreationDtoConverter: DtoConverter<ShortLinkCreationDto, ShortLink>
-
-    @Autowired
-    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-    private lateinit var bulkShortLinkRemovalDtoConverter: DtoConverter<BulkRemovalDto, Set<ShortLink>>
 
     private val shortLinkDtoSetConverter by lazy {
         shortLinkDtoConverter.converterForSet()
@@ -80,29 +75,8 @@ class ShortLinkControllerImpl : ShortLinkController {
         ).dto
     )
 
-    override fun remove(
-        identifier: String,
-        shortLinkFindingStrategy: ShortLinkFindingStrategyType?
-    ): ResponseEntity<Any> {
-        shortLinkService.remove(
-            byType(shortLinkFindingStrategy, identifier)
-        )
-        return noContent
-    }
-
-    override fun removeAll(): ResponseEntity<Any> {
-        shortLinkService.removeAll()
-        return noContent
-    }
-
-    override fun removeAll(
-        bulkShortLinkRemovalDto: BulkRemovalDto
-    ): ResponseEntity<*> {
-        shortLinkService.removeAll(
-            bulkShortLinkRemovalDtoConverter.convertToEntity(
-                bulkShortLinkRemovalDto
-            )
-        )
+    override fun remove(identifier: String): ResponseEntity<*> {
+        shortLinkService.removeById(identifier)
         return noContent
     }
 }

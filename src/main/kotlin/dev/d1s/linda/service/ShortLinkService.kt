@@ -27,13 +27,7 @@ interface ShortLinkService {
 
     fun create(shortLink: ShortLink): ShortLink
 
-    fun remove(shortLink: ShortLink): ShortLink
-
-    fun remove(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink
-
-    fun removeAll(): Set<ShortLink>
-
-    fun removeAll(shortLinks: Set<ShortLink>): Set<ShortLink>
+    fun removeById(id: String)
 
     fun doesAliasExist(alias: String): Boolean
 }

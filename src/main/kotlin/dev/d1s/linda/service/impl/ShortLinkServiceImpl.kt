@@ -16,7 +16,6 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.caching.annotation.CacheEvictByIdProvider
 import dev.d1s.caching.annotation.CachePutByIdProvider
 import dev.d1s.caching.annotation.CacheableList
 import dev.d1s.linda.cache.idProvider.ShortLinkIdProvider
@@ -28,6 +27,7 @@ import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -53,9 +53,9 @@ class ShortLinkServiceImpl : ShortLinkService {
     @Cacheable(cacheNames = [SHORT_LINKS_CACHE])
     override fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink =
         when (shortLinkFindingStrategy) {
-            is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(shortLinkFindingStrategy.id)
+            is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(shortLinkFindingStrategy.identifier)
             is ShortLinkFindingStrategy.ByAlias -> shortLinkRepository.findShortLinkByAliasEquals(
-                shortLinkFindingStrategy.alias
+                shortLinkFindingStrategy.identifier
             )
         }.orElseThrow {
             ShortLinkNotFoundException
@@ -67,22 +67,9 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLinkRepository.save(shortLink)
 
     @Transactional
-    @CacheEvictByIdProvider(cacheName = SHORT_LINKS_CACHE, idProvider = ShortLinkIdProvider::class)
-    override fun remove(shortLink: ShortLink): ShortLink {
-        shortLinkRepository.delete(shortLink)
-        return shortLink
-    }
-
-    override fun remove(shortLinkFindingStrategy: ShortLinkFindingStrategy) =
-        shortLinkService.remove(shortLinkService.find(shortLinkFindingStrategy))
-
-    override fun removeAll(): Set<ShortLink> =
-        shortLinkService.removeAll(shortLinkService.findAll())
-
-    override fun removeAll(shortLinks: Set<ShortLink>): Set<ShortLink> =
-        shortLinks.onEach {
-            shortLinkService.remove(it)
-        }
+    @CacheEvict(SHORT_LINKS_CACHE, key = "#id")
+    override fun removeById(id: String) =
+        shortLinkRepository.deleteById(id)
 
     override fun doesAliasExist(alias: String): Boolean = try {
         shortLinkService.find(byAlias(alias))

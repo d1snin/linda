@@ -24,21 +24,11 @@ interface RedirectService {
 
     fun findAll(): Set<Redirect>
 
-    fun findAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect>
-
     fun findById(id: String): Redirect
 
     fun create(shortLink: ShortLink): Redirect
 
     fun create(shortLinkFindingStrategy: ShortLinkFindingStrategy): Redirect
 
-    fun remove(redirect: Redirect): Redirect
-
-    fun remove(id: String): Redirect
-
-    fun removeAll(redirects: Set<Redirect>): Set<Redirect>
-
-    fun removeAll()
-
-    fun removeAllByShortLink(shortLinkFindingStrategy: ShortLinkFindingStrategy): Set<Redirect>
+    fun removeById(id: String)
 }

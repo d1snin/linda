@@ -27,9 +27,4 @@ internal class CacheConstantsTest {
         expectThat(REDIRECTS_CACHE) isEqualTo "redirects"
         expectThat(SHORT_LINKS_CACHE) isEqualTo "short-links"
     }
-
-    @Test
-    fun `should return valid cache tags`() {
-        expectThat(REDIRECTS_BY_SHORT_LINK_TAG) isEqualTo "redirects-by-short-link"
-    }
 }

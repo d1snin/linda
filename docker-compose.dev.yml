@@ -39,6 +39,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://linda-postgres:5432/linda-data
       SPRING_PROFILES_ACTIVE: dev
+#      SIMPLESECURITY_ENABLED: false
 
 networks:
   linda-net:

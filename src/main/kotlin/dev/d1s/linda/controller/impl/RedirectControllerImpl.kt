@@ -18,11 +18,8 @@ package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.controller.RedirectController
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
-import dev.d1s.linda.strategy.shortLink.byType
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
@@ -42,11 +39,6 @@ class RedirectControllerImpl : RedirectController {
     @Autowired
     private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
 
-    @Autowired
-    // I have no idea why does intellij complain about it, but the property is being autowired successfully. Tests are passing.
-    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-    private lateinit var bulkRedirectRemovalDtoConverter: DtoConverter<BulkRemovalDto, Set<Redirect>>
-
     private val redirectSetDtoConverter by lazy {
         redirectDtoConverter.converterForSet()
     }
@@ -58,47 +50,12 @@ class RedirectControllerImpl : RedirectController {
         redirectService.findAll().toDtoSet().toPage(page, size)
     )
 
-    override fun findAllByShortLink(
-        identifier: String,
-        shortLinkFindingStrategyType: ShortLinkFindingStrategyType?,
-        page: Int?,
-        size: Int?
-    ): ResponseEntity<Page<RedirectDto>> = ok(
-        redirectService.findAllByShortLink(
-            byType(shortLinkFindingStrategyType, identifier)
-        ).toDtoSet().toPage(
-            page, size
-        )
-    )
-
     override fun findById(identifier: String): ResponseEntity<RedirectDto> = ok(
         redirectService.findById(identifier).toDto()
     )
 
     override fun removeById(identifier: String): ResponseEntity<*> {
-        redirectService.remove(identifier)
-        return noContent
-    }
-
-    override fun removeAll(bulkRedirectRemovalDto: BulkRemovalDto): ResponseEntity<*> {
-        redirectService.removeAll(
-            bulkRedirectRemovalDtoConverter.convertToEntity(
-                bulkRedirectRemovalDto
-            )
-        )
-        return noContent
-    }
-
-    override fun removeAll(): ResponseEntity<*> {
-        redirectService.removeAll()
-        return noContent
-    }
-
-    override fun removeAllByShortLink(
-        identifier: String,
-        shortLinkFindingStrategyType: ShortLinkFindingStrategyType?
-    ): ResponseEntity<*> {
-        redirectService.removeAllByShortLink(byType(shortLinkFindingStrategyType, identifier))
+        redirectService.removeById(identifier)
         return noContent
     }
 }
