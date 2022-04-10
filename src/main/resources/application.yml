@@ -18,7 +18,7 @@ spring:
       ddl-auto: none # required for liquibase migrations
 
   liquibase:
-    change-log: db/changelog/db.changelog-linda.xml
+    change-log: db/changelog/db.changelog-main.xml
 
   main:
     allow-circular-references: true

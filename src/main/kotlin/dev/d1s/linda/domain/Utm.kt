@@ -22,14 +22,9 @@ import java.time.Instant
 import javax.persistence.*
 
 @Entity
-@Table(name = "short_link")
-class ShortLink(
-    @Column(nullable = false)
-    val url: String,
+@Table(name = "utm")
+class Utm {
 
-    @Column(nullable = false, unique = true)
-    val alias: String
-) {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
@@ -40,30 +35,11 @@ class ShortLink(
     @CreationTimestamp
     var creationTime: Instant? = null
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
+    @ManyToMany(cascade = [CascadeType.ALL])
+    @JoinTable(
+        name = "redirect_utm",
+        joinColumns = [JoinColumn(name = "utm_id")],
+        inverseJoinColumns = [JoinColumn(name = "redirect_id")]
+    )
     var redirects: Set<Redirect> = setOf()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ShortLink) return false
-
-        if (url != other.url) return false
-        if (alias != other.alias) return false
-        if (id != other.id) return false
-        if (creationTime != other.creationTime) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = url.hashCode()
-        result = 31 * result + alias.hashCode()
-        result = 31 * result + (id?.hashCode() ?: 0)
-        result = 31 * result + (creationTime?.hashCode() ?: 0)
-        return result
-    }
-
-    override fun toString(): String {
-        return "ShortLink(url='$url', alias='$alias', id=$id, creationTime=$creationTime, redirects=$redirects)"
-    }
 }

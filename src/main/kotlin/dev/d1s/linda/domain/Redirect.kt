@@ -37,6 +37,9 @@ class Redirect(
     @CreationTimestamp
     var creationTime: Instant? = null
 
+    @ManyToMany(mappedBy = "redirects")
+    var utmParameters: Set<Utm> = setOf()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Redirect) return false
