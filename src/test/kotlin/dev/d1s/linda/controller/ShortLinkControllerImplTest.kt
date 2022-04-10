@@ -18,23 +18,22 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.constant.mapping.api.*
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_CREATE_MAPPING
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_ALL_MAPPING
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_MAPPING
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_REMOVE_MAPPING
 import dev.d1s.linda.controller.impl.ShortLinkControllerImpl
 import dev.d1s.linda.converter.impl.shortLink.ShortLinkCreationDtoConverter
 import dev.d1s.linda.converter.impl.shortLink.ShortLinkDtoConverter
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.testUtil.*
 import dev.d1s.teabag.data.toPage
-import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.verify
-import io.mockk.verifyAll
+import dev.d1s.teabag.testing.constant.VALID_STUB
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -69,9 +68,6 @@ internal class ShortLinkControllerImplTest {
     @MockkBean
     private lateinit var shortLinkCreationDtoConverter: ShortLinkCreationDtoConverter
 
-    @MockkBean
-    private lateinit var bulkShortLinkRemovalDtoConverter: DtoConverter<BulkRemovalDto, Set<ShortLink>>
-
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
@@ -88,8 +84,6 @@ internal class ShortLinkControllerImplTest {
     private val shortLinkFindingStrategy = mockShortLinkFindingStrategy()
 
     private val shortLinkCreationDto = mockShortLinkCreationDto()
-
-    private val bulkRemovalDto = mockBulkRemovalDto()
 
     // the SHITTIEST way to disable JSR 380 constraints. Excluding ValidationAutoConfiguration does not work.
     // see: https://www.jvt.me/posts/2020/05/18/disable-valid-annotation-spring-test/
@@ -124,22 +118,9 @@ internal class ShortLinkControllerImplTest {
             shortLinkService.create(shortLink)
         } returns shortLink
 
-        every {
-            shortLinkService.remove(shortLinkFindingStrategy)
-        } returns shortLink
-
-        every {
-            shortLinkService.removeAll()
-        } returns shortLinks
-
-        every {
-            bulkShortLinkRemovalDtoConverter
-                .convertToEntity(bulkRemovalDto)
-        } returns shortLinks
-
-        every {
-            shortLinkService.removeAll(shortLinks)
-        } returns shortLinks
+        justRun {
+            shortLinkService.removeById(VALID_STUB)
+        }
     }
 
     @Test
@@ -209,46 +190,15 @@ internal class ShortLinkControllerImplTest {
 
     @Test
     fun `should remove short link`() {
-        mockMvc.delete(SHORT_LINKS_REMOVE_MAPPING.setId()) {
-            param("strategy", ShortLinkFindingStrategyType.BY_ID.name)
-        }.andExpect {
-            status {
-                isNoContent()
+        mockMvc.delete(SHORT_LINKS_REMOVE_MAPPING.setId())
+            .andExpect {
+                status {
+                    isNoContent()
+                }
             }
-        }
 
         verify {
-            shortLinkService.remove(shortLinkFindingStrategy)
-        }
-    }
-
-    @Test
-    fun `should remove all short links`() {
-        mockMvc.delete(SHORT_LINKS_REMOVE_ALL_MAPPING).andExpect {
-            status {
-                isNoContent()
-            }
-        }
-
-        verify {
-            shortLinkService.removeAll()
-        }
-    }
-
-    @Test
-    fun `should remove all short links by provided ids`() {
-        mockMvc.delete(SHORT_LINKS_BULK_REMOVE_MAPPING) {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(bulkRemovalDto)
-        }.andExpect {
-            status {
-                isNoContent()
-            }
-        }
-
-        verify {
-            bulkShortLinkRemovalDtoConverter.convertToEntity(bulkRemovalDto)
-            shortLinkService.removeAll(shortLinks)
+            shortLinkService.removeById(VALID_STUB)
         }
     }
 

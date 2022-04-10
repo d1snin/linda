@@ -18,14 +18,13 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.constant.mapping.api.*
+import dev.d1s.linda.constant.mapping.api.REDIRECTS_FIND_ALL_MAPPING
+import dev.d1s.linda.constant.mapping.api.REDIRECTS_FIND_BY_ID_MAPPING
+import dev.d1s.linda.constant.mapping.api.REDIRECTS_REMOVE_BY_ID_MAPPING
 import dev.d1s.linda.controller.impl.RedirectControllerImpl
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
-import dev.d1s.linda.strategy.shortLink.byType
 import dev.d1s.linda.testUtil.*
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
@@ -39,7 +38,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.Page
-import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
@@ -61,9 +59,6 @@ internal class RedirectControllerImplTest {
     @MockkBean
     private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
 
-    @MockkBean
-    private lateinit var bulkRedirectRemovalDtoConverter: DtoConverter<BulkRemovalDto, Set<Redirect>>
-
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
@@ -77,10 +72,6 @@ internal class RedirectControllerImplTest {
 
     private val dtoSetConverterFacade = mockDtoSetConverterFacade<RedirectDto, Redirect>()
 
-    private val shortLinkFindingStrategy = mockShortLinkFindingStrategy()
-
-    private val bulkRemovalDto = mockBulkRemovalDto()
-
     @BeforeEach
     fun setup() {
         every {
@@ -92,10 +83,6 @@ internal class RedirectControllerImplTest {
         } returns redirectsDto
 
         every {
-            redirectService.findAllByShortLink(shortLinkFindingStrategy)
-        } returns redirects
-
-        every {
             redirectService.findById(VALID_STUB)
         } returns redirect
 
@@ -103,25 +90,9 @@ internal class RedirectControllerImplTest {
             redirectDtoConverter.convertToDto(redirect)
         } returns redirectDto
 
-        every {
-            redirectService.remove(VALID_STUB)
-        } returns redirect
-
         justRun {
-            redirectService.removeAll()
+            redirectService.removeById(VALID_STUB)
         }
-
-        every {
-            bulkRedirectRemovalDtoConverter.convertToEntity(bulkRemovalDto)
-        } returns redirects
-
-        every {
-            redirectService.removeAll(redirects)
-        } returns redirects
-
-        every {
-            redirectService.removeAllByShortLink(shortLinkFindingStrategy)
-        } returns redirects
     }
 
     @Test
@@ -143,36 +114,6 @@ internal class RedirectControllerImplTest {
             verifyAll {
                 redirectService.findAll()
                 redirectsDto.toPage(0, 0)
-            }
-        }
-    }
-
-    @Test
-    fun `should find all by short link`() {
-        this.withStaticMocks {
-            mockkStatic("dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyKt") {
-                every {
-                    byType(ShortLinkFindingStrategyType.BY_ID, VALID_STUB)
-                } returns shortLinkFindingStrategy
-
-                mockMvc.get(REDIRECTS_FIND_ALL_BY_SHORT_LINK_MAPPING.setId()) {
-                    param("strategy", ShortLinkFindingStrategyType.BY_ID.name)
-                    param("page", "0")
-                    param("size", "0")
-                }.andExpect {
-                    status {
-                        isOk()
-                    }
-
-                    content {
-                        json(objectMapper.writeValueAsString(it))
-                    }
-                }
-
-                verifyAll {
-                    redirectService.findAllByShortLink(shortLinkFindingStrategy)
-                    redirectsDto.toPage(0, 0)
-                }
             }
         }
     }
@@ -206,58 +147,7 @@ internal class RedirectControllerImplTest {
             }
 
         verify {
-            redirectService.remove(VALID_STUB)
-        }
-    }
-
-    @Test
-    fun `should remove all`() {
-        mockMvc.delete(REDIRECTS_REMOVE_ALL_MAPPING).andExpect {
-            status {
-                isNoContent()
-            }
-        }
-
-        verify {
-            redirectService.removeAll()
-        }
-    }
-
-    @Test
-    fun `should remove all by provided ids`() {
-        mockMvc.delete(REDIRECTS_BULK_REMOVE_MAPPING) {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(bulkRemovalDto)
-        }.andExpect {
-            status {
-                isNoContent()
-            }
-        }
-
-        verifyAll {
-            bulkRedirectRemovalDtoConverter.convertToEntity(
-                bulkRemovalDto
-            )
-
-            redirectService.removeAll(redirects)
-        }
-    }
-
-    @Test
-    fun `should remove all by short link`() {
-        mockMvc.delete(
-            REDIRECTS_REMOVE_ALL_BY_SHORT_LINK_MAPPING
-                .setId()
-        ) {
-            param("strategy", ShortLinkFindingStrategyType.BY_ID.name)
-        }.andExpect {
-            status {
-                isNoContent()
-            }
-        }
-
-        verify {
-            redirectService.removeAllByShortLink(shortLinkFindingStrategy)
+            redirectService.removeById(VALID_STUB)
         }
     }
 

@@ -28,7 +28,7 @@ services:
       - db-data-postgres:/var/lib/postgresql/data
 
   linda:
-    image: linda:0.1.0-beta.0
+    image: linda:0.1.1-beta.0
     container_name: linda
     networks:
       - linda-net
@@ -39,6 +39,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://linda-postgres:5432/linda-data
       SPRING_PROFILES_ACTIVE: dev
+#      SIMPLESECURITY_ENABLED: false
 
 networks:
   linda-net:

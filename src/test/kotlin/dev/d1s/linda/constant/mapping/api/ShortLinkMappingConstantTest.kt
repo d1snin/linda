@@ -30,7 +30,5 @@ internal class ShortLinkMappingConstantTest {
         expectThat(SHORT_LINKS_FIND_MAPPING) isEqualTo "/api/shortLinks/{identifier}"
         expectThat(SHORT_LINKS_CREATE_MAPPING) isEqualTo "/api/shortLinks"
         expectThat(SHORT_LINKS_REMOVE_MAPPING) isEqualTo "/api/shortLinks/{identifier}"
-        expectThat(SHORT_LINKS_REMOVE_ALL_MAPPING) isEqualTo "/api/shortLinks"
-        expectThat(SHORT_LINKS_BULK_REMOVE_MAPPING) isEqualTo "/api/shortLinks/part"
     }
 }

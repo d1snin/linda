@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.mapping.api
+package dev.d1s.linda.exception.mapper
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.mapper.ExceptionMapper
+import org.springframework.dao.DataAccessException
+import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Component
 
-internal class RedirectMappingConstantsTest {
+@Component
+class DataAccessExceptionMapper : ExceptionMapper {
 
-    @Test
-    fun `should return valid mapping`() {
-        expectThat(REDIRECTS_BASE_MAPPING) isEqualTo "/api/redirects"
-        expectThat(REDIRECTS_FIND_ALL_MAPPING) isEqualTo "/api/redirects"
-        expectThat(REDIRECTS_FIND_BY_ID_MAPPING) isEqualTo "/api/redirects/{identifier}"
-        expectThat(REDIRECTS_REMOVE_BY_ID_MAPPING) isEqualTo "/api/redirects/{identifier}"
-    }
+    override fun map(exception: Exception): ErrorResponseData? =
+        if (exception is DataAccessException) {
+            ErrorResponseData(HttpStatus.BAD_REQUEST, exception.message!!)
+        } else {
+            null
+        }
 }

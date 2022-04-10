@@ -18,7 +18,6 @@ package dev.d1s.linda.testUtil
 
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.BulkRemovalDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
@@ -63,10 +62,6 @@ internal fun mockShortLinkFindingStrategy() =
 internal fun mockShortLinkCreationDto() = ShortLinkCreationDto(
     VALID_STUB,
     VALID_STUB
-)
-
-internal fun mockBulkRemovalDto() = BulkRemovalDto(
-    setOf(VALID_STUB)
 )
 
 internal fun mockRedirect(configure: Boolean = false) = Redirect(

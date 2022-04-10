@@ -88,11 +88,7 @@ internal class RedirectServiceImplTest {
         } returns redirect
 
         justRun {
-            redirectRepository.delete(redirect)
-        }
-
-        justRun {
-            redirectRepository.deleteAll()
+            redirectRepository.deleteById(VALID_STUB)
         }
     }
 
@@ -104,17 +100,6 @@ internal class RedirectServiceImplTest {
 
         verify {
             redirectRepository.findAll()
-        }
-    }
-
-    @Test
-    fun `should find all by short link`() {
-        expectThat(
-            redirectService.findAllByShortLink(shortLinkFindingStrategy)
-        ) isEqualTo redirects
-
-        verify {
-            shortLinkService.find(shortLinkFindingStrategy)
         }
     }
 
@@ -159,49 +144,13 @@ internal class RedirectServiceImplTest {
     }
 
     @Test
-    fun `should remove redirect`() {
-        expectThat(
-            redirectService.remove(redirect)
-        ) isEqualTo redirect
-
-        verify {
-            redirectRepository.delete(redirect)
-        }
-    }
-
-    @Test
     fun `should remove by id`() {
-        expectThat(
-            redirectService.remove(VALID_STUB)
-        ) isEqualTo redirect
-    }
-
-    @Test
-    fun `should remove all provided redirects`() {
-        expectThat(
-            redirectService.removeAll(redirects)
-        ) isEqualTo redirects
-
-        verify {
-            redirectService.remove(redirect)
-        }
-    }
-
-    @Test
-    fun `should remove all`() {
         assertDoesNotThrow {
-            redirectService.removeAll()
+            redirectService.removeById(VALID_STUB)
         }
 
         verify {
-            redirectRepository.deleteAll()
+            redirectRepository.deleteById(VALID_STUB)
         }
-    }
-
-    @Test
-    fun `should remove all by short link`() {
-        expectThat(
-            redirectService.removeAllByShortLink(shortLinkFindingStrategy)
-        ) isEqualTo redirects
     }
 }

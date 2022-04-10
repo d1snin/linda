@@ -16,8 +16,10 @@
 
 package dev.d1s.linda.controller
 
-import dev.d1s.linda.constant.mapping.api.*
-import dev.d1s.linda.dto.BulkRemovalDto
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_CREATE_MAPPING
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_ALL_MAPPING
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_MAPPING
+import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_REMOVE_MAPPING
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
@@ -49,13 +51,6 @@ interface ShortLinkController {
 
     @DeleteMapping(SHORT_LINKS_REMOVE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     fun remove(
-        @PathVariable @NotBlank identifier: String,
-        @RequestParam("strategy", required = false) shortLinkFindingStrategy: ShortLinkFindingStrategyType?
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<*>
-
-    @DeleteMapping(SHORT_LINKS_REMOVE_ALL_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun removeAll(): ResponseEntity<*>
-
-    @DeleteMapping(SHORT_LINKS_BULK_REMOVE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun removeAll(@RequestBody bulkShortLinkRemovalDto: BulkRemovalDto): ResponseEntity<*>
 }

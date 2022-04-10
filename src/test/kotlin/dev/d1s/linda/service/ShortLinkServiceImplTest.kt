@@ -18,6 +18,7 @@ package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
+import dev.d1s.linda.exception.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.impl.ShortLinkServiceImpl
 import dev.d1s.linda.strategy.shortLink.byAlias
@@ -26,13 +27,18 @@ import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
+import strikt.assertions.isFalse
+import strikt.assertions.isTrue
 import java.util.*
 
 @SpringBootTest
@@ -70,8 +76,16 @@ internal class ShortLinkServiceImplTest {
         } returns Optional.of(shortLink)
 
         every {
+            shortLinkRepository.findShortLinkByAliasEquals(INVALID_STUB)
+        } returns Optional.empty()
+
+        every {
             shortLinkRepository.save(shortLink)
         } returns shortLink
+
+        justRun {
+            shortLinkRepository.deleteById(VALID_STUB)
+        }
     }
 
     @Test
@@ -108,6 +122,13 @@ internal class ShortLinkServiceImplTest {
     }
 
     @Test
+    fun `should throw ShortLinkNotFoundException`() {
+        assertThrows<ShortLinkNotFoundException> {
+            shortLinkService.find(byId(INVALID_STUB))
+        }
+    }
+
+    @Test
     fun `should create short link`() {
         expectThat(
             shortLinkService.create(shortLink)
@@ -118,6 +139,25 @@ internal class ShortLinkServiceImplTest {
         }
     }
 
-    // tests for remove operations are missing due to
-    // https://github.com/linda-project/linda/issues/23
+    @Test
+    fun `should remove short link by id`() {
+        assertDoesNotThrow {
+            shortLinkService.removeById(VALID_STUB)
+        }
+
+        verify {
+            shortLinkRepository.deleteById(VALID_STUB)
+        }
+    }
+
+    @Test
+    fun `should return valid decision wherever the alias exists or not`() {
+        expectThat(
+            shortLinkService.doesAliasExist(VALID_STUB)
+        ).isTrue()
+
+        expectThat(
+            shortLinkService.doesAliasExist(INVALID_STUB)
+        ).isFalse()
+    }
 }

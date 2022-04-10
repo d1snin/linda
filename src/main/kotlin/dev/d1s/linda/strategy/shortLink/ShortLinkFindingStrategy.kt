@@ -22,8 +22,10 @@ import dev.d1s.linda.util.thisOrDefaultType
 
 sealed class ShortLinkFindingStrategy {
 
-    data class ById(val id: String) : ShortLinkFindingStrategy()
-    data class ByAlias(val alias: String) : ShortLinkFindingStrategy()
+    abstract val identifier: String
+
+    data class ById(override val identifier: String) : ShortLinkFindingStrategy()
+    data class ByAlias(override val identifier: String) : ShortLinkFindingStrategy()
 }
 
 enum class ShortLinkFindingStrategyType {
