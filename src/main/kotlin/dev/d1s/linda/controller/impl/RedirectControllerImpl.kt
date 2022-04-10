@@ -20,6 +20,7 @@ import dev.d1s.linda.controller.RedirectController
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService
+import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
@@ -46,14 +47,17 @@ class RedirectControllerImpl : RedirectController {
     private fun Redirect.toDto() = redirectDtoConverter.convertToDto(this)
     private fun Set<Redirect>.toDtoSet() = redirectSetDtoConverter.convertToDtoSet(this)
 
+    @Secured
     override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<RedirectDto>> = ok(
         redirectService.findAll().toDtoSet().toPage(page, size)
     )
 
+    @Secured
     override fun findById(identifier: String): ResponseEntity<RedirectDto> = ok(
         redirectService.findById(identifier).toDto()
     )
 
+    @Secured
     override fun removeById(identifier: String): ResponseEntity<*> {
         redirectService.removeById(identifier)
         return noContent

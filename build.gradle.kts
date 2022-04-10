@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.d1s"
-version = "0.1.1-beta.0"
+version = "0.1.2-beta.0"
 
 repositories {
     mavenCentral()
@@ -19,6 +19,7 @@ val teabagsVersion: String by project
 val springdocVersion: String by project
 val starterCachingVersion: String by project
 val starterAdviceVersion: String by project
+val starterSimpleSecurityVersion: String by project
 val liquibaseVersion: String by project
 val caffeineVersion: String by project
 val striktVersion: String by project
@@ -33,6 +34,7 @@ dependencies {
     implementation("dev.d1s.teabags:teabag-stdlib:$teabagsVersion")
     implementation("dev.d1s:spring-boot-starter-caching:$starterCachingVersion")
     implementation("dev.d1s:spring-boot-starter-advice:$starterAdviceVersion")
+    implementation("dev.d1s:spring-boot-starter-simple-security:$starterSimpleSecurityVersion")
     implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
     implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
     implementation("org.springframework.boot:spring-boot-starter-validation")

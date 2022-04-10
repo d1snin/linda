@@ -23,6 +23,7 @@ import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType
+import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
@@ -51,12 +52,14 @@ class ShortLinkControllerImpl : ShortLinkController {
 
     private val ShortLink.dto get() = shortLinkDtoConverter.convertToDto(this)
 
+    @Secured
     override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<ShortLinkDto>> = ok(
         shortLinkDtoSetConverter.convertToDtoSet(
             shortLinkService.findAll()
         ).toPage(page, size)
     )
 
+    @Secured
     override fun find(
         identifier: String,
         shortLinkFindingStrategy: ShortLinkFindingStrategyType?
@@ -66,6 +69,7 @@ class ShortLinkControllerImpl : ShortLinkController {
         ).dto
     )
 
+    @Secured
     override fun create(shortLinkCreationDto: ShortLinkCreationDto):
             ResponseEntity<ShortLinkDto> = ok(
         shortLinkService.create(
@@ -75,6 +79,7 @@ class ShortLinkControllerImpl : ShortLinkController {
         ).dto
     )
 
+    @Secured
     override fun remove(identifier: String): ResponseEntity<*> {
         shortLinkService.removeById(identifier)
         return noContent
