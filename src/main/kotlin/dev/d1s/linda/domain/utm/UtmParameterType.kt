@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception
+package dev.d1s.linda.domain.utm
 
-import dev.d1s.linda.exception.impl.ShortLinkNotFoundException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
-
-internal class ShortLinkNotFoundExceptionTest {
-
-    @Test
-    fun `should return valid message`() {
-        expectThat(ShortLinkNotFoundException.message!!) isEqualTo
-                "The requested short link was not found."
-    }
+enum class UtmParameterType {
+    SOURCE, MEDIUM, CAMPAIGN, TERM, CONTENT
 }

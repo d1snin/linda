@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception
+package dev.d1s.linda.constant.mapping.api
 
-import dev.d1s.linda.exception.impl.RedirectNotFoundException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-internal class RedirectNotFoundExceptionTest {
+internal class ShortLinkMappingConstantsTest {
 
     @Test
-    fun `should return valid message`() {
-        expectThat(RedirectNotFoundException.message!!) isEqualTo
-                "The requested redirect was not found."
+    fun `should return valid mapping`() {
+        expectThat(SHORT_LINKS_BASE_NAME) isEqualTo "shortLinks"
+        expectThat(SHORT_LINKS_BASE_MAPPING) isEqualTo "/api/shortLinks"
+        expectThat(SHORT_LINKS_FIND_ALL_MAPPING) isEqualTo "/api/shortLinks"
+        expectThat(SHORT_LINKS_FIND_MAPPING) isEqualTo "/api/shortLinks/{identifier}"
+        expectThat(SHORT_LINKS_CREATE_MAPPING) isEqualTo "/api/shortLinks"
+        expectThat(SHORT_LINKS_REMOVE_MAPPING) isEqualTo "/api/shortLinks/{identifier}"
     }
 }

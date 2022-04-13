@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.domain
 
+import dev.d1s.linda.domain.utm.UtmParameter
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
@@ -38,7 +39,7 @@ class Redirect(
     var creationTime: Instant? = null
 
     @ManyToMany(mappedBy = "redirects")
-    var utmParameters: Set<Utm> = setOf()
+    var utmParameters: MutableSet<UtmParameter> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

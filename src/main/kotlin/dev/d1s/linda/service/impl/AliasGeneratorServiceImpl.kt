@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.linda.exception.impl.AliasGeneratorNotFoundException
+import dev.d1s.linda.exception.impl.notFound.AliasGeneratorNotFoundException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.AliasGeneratorService
 import org.springframework.beans.factory.annotation.Autowired

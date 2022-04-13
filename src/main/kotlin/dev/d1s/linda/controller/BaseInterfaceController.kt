@@ -17,9 +17,11 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_MAPPING
+import dev.d1s.linda.constant.utm.*
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.view.RedirectView
 import javax.validation.constraints.NotBlank
 
@@ -27,5 +29,12 @@ import javax.validation.constraints.NotBlank
 interface BaseInterfaceController {
 
     @GetMapping(BASE_INTERFACE_MAPPING)
-    fun redirect(@PathVariable @NotBlank alias: String): RedirectView
+    fun redirect(
+        @PathVariable @NotBlank alias: String,
+        @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
+        @RequestParam(UTM_MEDIUM, required = false) utmMedium: String?,
+        @RequestParam(UTM_CAMPAIGN, required = false) utmCampaign: String?,
+        @RequestParam(UTM_TERM, required = false) utmTerm: String?,
+        @RequestParam(UTM_CONTENT, required = false) utmContent: String?
+    ): RedirectView
 }

@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.domain.utm
 
+import dev.d1s.linda.domain.Redirect
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import javax.persistence.*
 
 @Entity
-@Table(name = "utm")
-class Utm {
+@Table(name = "utm_parameter")
+class UtmParameter(
+    @Column(nullable = false)
+    var type: UtmParameterType,
 
+    @Column(nullable = false)
+    var parameterValue: String
+) {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
@@ -41,5 +47,29 @@ class Utm {
         joinColumns = [JoinColumn(name = "utm_id")],
         inverseJoinColumns = [JoinColumn(name = "redirect_id")]
     )
-    var redirects: Set<Redirect> = setOf()
+    var redirects: MutableSet<Redirect> = mutableSetOf()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is UtmParameter) return false
+
+        if (type != other.type) return false
+        if (parameterValue != other.parameterValue) return false
+        if (id != other.id) return false
+        if (creationTime != other.creationTime) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = type.hashCode()
+        result = 31 * result + parameterValue.hashCode()
+        result = 31 * result + (id?.hashCode() ?: 0)
+        result = 31 * result + (creationTime?.hashCode() ?: 0)
+        return result
+    }
+
+    override fun toString(): String {
+        return "UtmParameter(type=$type, parameterValue='$parameterValue', id=$id, creationTime=$creationTime, redirects=$redirects)"
+    }
 }

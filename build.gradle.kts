@@ -17,7 +17,6 @@ repositories {
 
 val teabagsVersion: String by project
 val springdocVersion: String by project
-val starterCachingVersion: String by project
 val starterAdviceVersion: String by project
 val starterSimpleSecurityVersion: String by project
 val liquibaseVersion: String by project
@@ -32,7 +31,6 @@ dependencies {
     implementation("dev.d1s.teabags:teabag-spring-data:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-dto:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-stdlib:$teabagsVersion")
-    implementation("dev.d1s:spring-boot-starter-caching:$starterCachingVersion")
     implementation("dev.d1s:spring-boot-starter-advice:$starterAdviceVersion")
     implementation("dev.d1s:spring-boot-starter-simple-security:$starterSimpleSecurityVersion")
     implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
@@ -40,13 +38,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.postgresql:postgresql")
+    implementation("org.mariadb.jdbc:mariadb-java-client")
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.h2database:h2")
     testImplementation("io.strikt:strikt-jvm:$striktVersion")
     testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")

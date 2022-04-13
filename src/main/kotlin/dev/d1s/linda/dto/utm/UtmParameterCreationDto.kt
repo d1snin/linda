@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.configuration.properties
+package dev.d1s.linda.dto.utm
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import dev.d1s.linda.domain.utm.UtmParameterType
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
-@ConstructorBinding
-@ConfigurationProperties("linda.base-interface")
-data class BaseInterfaceConfigurationProperties(
-    val enabled: Boolean = true,
-    val automaticUtmCreation: Boolean = false
+data class UtmParameterCreationDto(
+    @field:NotNull
+    val type: UtmParameterType,
+
+    @field:NotBlank
+    val value: String
 )

@@ -17,26 +17,8 @@ services:
       MARIADB_PASSWORD: "linda-data"
       MARIADB_ROOT_PASSWORD: "root"
     restart: always
-    networks:
-      - linda-net
-    expose:
-      - 3306
+    ports:
+      - "3306:3306"
     volumes:
       - db-data-mariadb:/var/lib/mysql
       - db-data-mariadb-config:/etc/mysql
-
-  linda:
-    image: linda:0.1.2-beta.0
-    container_name: linda
-    networks:
-      - linda-net
-    ports:
-      - "8080:8080"
-    depends_on:
-      - linda-mariadb
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://linda-mariadb:3306/linda-data
-
-networks:
-  linda-net:
-    driver: bridge

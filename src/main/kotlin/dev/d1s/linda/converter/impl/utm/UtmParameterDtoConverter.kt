@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.impl.shortLink
+package dev.d1s.linda.converter.impl.utm
 
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
-import dev.d1s.linda.service.AliasGeneratorService
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.teabag.dto.DtoConverter
-import org.springframework.beans.factory.annotation.Autowired
+import dev.d1s.teabag.stdlib.checks.checkNotNull
+import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
 
 @Component
-class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLink> {
+class UtmParameterDtoConverter : DtoConverter<UtmParameterDto, UtmParameter> {
 
-    @Autowired
-    private lateinit var aliasGeneratorService: AliasGeneratorService
-
-    override fun convertToEntity(dto: ShortLinkCreationDto): ShortLink =
-        ShortLink(
-            dto.url,
-            aliasGeneratorService
-                .getAliasGenerator(dto.aliasGeneratorId)
-                .generateAlias()
+    override fun convertToDto(entity: UtmParameter): UtmParameterDto =
+        UtmParameterDto(
+            entity.id.checkNotNull("id"),
+            entity.type,
+            entity.parameterValue,
+            entity.creationTime.checkNotNull("creationTime"),
+            entity.redirects.mapToSet {
+                it.id.checkNotNull("Redirect's id")
+            }
         )
 }

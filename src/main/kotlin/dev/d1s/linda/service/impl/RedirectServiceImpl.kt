@@ -16,20 +16,12 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.caching.annotation.CachePutByIdProvider
-import dev.d1s.caching.annotation.CacheableList
-import dev.d1s.linda.cache.idProvider.RedirectIdProvider
-import dev.d1s.linda.constant.cache.REDIRECTS_CACHE
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.exception.impl.RedirectNotFoundException
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.exception.impl.notFound.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -40,39 +32,32 @@ class RedirectServiceImpl : RedirectService {
     @Autowired
     private lateinit var redirectRepository: RedirectRepository
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
-
     @Lazy
     @Autowired
     private lateinit var redirectService: RedirectServiceImpl
 
     @Transactional(readOnly = true)
-    @CacheableList(cacheName = REDIRECTS_CACHE, idProvider = RedirectIdProvider::class)
     override fun findAll(): Set<Redirect> =
         redirectRepository.findAll().toSet()
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = [REDIRECTS_CACHE])
     override fun findById(id: String): Redirect =
         redirectRepository.findById(id).orElseThrow {
             RedirectNotFoundException
         }
 
     @Transactional
-    @CachePutByIdProvider(cacheName = REDIRECTS_CACHE, idProvider = RedirectIdProvider::class)
-    override fun create(shortLink: ShortLink): Redirect =
-        redirectRepository.save(
-            Redirect(shortLink)
-        )
-
-    override fun create(shortLinkFindingStrategy: ShortLinkFindingStrategy): Redirect =
-        redirectService.create(
-            shortLinkService.find(shortLinkFindingStrategy)
-        )
+    override fun create(redirect: Redirect): Redirect =
+        redirectRepository.save(redirect)
 
     @Transactional
-    @CacheEvict(REDIRECTS_CACHE, key = "#id")
+    override fun assignUtmParameter(redirect: Redirect, utmParameter: UtmParameter) {
+        redirect.utmParameters.add(utmParameter)
+        utmParameter.redirects.add(redirect)
+        redirectRepository.save(redirect)
+    }
+
+    @Transactional
     override fun removeById(id: String) =
         redirectRepository.deleteById(id)
 }

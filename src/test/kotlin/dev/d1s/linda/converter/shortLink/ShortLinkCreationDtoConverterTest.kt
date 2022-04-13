@@ -59,13 +59,6 @@ internal class ShortLinkCreationDtoConverterTest {
     }
 
     @Test
-    fun `should throw IllegalStateException`() {
-        assertThrows<IllegalStateException> {
-            converter.convertToDto(shortLink)
-        }
-    }
-
-    @Test
     fun `should convert to entity`() {
         expectThat(
             converter.convertToEntity(

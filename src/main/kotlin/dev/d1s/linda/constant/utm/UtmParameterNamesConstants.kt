@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.cache
+package dev.d1s.linda.constant.utm
 
-const val REDIRECTS_CACHE = "redirects"
-const val SHORT_LINKS_CACHE = "short-links"
+const val UTM_SOURCE = "utm_source"
+const val UTM_MEDIUM = "utm_medium"
+const val UTM_CAMPAIGN = "utm_campaign"
+const val UTM_TERM = "utm_term"
+const val UTM_CONTENT = "utm_content"

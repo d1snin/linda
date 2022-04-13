@@ -16,16 +16,9 @@
 
 package dev.d1s.linda.converter.redirect
 
-import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.converter.impl.redirect.RedirectDtoConverter
-import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.testUtil.mockRedirect
 import dev.d1s.linda.testUtil.mockRedirectDto
-import dev.d1s.linda.testUtil.mockShortLink
-import dev.d1s.linda.testUtil.mockShortLinkFindingStrategy
-import io.mockk.every
-import io.mockk.verify
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,39 +33,15 @@ internal class RedirectDtoConverterTest {
     @Autowired
     private lateinit var converter: RedirectDtoConverter
 
-    @MockkBean
-    private lateinit var shortLinkService: ShortLinkService
-
-    private val shortLinkFindingStrategy =
-        mockShortLinkFindingStrategy()
-
     private val redirect = mockRedirect(true)
 
     // redirectDto has the same properties as the associated entity
     private val redirectDto = mockRedirectDto()
-
-    @BeforeEach
-    fun setup() {
-        every {
-            shortLinkService.find(shortLinkFindingStrategy)
-        } returns mockShortLink(true)
-    }
 
     @Test
     fun `should convert to dto`() {
         expectThat(
             converter.convertToDto(redirect)
         ) isEqualTo redirectDto
-    }
-
-    @Test
-    fun `should convert to entity`() {
-        expectThat(
-            converter.convertToEntity(redirectDto)
-        ) isEqualTo redirect
-
-        verify {
-            shortLinkService.find(shortLinkFindingStrategy)
-        }
     }
 }
