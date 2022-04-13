@@ -18,6 +18,7 @@ package dev.d1s.linda.configuration.properties
 
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
+import strikt.assertions.isFalse
 import strikt.assertions.isTrue
 
 internal class BaseInterfaceConfigurationPropertiesTest {
@@ -27,5 +28,6 @@ internal class BaseInterfaceConfigurationPropertiesTest {
     @Test
     fun `should return valid default values`() {
         expectThat(configurationProperties.enabled).isTrue()
+        expectThat(configurationProperties.automaticUtmCreation).isFalse()
     }
 }

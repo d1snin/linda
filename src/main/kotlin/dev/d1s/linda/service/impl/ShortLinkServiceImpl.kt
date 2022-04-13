@@ -16,19 +16,13 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.caching.annotation.CachePutByIdProvider
-import dev.d1s.caching.annotation.CacheableList
-import dev.d1s.linda.cache.idProvider.ShortLinkIdProvider
-import dev.d1s.linda.constant.cache.SHORT_LINKS_CACHE
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.exception.impl.ShortLinkNotFoundException
+import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
@@ -45,12 +39,10 @@ class ShortLinkServiceImpl : ShortLinkService {
     private lateinit var shortLinkService: ShortLinkServiceImpl
 
     @Transactional(readOnly = true)
-    @CacheableList(cacheName = SHORT_LINKS_CACHE, idProvider = ShortLinkIdProvider::class)
     override fun findAll(): Set<ShortLink> =
         shortLinkRepository.findAll().toSet()
 
     @Transactional(readOnly = true)
-    @Cacheable(cacheNames = [SHORT_LINKS_CACHE])
     override fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink =
         when (shortLinkFindingStrategy) {
             is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(shortLinkFindingStrategy.identifier)
@@ -62,12 +54,10 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    @CachePutByIdProvider(cacheName = SHORT_LINKS_CACHE, idProvider = ShortLinkIdProvider::class)
     override fun create(shortLink: ShortLink): ShortLink =
         shortLinkRepository.save(shortLink)
 
     @Transactional
-    @CacheEvict(SHORT_LINKS_CACHE, key = "#id")
     override fun removeById(id: String) =
         shortLinkRepository.deleteById(id)
 

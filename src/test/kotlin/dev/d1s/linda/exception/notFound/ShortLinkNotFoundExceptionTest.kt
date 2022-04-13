@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception
+package dev.d1s.linda.exception.notFound
 
-import dev.d1s.linda.exception.impl.AliasGeneratorNotFoundException
+import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-internal class AliasGeneratorNotFoundExceptionTest {
+internal class ShortLinkNotFoundExceptionTest {
 
     @Test
     fun `should return valid message`() {
-        expectThat(AliasGeneratorNotFoundException.message!!) isEqualTo
-                "The requested generator was not found."
+        expectThat(ShortLinkNotFoundException.message!!) isEqualTo
+                "The requested short link was not found."
     }
 }

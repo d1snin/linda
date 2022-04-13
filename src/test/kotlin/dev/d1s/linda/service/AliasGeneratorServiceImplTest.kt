@@ -17,7 +17,7 @@
 package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.exception.impl.AliasGeneratorNotFoundException
+import dev.d1s.linda.exception.impl.notFound.AliasGeneratorNotFoundException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.impl.AliasGeneratorServiceImpl
 import dev.d1s.teabag.testing.constant.INVALID_STUB

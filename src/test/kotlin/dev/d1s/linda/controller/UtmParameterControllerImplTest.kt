@@ -18,18 +18,19 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_CREATE_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_REMOVE_MAPPING
-import dev.d1s.linda.controller.impl.ShortLinkControllerImpl
-import dev.d1s.linda.converter.impl.shortLink.ShortLinkCreationDtoConverter
-import dev.d1s.linda.converter.impl.shortLink.ShortLinkDtoConverter
-import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
+import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_CREATE_MAPPING
+import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_FIND_ALL_MAPPING
+import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_FIND_BY_ID_MAPPING
+import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_REMOVE_BY_ID_MAPPING
+import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.testConfiguration.LocalValidatorFactoryBeanConfiguration
 import dev.d1s.linda.testUtil.*
 import dev.d1s.teabag.data.toPage
+import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
@@ -50,76 +51,73 @@ import org.springframework.test.web.servlet.post
 
 @ContextConfiguration(
     classes = [
-        ShortLinkControllerImpl::class,
+        UtmParameterControllerImpl::class,
         JacksonAutoConfiguration::class,
         LocalValidatorFactoryBeanConfiguration::class
     ]
 )
 @WebMvcTest(
-    controllers = [ShortLinkControllerImpl::class],
+    controllers = [UtmParameterControllerImpl::class],
     excludeAutoConfiguration = [SecurityAutoConfiguration::class]
 )
-internal class ShortLinkControllerImplTest {
+internal class UtmParameterControllerImplTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @MockkBean
-    private lateinit var shortLinkService: ShortLinkService
+    private lateinit var utmParameterService: UtmParameterService
 
     @MockkBean
-    private lateinit var shortLinkDtoConverter: ShortLinkDtoConverter
+    private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
 
     @MockkBean
-    private lateinit var shortLinkCreationDtoConverter: ShortLinkCreationDtoConverter
+    private lateinit var utmParameterCreationDtoConverter: DtoConverter<UtmParameterCreationDto, UtmParameter>
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-    private val shortLink = mockShortLink(true)
+    private val utmParameter = mockUtmParameter(true)
 
-    private val shortLinks = setOf(shortLink)
+    private val utmParameters = setOf(utmParameter)
 
-    private val shortLinkDto = mockShortLinkDto()
+    private val utmParameterDto = mockUtmParameterDto()
 
-    private val shortLinksDto = setOf(shortLinkDto)
+    private val utmParametersDto = setOf(utmParameterDto)
 
-    private val shortLinkFindingStrategy = mockShortLinkFindingStrategy()
-
-    private val shortLinkCreationDto = mockShortLinkCreationDto()
+    private val utmParameterCreationDto = mockUtmParameterCreationDto()
 
     @BeforeEach
     fun setup() {
         every {
-            shortLinkService.findAll()
-        } returns shortLinks
+            utmParameterService.findAll()
+        } returns utmParameters
 
         every {
-            shortLinkService.find(shortLinkFindingStrategy)
-        } returns shortLink
+            utmParameterService.findById(VALID_STUB)
+        } returns utmParameter
 
         every {
-            shortLinkDtoConverter.convertToDto(shortLink)
-        } returns shortLinkDto
+            utmParameterService.create(utmParameter)
+        } returns utmParameter
 
         every {
-            shortLinkCreationDtoConverter
-                .convertToEntity(shortLinkCreationDto)
-        } returns shortLink
+            utmParameterDtoConverter.convertToDto(utmParameter)
+        } returns utmParameterDto
 
         every {
-            shortLinkService.create(shortLink)
-        } returns shortLink
+            utmParameterCreationDtoConverter.convertToEntity(utmParameterCreationDto)
+        } returns utmParameter
 
         justRun {
-            shortLinkService.removeById(VALID_STUB)
+            utmParameterService.removeById(VALID_STUB)
         }
     }
 
     @Test
-    fun `should find all short links`() {
-        withStaticMocks(shortLinkDtoConverter, shortLinksDto, shortLinks) { page, converter ->
-            mockMvc.get(SHORT_LINKS_FIND_ALL_MAPPING) {
+    fun `should find all utm parameters`() {
+        withStaticMocks(utmParameterDtoConverter, utmParametersDto, utmParameters) { page, converter ->
+            mockMvc.get(UTM_PARAMETERS_FIND_ALL_MAPPING) {
                 param("page", "0")
                 param("size", "0")
             }.andExpect {
@@ -133,58 +131,56 @@ internal class ShortLinkControllerImplTest {
             }
 
             verifyAll {
-                shortLinkService.findAll()
-                shortLinksDto.toPage(0, 0)
-                converter.convertToDtoSet(shortLinks)
+                utmParameterService.findAll()
+                utmParametersDto.toPage(0, 0)
+                converter.convertToDtoSet(utmParameters)
             }
         }
     }
 
     @Test
     fun `should find by id`() {
-        mockMvc.get(SHORT_LINKS_FIND_MAPPING.setId()) {
-            param("strategy", ShortLinkFindingStrategyType.BY_ID.name)
-        }.andExpect {
+        mockMvc.get(UTM_PARAMETERS_FIND_BY_ID_MAPPING.setId()).andExpect {
             status {
                 isOk()
             }
 
             content {
-                json(objectMapper.writeValueAsString(shortLinkDto))
+                json(objectMapper.writeValueAsString(utmParameterDto))
             }
         }
 
         verifyAll {
-            shortLinkService.find(shortLinkFindingStrategy)
-            shortLinkDtoConverter.convertToDto(shortLink)
+            utmParameterService.findById(VALID_STUB)
+            utmParameterDtoConverter.convertToDto(utmParameter)
         }
     }
 
     @Test
-    fun `should create short link`() {
-        mockMvc.post(SHORT_LINKS_CREATE_MAPPING) {
+    fun `should create utm parameter`() {
+        mockMvc.post(UTM_PARAMETERS_CREATE_MAPPING) {
             contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(shortLinkCreationDto)
+            content = objectMapper.writeValueAsString(utmParameterCreationDto)
         }.andExpect {
             status {
-                isOk() // should be 201: https://github.com/linda-project/linda/issues/9
+                isCreated()
             }
 
             content {
-                json(objectMapper.writeValueAsString(shortLinkDto))
+                json(objectMapper.writeValueAsString(utmParameterDto))
             }
         }
 
         verifyAll {
-            shortLinkCreationDtoConverter.convertToEntity(shortLinkCreationDto)
-            shortLinkService.create(shortLink)
-            shortLinkDtoConverter.convertToDto(shortLink)
+            utmParameterCreationDtoConverter.convertToEntity(utmParameterCreationDto)
+            utmParameterService.create(utmParameter)
+            utmParameterDtoConverter.convertToDto(utmParameter)
         }
     }
 
     @Test
-    fun `should remove short link`() {
-        mockMvc.delete(SHORT_LINKS_REMOVE_MAPPING.setId())
+    fun `should remove by id`() {
+        mockMvc.delete(UTM_PARAMETERS_REMOVE_BY_ID_MAPPING.setId())
             .andExpect {
                 status {
                     isNoContent()
@@ -192,7 +188,7 @@ internal class ShortLinkControllerImplTest {
             }
 
         verify {
-            shortLinkService.removeById(VALID_STUB)
+            utmParameterService.removeById(VALID_STUB)
         }
     }
 }

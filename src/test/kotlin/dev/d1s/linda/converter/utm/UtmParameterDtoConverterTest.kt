@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.cache.idProvider
+package dev.d1s.linda.converter.utm
 
-import dev.d1s.caching.model.TaggedValue
-import dev.d1s.linda.testUtil.mockRedirect
-import dev.d1s.teabag.testing.constant.VALID_STUB
+import dev.d1s.linda.converter.impl.utm.UtmParameterDtoConverter
+import dev.d1s.linda.testUtil.mockUtmParameter
+import dev.d1s.linda.testUtil.mockUtmParameterDto
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,22 +27,16 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [RedirectIdProvider::class])
-internal class RedirectIdProviderTest {
+@ContextConfiguration(classes = [UtmParameterDtoConverter::class])
+internal class UtmParameterDtoConverterTest {
 
     @Autowired
-    private lateinit var redirectIdProvider: RedirectIdProvider
-
-    private val mockRedirect = mockRedirect().apply {
-        id = VALID_STUB
-    }
+    private lateinit var converter: UtmParameterDtoConverter
 
     @Test
-    fun `should return valid id`() {
+    fun `should convert to dto`() {
         expectThat(
-            redirectIdProvider.getId(
-                TaggedValue(mockRedirect, setOf())
-            )
-        ) isEqualTo VALID_STUB
+            converter.convertToDto(mockUtmParameter(true))
+        ) isEqualTo mockUtmParameterDto()
     }
 }

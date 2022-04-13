@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.cache.idProvider
+package dev.d1s.linda.service
 
-import dev.d1s.caching.model.TaggedValue
-import dev.d1s.caching.provider.id.IdProvider
-import dev.d1s.linda.domain.Redirect
-import org.springframework.stereotype.Component
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utm.UtmParameterType
+import java.util.*
 
-@Component
-class RedirectIdProvider : IdProvider {
+interface UtmParameterService {
 
-    override fun getId(taggedValue: TaggedValue): String =
-        (taggedValue.value as Redirect).id!!
+    fun findAll(): Set<UtmParameter>
+
+    fun findById(id: String): UtmParameter
+
+    fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
+
+    fun create(utmParameter: UtmParameter): UtmParameter
+
+    fun removeById(id: String)
 }

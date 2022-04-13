@@ -7,3 +7,15 @@ management:
 logging:
   level:
     org.springframework: debug
+
+spring:
+  jpa:
+    show-sql: true
+
+simple-security:
+  authentication-secret: secret
+  enabled: false
+
+linda:
+  base-interface:
+    automatic-utm-creation: true

@@ -25,19 +25,23 @@ import dev.d1s.linda.controller.impl.RedirectControllerImpl
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.testUtil.*
+import dev.d1s.linda.testUtil.mockRedirect
+import dev.d1s.linda.testUtil.mockRedirectDto
+import dev.d1s.linda.testUtil.setId
+import dev.d1s.linda.testUtil.withStaticMocks
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.*
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.verify
+import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.data.domain.Page
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
@@ -70,17 +74,11 @@ internal class RedirectControllerImplTest {
 
     private val redirectsDto = setOf(redirectDto)
 
-    private val dtoSetConverterFacade = mockDtoSetConverterFacade<RedirectDto, Redirect>()
-
     @BeforeEach
     fun setup() {
         every {
             redirectService.findAll()
         } returns redirects
-
-        every {
-            dtoSetConverterFacade.convertToDtoSet(redirects)
-        } returns redirectsDto
 
         every {
             redirectService.findById(VALID_STUB)
@@ -97,7 +95,7 @@ internal class RedirectControllerImplTest {
 
     @Test
     fun `should return all redirects`() {
-        this.withStaticMocks {
+        withStaticMocks(redirectDtoConverter, redirectsDto, redirects) { page, converter ->
             mockMvc.get(REDIRECTS_FIND_ALL_MAPPING) {
                 param("page", "0")
                 param("size", "0")
@@ -107,13 +105,14 @@ internal class RedirectControllerImplTest {
                 }
 
                 content {
-                    json(objectMapper.writeValueAsString(it))
+                    json(objectMapper.writeValueAsString(page))
                 }
             }
 
             verifyAll {
                 redirectService.findAll()
                 redirectsDto.toPage(0, 0)
+                converter.convertToDtoSet(redirects)
             }
         }
     }
@@ -148,18 +147,6 @@ internal class RedirectControllerImplTest {
 
         verify {
             redirectService.removeById(VALID_STUB)
-        }
-    }
-
-    private inline fun withStaticMocks(crossinline block: (Page<RedirectDto>) -> Unit) {
-        mockkStatic("dev.d1s.teabag.dto.util.DtoConverterExtKt") {
-            every {
-                redirectDtoConverter.converterForSet()
-            } returns dtoSetConverterFacade
-
-            mockToPageFun(redirectsDto) {
-                block(it)
-            }
         }
     }
 }

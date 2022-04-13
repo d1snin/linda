@@ -18,17 +18,14 @@ package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
-import dev.d1s.linda.exception.impl.RedirectNotFoundException
+import dev.d1s.linda.exception.impl.notFound.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.impl.RedirectServiceImpl
 import dev.d1s.linda.testUtil.mockRedirect
-import dev.d1s.linda.testUtil.mockShortLink
-import dev.d1s.linda.testUtil.mockShortLinkFindingStrategy
+import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.every
-import io.mockk.justRun
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -36,6 +33,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import strikt.api.expectThat
+import strikt.assertions.contains
 import strikt.assertions.isEqualTo
 import java.util.*
 
@@ -49,31 +47,17 @@ internal class RedirectServiceImplTest {
     @MockkBean
     private lateinit var redirectRepository: RedirectRepository
 
-    @MockkBean
-    private lateinit var shortLinkService: ShortLinkService
-
     private val redirect = mockRedirect(true)
-
-    private val redirectWithNoConf = mockRedirect(false)
 
     private val redirects = setOf(redirect)
 
     private val redirectsList = redirects.toList()
-
-    private val shortLinkFindingStrategy =
-        mockShortLinkFindingStrategy()
-
-    private val shortLink = mockShortLink(true)
 
     @BeforeEach
     fun setup() {
         every {
             redirectRepository.findAll()
         } returns redirectsList
-
-        every {
-            shortLinkService.find(shortLinkFindingStrategy)
-        } returns shortLink
 
         every {
             redirectRepository.findById(VALID_STUB)
@@ -84,7 +68,7 @@ internal class RedirectServiceImplTest {
         } returns Optional.empty()
 
         every {
-            redirectRepository.save(redirectWithNoConf)
+            redirectRepository.save(redirect)
         } returns redirect
 
         justRun {
@@ -128,19 +112,33 @@ internal class RedirectServiceImplTest {
     @Test
     fun `should create redirect`() {
         expectThat(
-            redirectService.create(shortLink)
+            redirectService.create(redirect)
         ) isEqualTo redirect
 
         verify {
-            redirectRepository.save(redirectWithNoConf)
+            redirectRepository.save(redirect)
         }
     }
 
     @Test
-    fun `should create redirect by shortLinkFindingStrategy`() {
-        expectThat(
-            redirectService.create(shortLinkFindingStrategy)
-        ) isEqualTo redirect
+    fun `should assign utm parameter to the redirect`() {
+        val redirect = spyk(mockRedirect())
+        val utmParameter = spyk(mockUtmParameter())
+
+        every {
+            redirectRepository.save(redirect)
+        } returns redirect
+
+        assertDoesNotThrow {
+            redirectService.assignUtmParameter(redirect, utmParameter)
+        }
+
+        expectThat(redirect.utmParameters).contains(utmParameter)
+        expectThat(utmParameter.redirects).contains(redirect)
+
+        verifyAll {
+            redirectRepository.save(redirect)
+        }
     }
 
     @Test

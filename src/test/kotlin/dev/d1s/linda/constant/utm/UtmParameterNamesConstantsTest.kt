@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.configuration.properties
+package dev.d1s.linda.constant.utm
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-@ConstructorBinding
-@ConfigurationProperties("linda.base-interface")
-data class BaseInterfaceConfigurationProperties(
-    val enabled: Boolean = true,
-    val automaticUtmCreation: Boolean = false
-)
+internal class UtmParameterNamesConstantsTest {
+
+    @Test
+    fun `should return valid parameter names`() {
+        expectThat(UTM_SOURCE) isEqualTo "utm_source"
+        expectThat(UTM_MEDIUM) isEqualTo "utm_medium"
+        expectThat(UTM_CAMPAIGN) isEqualTo "utm_campaign"
+        expectThat(UTM_CONTENT) isEqualTo "utm_content"
+    }
+}

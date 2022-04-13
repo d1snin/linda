@@ -17,8 +17,7 @@
 package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
+import dev.d1s.linda.domain.utm.UtmParameter
 
 interface RedirectService {
 
@@ -26,9 +25,9 @@ interface RedirectService {
 
     fun findById(id: String): Redirect
 
-    fun create(shortLink: ShortLink): Redirect
+    fun create(redirect: Redirect): Redirect
 
-    fun create(shortLinkFindingStrategy: ShortLinkFindingStrategy): Redirect
+    fun assignUtmParameter(redirect: Redirect, utmParameter: UtmParameter)
 
     fun removeById(id: String)
 }

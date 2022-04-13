@@ -16,16 +16,9 @@
 
 package dev.d1s.linda.converter.shortLink
 
-import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.converter.impl.shortLink.ShortLinkDtoConverter
-import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.testUtil.mockRedirect
 import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockShortLinkDto
-import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.every
-import io.mockk.verify
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,35 +33,10 @@ internal class ShortLinkDtoConverterTest {
     @Autowired
     private lateinit var converter: ShortLinkDtoConverter
 
-    @MockkBean
-    private lateinit var redirectService: RedirectService
-
-    private val shortLink = mockShortLink(true)
-
-    private val shortLinkDto = mockShortLinkDto()
-
-    @BeforeEach
-    fun setup() {
-        every {
-            redirectService.findById(VALID_STUB)
-        } returns mockRedirect(true)
-    }
-
     @Test
     fun `should convert to dto`() {
         expectThat(
-            converter.convertToDto(shortLink)
-        ) isEqualTo shortLinkDto
-    }
-
-    @Test
-    fun `should convert to entity`() {
-        expectThat(
-            converter.convertToEntity(shortLinkDto)
-        ) isEqualTo shortLink
-
-        verify {
-            redirectService.findById(VALID_STUB)
-        }
+            converter.convertToDto(mockShortLink(true))
+        ) isEqualTo mockShortLinkDto()
     }
 }

@@ -18,18 +18,13 @@ package dev.d1s.linda.converter.impl.shortLink
 
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.service.RedirectService
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
 import dev.d1s.teabag.stdlib.collection.mapToSet
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
-
-    @Autowired
-    private lateinit var redirectService: RedirectService
 
     override fun convertToDto(entity: ShortLink): ShortLinkDto =
         ShortLinkDto(
@@ -41,13 +36,4 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
                 it.id.checkNotNull("redirect id")
             }
         )
-
-    override fun convertToEntity(dto: ShortLinkDto): ShortLink =
-        ShortLink(dto.url, dto.alias).apply {
-            id = dto.id
-            creationTime = dto.creationTime
-            redirects = dto.redirects.mapToSet {
-                redirectService.findById(it)
-            }
-        }
 }

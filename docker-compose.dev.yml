@@ -1,46 +1,45 @@
 version: '3'
 
 volumes:
-  db-data-postgres:
+  db-data-mariadb:
     driver: local
 
-  db-data-postgres-config:
+  db-data-mariadb-config:
     driver: local
 
 services:
-  linda-postgres:
-    image: postgres:9.6-bullseye
-    container_name: linda-postgres
+  linda-mariadb:
+    image: mariadb:10.8.2-rc-focal
+    container_name: linda-mariadb
     environment:
-      POSTGRES_DB: "linda-data"
-      POSTGRES_USER: "linda-data"
-      POSTGRES_PASSWORD: "linda-data"
-      PGDATA: /var/lib/postgresql/data/pgdata
+      MARIADB_DATABASE: "linda-data"
+      MARIADB_USER: "linda-data"
+      MARIADB_PASSWORD: "linda-data"
+      MARIADB_ROOT_PASSWORD: "root"
     restart: always
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
     networks:
       - linda-net
-    ports:
-      - "5432:5432"
-    expose:
-      - 5432
     volumes:
-      - db-data-postgres-config:/var/lib/postgresql/dataConfig
-      - db-data-postgres:/var/lib/postgresql/data
+      - db-data-mariadb:/var/lib/mysql
+      - db-data-mariadb-config:/etc/mysql
+
 
   linda:
-    image: linda:0.1.1-beta.0
+    image: linda:0.1.2-beta.0
     container_name: linda
     networks:
       - linda-net
     ports:
       - "8080:8080"
     depends_on:
-      - linda-postgres
+      - linda-mariadb
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://linda-postgres:5432/linda-data
+      SPRING_DATASOURCE_URL: jdbc:mariadb://linda-mariadb:3306/linda-data
       SPRING_PROFILES_ACTIVE: dev
-      SIMPLE_SECURITY_AUTHENTICATION_SECRET: secret
-      SIMPLE_SECURITY_ENABLED: false
 
 networks:
   linda-net:

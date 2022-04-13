@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.domain.utm
 
+import dev.d1s.linda.domain.Redirect
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import javax.persistence.*
 
 @Entity
-@Table(name = "short_link")
-class ShortLink(
+@Table(name = "utm_parameter")
+class UtmParameter(
     @Column(nullable = false)
-    val url: String,
+    var type: UtmParameterType,
 
-    @Column(nullable = false, unique = true)
-    val alias: String
+    @Column(nullable = false)
+    var parameterValue: String
 ) {
     @Id
     @Column
@@ -40,15 +41,20 @@ class ShortLink(
     @CreationTimestamp
     var creationTime: Instant? = null
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    var redirects: Set<Redirect> = setOf()
+    @ManyToMany(cascade = [CascadeType.ALL])
+    @JoinTable(
+        name = "redirect_utm",
+        joinColumns = [JoinColumn(name = "utm_id")],
+        inverseJoinColumns = [JoinColumn(name = "redirect_id")]
+    )
+    var redirects: MutableSet<Redirect> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ShortLink) return false
+        if (other !is UtmParameter) return false
 
-        if (url != other.url) return false
-        if (alias != other.alias) return false
+        if (type != other.type) return false
+        if (parameterValue != other.parameterValue) return false
         if (id != other.id) return false
         if (creationTime != other.creationTime) return false
 
@@ -56,14 +62,14 @@ class ShortLink(
     }
 
     override fun hashCode(): Int {
-        var result = url.hashCode()
-        result = 31 * result + alias.hashCode()
+        var result = type.hashCode()
+        result = 31 * result + parameterValue.hashCode()
         result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + (creationTime?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "ShortLink(url='$url', alias='$alias', id=$id, creationTime=$creationTime, redirects=$redirects)"
+        return "UtmParameter(type=$type, parameterValue='$parameterValue', id=$id, creationTime=$creationTime, redirects=$redirects)"
     }
 }

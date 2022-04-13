@@ -20,15 +20,14 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-internal class ShortLinkMappingConstantTest {
+internal class UtmParameterMappingConstantsTest {
 
     @Test
     fun `should return valid mapping`() {
-        expectThat(SHORT_LINKS_BASE_NAME) isEqualTo "shortLinks"
-        expectThat(SHORT_LINKS_BASE_MAPPING) isEqualTo "/api/shortLinks"
-        expectThat(SHORT_LINKS_FIND_ALL_MAPPING) isEqualTo "/api/shortLinks"
-        expectThat(SHORT_LINKS_FIND_MAPPING) isEqualTo "/api/shortLinks/{identifier}"
-        expectThat(SHORT_LINKS_CREATE_MAPPING) isEqualTo "/api/shortLinks"
-        expectThat(SHORT_LINKS_REMOVE_MAPPING) isEqualTo "/api/shortLinks/{identifier}"
+        expectThat(UTM_PARAMETERS_BASE_MAPPING) isEqualTo "/api/utmParameters"
+        expectThat(UTM_PARAMETERS_FIND_ALL_MAPPING) isEqualTo "/api/utmParameters"
+        expectThat(UTM_PARAMETERS_FIND_BY_ID_MAPPING) isEqualTo "/api/utmParameters/{identifier}"
+        expectThat(UTM_PARAMETERS_CREATE_MAPPING) isEqualTo "/api/utmParameters"
+        expectThat(UTM_PARAMETERS_REMOVE_BY_ID_MAPPING) isEqualTo "/api/utmParameters/{identifier}"
     }
 }

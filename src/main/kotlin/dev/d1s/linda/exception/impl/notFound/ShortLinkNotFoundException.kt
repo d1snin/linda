@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.cache
+package dev.d1s.linda.exception.impl.notFound
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.exception.DomainNotFoundException
 
-internal class CacheConstantsTest {
-
-    @Test
-    fun `should return valid cache names`() {
-        expectThat(REDIRECTS_CACHE) isEqualTo "redirects"
-        expectThat(SHORT_LINKS_CACHE) isEqualTo "short-links"
-    }
-}
+object ShortLinkNotFoundException : DomainNotFoundException(
+    "The requested short link was not found."
+)

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.cache.idProvider
+package dev.d1s.linda.converter.utm
 
-import dev.d1s.caching.model.TaggedValue
-import dev.d1s.linda.testUtil.mockShortLink
+import dev.d1s.linda.converter.impl.utm.UtmParameterCreationDtoConverter
+import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,22 +29,21 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [ShortLinkIdProvider::class])
-internal class ShortLinkIdProviderTest {
+@ContextConfiguration(classes = [UtmParameterCreationDtoConverter::class])
+class UtmParameterCreationDtoConverterTest {
 
     @Autowired
-    private lateinit var shortLinkIdProvider: ShortLinkIdProvider
-
-    private val mockShortLink = mockShortLink().apply {
-        id = VALID_STUB
-    }
+    private lateinit var converter: UtmParameterCreationDtoConverter
 
     @Test
-    fun `should return valid id`() {
+    fun `should convert to entity`() {
         expectThat(
-            shortLinkIdProvider.getId(
-                TaggedValue(mockShortLink)
+            converter.convertToEntity(
+                UtmParameterCreationDto(
+                    UtmParameterType.CAMPAIGN,
+                    VALID_STUB
+                )
             )
-        ) isEqualTo VALID_STUB
+        ) isEqualTo mockUtmParameter()
     }
 }

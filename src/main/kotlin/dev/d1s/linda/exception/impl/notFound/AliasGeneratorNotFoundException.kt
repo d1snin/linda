@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.configuration.properties
+package dev.d1s.linda.exception.impl.notFound
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import dev.d1s.linda.exception.DomainNotFoundException
 
-@ConstructorBinding
-@ConfigurationProperties("linda.base-interface")
-data class BaseInterfaceConfigurationProperties(
-    val enabled: Boolean = true,
-    val automaticUtmCreation: Boolean = false
+object AliasGeneratorNotFoundException : DomainNotFoundException(
+    "The requested generator was not found."
 )
