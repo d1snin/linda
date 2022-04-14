@@ -27,10 +27,12 @@ import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
+import dev.d1s.teabag.web.appendUri
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 
@@ -70,14 +72,17 @@ class ShortLinkControllerImpl : ShortLinkController {
     )
 
     @Secured
-    override fun create(shortLinkCreationDto: ShortLinkCreationDto):
-            ResponseEntity<ShortLinkDto> = ok(
-        shortLinkService.create(
+    override fun create(shortLinkCreationDto: ShortLinkCreationDto): ResponseEntity<ShortLinkDto> {
+        val shortLink = shortLinkService.create(
             shortLinkCreationDtoConverter.convertToEntity(
                 shortLinkCreationDto
             )
         ).dto
-    )
+
+        return created(
+            appendUri(shortLink.id)
+        ).body(shortLink)
+    }
 
     @Secured
     override fun remove(identifier: String): ResponseEntity<*> {
