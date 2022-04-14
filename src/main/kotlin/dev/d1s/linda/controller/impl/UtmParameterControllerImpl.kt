@@ -68,11 +68,11 @@ class UtmParameterControllerImpl : UtmParameterController {
     override fun create(creation: UtmParameterCreationDto): ResponseEntity<UtmParameterDto> {
         val utmParameter = utmParameterService.create(
             utmParameterCreationDtoConverter.convertToEntity(creation)
-        )
+        ).dto
 
         return created(
-            appendUri(utmParameter.id!!)
-        ).body(utmParameter.dto)
+            appendUri(utmParameter.id)
+        ).body(utmParameter)
     }
 
     @Secured

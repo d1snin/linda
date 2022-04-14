@@ -167,7 +167,7 @@ internal class ShortLinkControllerImplTest {
             content = objectMapper.writeValueAsString(shortLinkCreationDto)
         }.andExpect {
             status {
-                isOk() // should be 201: https://github.com/linda-project/linda/issues/9
+                isCreated()
             }
 
             content {
