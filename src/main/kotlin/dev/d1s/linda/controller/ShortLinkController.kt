@@ -16,12 +16,10 @@
 
 package dev.d1s.linda.controller
 
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_CREATE_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_REMOVE_MAPPING
+import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
@@ -47,7 +45,15 @@ interface ShortLinkController {
     ): ResponseEntity<ShortLinkDto>
 
     @PostMapping(SHORT_LINKS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun create(@RequestBody @Valid shortLinkCreationDto: ShortLinkCreationDto): ResponseEntity<ShortLinkDto>
+    fun create(
+        @RequestBody @Valid shortLinkCreationDto: ShortLinkCreationDto
+    ): ResponseEntity<ShortLinkDto>
+
+    @PutMapping(SHORT_LINKS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun update(
+        @PathVariable @NotBlank identifier: String,
+        @RequestBody @Valid shortLinkUpdateDto: ShortLinkUpdateDto
+    ): ResponseEntity<ShortLinkDto>
 
     @DeleteMapping(SHORT_LINKS_REMOVE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     fun remove(
