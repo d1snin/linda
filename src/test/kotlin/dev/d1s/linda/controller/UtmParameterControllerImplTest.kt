@@ -18,14 +18,12 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_CREATE_MAPPING
-import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_FIND_BY_ID_MAPPING
-import dev.d1s.linda.constant.mapping.api.UTM_PARAMETERS_REMOVE_BY_ID_MAPPING
+import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.testConfiguration.LocalValidatorFactoryBeanConfiguration
 import dev.d1s.linda.testUtil.*
@@ -44,10 +42,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.*
 
 @ContextConfiguration(
     classes = [
@@ -74,6 +69,9 @@ internal class UtmParameterControllerImplTest {
     @MockkBean
     private lateinit var utmParameterCreationDtoConverter: DtoConverter<UtmParameterCreationDto, UtmParameter>
 
+    @MockkBean
+    private lateinit var utmParameterUpdateDtoConverter: DtoConverter<UtmParameterUpdateDto, UtmParameter>
+
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
@@ -86,6 +84,8 @@ internal class UtmParameterControllerImplTest {
     private val utmParametersDto = setOf(utmParameterDto)
 
     private val utmParameterCreationDto = mockUtmParameterCreationDto()
+
+    private val utmParameterUpdateDto = mockUtmParameterUpdateDto()
 
     @BeforeEach
     fun setup() {
@@ -102,11 +102,19 @@ internal class UtmParameterControllerImplTest {
         } returns utmParameter
 
         every {
+            utmParameterService.update(VALID_STUB, utmParameter)
+        } returns utmParameter
+
+        every {
             utmParameterDtoConverter.convertToDto(utmParameter)
         } returns utmParameterDto
 
         every {
             utmParameterCreationDtoConverter.convertToEntity(utmParameterCreationDto)
+        } returns utmParameter
+
+        every {
+            utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
         } returns utmParameter
 
         justRun {
@@ -174,6 +182,28 @@ internal class UtmParameterControllerImplTest {
         verifyAll {
             utmParameterCreationDtoConverter.convertToEntity(utmParameterCreationDto)
             utmParameterService.create(utmParameter)
+            utmParameterDtoConverter.convertToDto(utmParameter)
+        }
+    }
+
+    @Test
+    fun `should update utm parameter`() {
+        mockMvc.put(UTM_PARAMETERS_UPDATE_MAPPING.setId()) {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(utmParameterUpdateDto)
+        }.andExpect {
+            status {
+                isOk()
+            }
+
+            content {
+                json(objectMapper.writeValueAsString(utmParameterDto))
+            }
+        }
+
+        verifyAll {
+            utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
+            utmParameterService.update(VALID_STUB, utmParameter)
             utmParameterDtoConverter.convertToDto(utmParameter)
         }
     }

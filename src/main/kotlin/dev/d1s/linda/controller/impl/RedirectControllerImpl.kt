@@ -18,16 +18,19 @@ package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.controller.RedirectController
 import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
+import dev.d1s.teabag.web.appendUri
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
+import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
 
@@ -39,6 +42,9 @@ class RedirectControllerImpl : RedirectController {
 
     @Autowired
     private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
+
+    @Autowired
+    private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
 
     private val redirectSetDtoConverter by lazy {
         redirectDtoConverter.converterForSet()
@@ -55,6 +61,29 @@ class RedirectControllerImpl : RedirectController {
     @Secured
     override fun findById(identifier: String): ResponseEntity<RedirectDto> = ok(
         redirectService.findById(identifier).toDto()
+    )
+
+    @Secured
+    override fun create(alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> {
+        val redirect = redirectService.create(
+            redirectAlterationDtoConverter.convertToEntity(
+                alteration
+            )
+        ).toDto()
+
+        return created(
+            appendUri(redirect.id)
+        ).body(redirect)
+    }
+
+    @Secured
+    override fun update(identifier: String, alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> = ok(
+        redirectService.update(
+            identifier,
+            redirectAlterationDtoConverter.convertToEntity(
+                alteration
+            )
+        ).toDto()
     )
 
     @Secured

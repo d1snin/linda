@@ -20,11 +20,14 @@ import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.teabag.data.toPage
@@ -68,6 +71,12 @@ internal fun mockShortLinkFindingStrategy() =
 internal fun mockShortLinkCreationDto() = ShortLinkCreationDto(
     VALID_STUB,
     VALID_STUB
+)
+
+internal fun mockShortLinkUpdateDto() = ShortLinkUpdateDto(
+    VALID_STUB,
+    VALID_STUB,
+    setOf(VALID_STUB)
 )
 
 internal fun mockRedirect(configure: Boolean = false) = Redirect(
@@ -166,4 +175,15 @@ internal fun mockUtmParameterDto() = UtmParameterDto(
 internal fun mockUtmParameterCreationDto() = UtmParameterCreationDto(
     UtmParameterType.CAMPAIGN,
     VALID_STUB
+)
+
+internal fun mockUtmParameterUpdateDto() = UtmParameterUpdateDto(
+    UtmParameterType.CAMPAIGN,
+    VALID_STUB,
+    setOf(VALID_STUB)
+)
+
+internal fun mockRedirectAlterationDto() = RedirectAlterationDto(
+    VALID_STUB,
+    setOf(VALID_STUB)
 )

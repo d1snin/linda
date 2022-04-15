@@ -18,18 +18,18 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_CREATE_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_MAPPING
-import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_REMOVE_MAPPING
+import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.ShortLinkControllerImpl
-import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkCreationDtoConverter
-import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkDtoConverter
+import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.testConfiguration.LocalValidatorFactoryBeanConfiguration
 import dev.d1s.linda.testUtil.*
 import dev.d1s.teabag.data.toPage
+import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
@@ -43,10 +43,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.*
 
 @ContextConfiguration(
     classes = [
@@ -68,10 +65,13 @@ internal class ShortLinkControllerImplTest {
     private lateinit var shortLinkService: ShortLinkService
 
     @MockkBean
-    private lateinit var shortLinkDtoConverter: ShortLinkDtoConverter
+    private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
 
     @MockkBean
-    private lateinit var shortLinkCreationDtoConverter: ShortLinkCreationDtoConverter
+    private lateinit var shortLinkCreationDtoConverter: DtoConverter<ShortLinkCreationDto, ShortLink>
+
+    @MockkBean
+    private lateinit var shortLinkUpdateDtoConverter: DtoConverter<ShortLinkUpdateDto, ShortLink>
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -87,6 +87,8 @@ internal class ShortLinkControllerImplTest {
     private val shortLinkFindingStrategy = mockShortLinkFindingStrategy()
 
     private val shortLinkCreationDto = mockShortLinkCreationDto()
+
+    private val shortLinkUpdateDto = mockShortLinkUpdateDto()
 
     @BeforeEach
     fun setup() {
@@ -108,7 +110,17 @@ internal class ShortLinkControllerImplTest {
         } returns shortLink
 
         every {
+            shortLinkUpdateDtoConverter.convertToEntity(
+                shortLinkUpdateDto
+            )
+        } returns shortLink
+
+        every {
             shortLinkService.create(shortLink)
+        } returns shortLink
+
+        every {
+            shortLinkService.update(VALID_STUB, shortLink)
         } returns shortLink
 
         justRun {
@@ -178,6 +190,28 @@ internal class ShortLinkControllerImplTest {
         verifyAll {
             shortLinkCreationDtoConverter.convertToEntity(shortLinkCreationDto)
             shortLinkService.create(shortLink)
+            shortLinkDtoConverter.convertToDto(shortLink)
+        }
+    }
+
+    @Test
+    fun `should update short link`() {
+        mockMvc.put(SHORT_LINKS_UPDATE_MAPPING.setId()) {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(shortLinkUpdateDto)
+        }.andExpect {
+            status {
+                isOk()
+            }
+
+            content {
+                json(objectMapper.writeValueAsString(shortLinkDto))
+            }
+        }
+
+        verifyAll {
+            shortLinkUpdateDtoConverter.convertToEntity(shortLinkUpdateDto)
+            shortLinkService.update(VALID_STUB, shortLink)
             shortLinkDtoConverter.convertToDto(shortLink)
         }
     }

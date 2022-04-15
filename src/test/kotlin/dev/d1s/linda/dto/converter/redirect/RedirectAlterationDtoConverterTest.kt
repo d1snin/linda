@@ -19,9 +19,9 @@ package dev.d1s.linda.dto.converter.redirect
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.converter.impl.redirect.RedirectAlterationDtoConverter
-import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
+import dev.d1s.linda.testUtil.mockRedirectAlterationDto
 import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockShortLinkFindingStrategy
 import dev.d1s.linda.testUtil.mockUtmParameter
@@ -52,6 +52,8 @@ internal class RedirectAlterationDtoConverterTest {
 
     private val utmParameter = mockUtmParameter()
 
+    private val alteration = mockRedirectAlterationDto()
+
     @BeforeEach
     fun setup() {
         every {
@@ -67,10 +69,7 @@ internal class RedirectAlterationDtoConverterTest {
     fun `should return valid converted redirect`() {
         expectThat(
             redirectAlterationDtoConverter.convertToEntity(
-                RedirectAlterationDto(
-                    VALID_STUB,
-                    setOf(VALID_STUB)
-                )
+                alteration
             )
         ) isEqualTo Redirect(shortLink).apply {
             utmParameters = mutableSetOf(utmParameter)

@@ -20,6 +20,7 @@ import dev.d1s.linda.controller.UtmParameterController
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
@@ -46,11 +47,15 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Autowired
     private lateinit var utmParameterCreationDtoConverter: DtoConverter<UtmParameterCreationDto, UtmParameter>
 
+    @Autowired
+    private lateinit var utmParameterUpdateDtoConverter: DtoConverter<UtmParameterUpdateDto, UtmParameter>
+
     private val utmParameterDtoSetConverter by lazy {
         utmParameterDtoConverter.converterForSet()
     }
 
-    private val UtmParameter.dto get() = utmParameterDtoConverter.convertToDto(this)
+    private fun UtmParameter.toDto() =
+        utmParameterDtoConverter.convertToDto(this)
 
     @Secured
     override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<UtmParameterDto>> = ok(
@@ -61,19 +66,30 @@ class UtmParameterControllerImpl : UtmParameterController {
 
     @Secured
     override fun findById(identifier: String): ResponseEntity<UtmParameterDto> = ok(
-        utmParameterService.findById(identifier).dto
+        utmParameterService.findById(identifier).toDto()
     )
 
     @Secured
     override fun create(creation: UtmParameterCreationDto): ResponseEntity<UtmParameterDto> {
         val utmParameter = utmParameterService.create(
             utmParameterCreationDtoConverter.convertToEntity(creation)
-        ).dto
+        ).toDto()
 
         return created(
             appendUri(utmParameter.id)
         ).body(utmParameter)
     }
+
+    @Secured
+    override fun update(
+        identifier: String,
+        utmParameterUpdateDto: UtmParameterUpdateDto
+    ): ResponseEntity<UtmParameterDto> = ok(
+        utmParameterService.update(
+            identifier,
+            utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
+        ).toDto()
+    )
 
     @Secured
     override fun removeById(identifier: String): ResponseEntity<*> {

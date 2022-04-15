@@ -20,6 +20,7 @@ import dev.d1s.linda.controller.ShortLinkController
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType
@@ -48,14 +49,19 @@ class ShortLinkControllerImpl : ShortLinkController {
     @Autowired
     private lateinit var shortLinkCreationDtoConverter: DtoConverter<ShortLinkCreationDto, ShortLink>
 
+    @Autowired
+    private lateinit var shortLinkUpdateDtoConverter: DtoConverter<ShortLinkUpdateDto, ShortLink>
+
     private val shortLinkDtoSetConverter by lazy {
         shortLinkDtoConverter.converterForSet()
     }
 
-    private val ShortLink.dto get() = shortLinkDtoConverter.convertToDto(this)
+    private fun ShortLink.toDto() =
+        shortLinkDtoConverter.convertToDto(this)
 
     @Secured
-    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<ShortLinkDto>> = ok(
+    override fun findAll(page: Int?, size: Int?):
+            ResponseEntity<Page<ShortLinkDto>> = ok(
         shortLinkDtoSetConverter.convertToDtoSet(
             shortLinkService.findAll()
         ).toPage(page, size)
@@ -68,21 +74,31 @@ class ShortLinkControllerImpl : ShortLinkController {
     ): ResponseEntity<ShortLinkDto> = ok(
         shortLinkService.find(
             byType(shortLinkFindingStrategy, identifier)
-        ).dto
+        ).toDto()
     )
 
     @Secured
-    override fun create(shortLinkCreationDto: ShortLinkCreationDto): ResponseEntity<ShortLinkDto> {
+    override fun create(shortLinkCreationDto: ShortLinkCreationDto):
+            ResponseEntity<ShortLinkDto> {
         val shortLink = shortLinkService.create(
             shortLinkCreationDtoConverter.convertToEntity(
                 shortLinkCreationDto
             )
-        ).dto
+        ).toDto()
 
         return created(
             appendUri(shortLink.id)
         ).body(shortLink)
     }
+
+    @Secured
+    override fun update(identifier: String, shortLinkUpdateDto: ShortLinkUpdateDto):
+            ResponseEntity<ShortLinkDto> = ok(
+        shortLinkService.update(
+            identifier,
+            shortLinkUpdateDtoConverter.convertToEntity(shortLinkUpdateDto)
+        ).toDto()
+    )
 
     @Secured
     override fun remove(identifier: String): ResponseEntity<*> {

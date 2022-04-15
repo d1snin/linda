@@ -18,17 +18,13 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.constant.mapping.api.REDIRECTS_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.REDIRECTS_FIND_BY_ID_MAPPING
-import dev.d1s.linda.constant.mapping.api.REDIRECTS_REMOVE_BY_ID_MAPPING
+import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.RedirectControllerImpl
 import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.testUtil.mockRedirect
-import dev.d1s.linda.testUtil.mockRedirectDto
-import dev.d1s.linda.testUtil.setId
-import dev.d1s.linda.testUtil.withStaticMocks
+import dev.d1s.linda.testUtil.*
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
@@ -42,10 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.*
 
 @ContextConfiguration(classes = [RedirectControllerImpl::class, JacksonAutoConfiguration::class])
 @WebMvcTest(
@@ -63,6 +58,9 @@ internal class RedirectControllerImplTest {
     @MockkBean
     private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
 
+    @MockkBean
+    private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
+
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
@@ -74,6 +72,8 @@ internal class RedirectControllerImplTest {
 
     private val redirectsDto = setOf(redirectDto)
 
+    private val alteration = mockRedirectAlterationDto()
+
     @BeforeEach
     fun setup() {
         every {
@@ -82,6 +82,18 @@ internal class RedirectControllerImplTest {
 
         every {
             redirectService.findById(VALID_STUB)
+        } returns redirect
+
+        every {
+            redirectService.create(redirect)
+        } returns redirect
+
+        every {
+            redirectService.update(VALID_STUB, redirect)
+        } returns redirect
+
+        every {
+            redirectAlterationDtoConverter.convertToEntity(alteration)
         } returns redirect
 
         every {
@@ -132,6 +144,54 @@ internal class RedirectControllerImplTest {
 
         verifyAll {
             redirectService.findById(VALID_STUB)
+            redirectDtoConverter.convertToDto(redirect)
+        }
+    }
+
+    @Test
+    fun `should create redirect`() {
+        mockMvc.post(REDIRECTS_CREATE_MAPPING) {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(alteration)
+        }.andExpect {
+            status {
+                isCreated()
+            }
+
+            content {
+                json(objectMapper.writeValueAsString(redirectDto))
+            }
+        }
+
+        verifyAll {
+            redirectAlterationDtoConverter.convertToEntity(
+                alteration
+            )
+            redirectService.create(redirect)
+            redirectDtoConverter.convertToDto(redirect)
+        }
+    }
+
+    @Test
+    fun `should update redirect`() {
+        mockMvc.put(REDIRECTS_UPDATE_MAPPING.setId()) {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(alteration)
+        }.andExpect {
+            status {
+                isOk()
+            }
+
+            content {
+                json(objectMapper.writeValueAsString(redirectDto))
+            }
+        }
+
+        verifyAll {
+            redirectAlterationDtoConverter.convertToEntity(
+                alteration
+            )
+            redirectService.update(VALID_STUB, redirect)
             redirectDtoConverter.convertToDto(redirect)
         }
     }
