@@ -30,5 +30,7 @@ interface UtmParameterService {
 
     fun create(utmParameter: UtmParameter): UtmParameter
 
+    fun update(id: String, utmParameter: UtmParameter): UtmParameter
+
     fun removeById(id: String)
 }

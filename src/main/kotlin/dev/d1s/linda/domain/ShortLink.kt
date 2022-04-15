@@ -25,10 +25,10 @@ import javax.persistence.*
 @Table(name = "short_link")
 class ShortLink(
     @Column(nullable = false)
-    val url: String,
+    var url: String,
 
     @Column(nullable = false, unique = true)
-    val alias: String
+    var alias: String
 ) {
     @Id
     @Column

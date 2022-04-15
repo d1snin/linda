@@ -27,6 +27,8 @@ interface RedirectService {
 
     fun create(redirect: Redirect): Redirect
 
+    fun update(id: String, redirect: Redirect): Redirect
+
     fun assignUtmParameter(redirect: Redirect, utmParameter: UtmParameter)
 
     fun removeById(id: String)

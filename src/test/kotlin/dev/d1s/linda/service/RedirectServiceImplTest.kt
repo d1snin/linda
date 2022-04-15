@@ -18,10 +18,12 @@ package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
+import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.exception.impl.notFound.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.impl.RedirectServiceImpl
 import dev.d1s.linda.testUtil.mockRedirect
+import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
@@ -117,6 +119,23 @@ internal class RedirectServiceImplTest {
 
         verify {
             redirectRepository.save(redirect)
+        }
+    }
+
+    @Test
+    fun `should update redirect`() {
+        expectThat(
+            redirectService.update(
+                VALID_STUB,
+                Redirect(
+                    mockShortLink()
+                ).apply {
+                    utmParameters = mutableSetOf()
+                }
+            )
+        ) isEqualTo redirect.apply {
+            shortLink = mockShortLink()
+            utmParameters = mutableSetOf()
         }
     }
 
