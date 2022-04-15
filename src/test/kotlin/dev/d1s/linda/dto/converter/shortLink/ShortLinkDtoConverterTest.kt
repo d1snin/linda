@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.utm
+package dev.d1s.linda.dto.converter.shortLink
 
-import dev.d1s.linda.converter.impl.utm.UtmParameterDtoConverter
-import dev.d1s.linda.testUtil.mockUtmParameter
-import dev.d1s.linda.testUtil.mockUtmParameterDto
+import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkDtoConverter
+import dev.d1s.linda.testUtil.mockShortLink
+import dev.d1s.linda.testUtil.mockShortLinkDto
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,16 +27,16 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [UtmParameterDtoConverter::class])
-internal class UtmParameterDtoConverterTest {
+@ContextConfiguration(classes = [ShortLinkDtoConverter::class])
+internal class ShortLinkDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: UtmParameterDtoConverter
+    private lateinit var converter: ShortLinkDtoConverter
 
     @Test
     fun `should convert to dto`() {
         expectThat(
-            converter.convertToDto(mockUtmParameter(true))
-        ) isEqualTo mockUtmParameterDto()
+            converter.convertToDto(mockShortLink(true))
+        ) isEqualTo mockShortLinkDto()
     }
 }

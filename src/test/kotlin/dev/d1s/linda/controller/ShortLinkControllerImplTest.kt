@@ -23,8 +23,8 @@ import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_ALL_MAPPING
 import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_FIND_MAPPING
 import dev.d1s.linda.constant.mapping.api.SHORT_LINKS_REMOVE_MAPPING
 import dev.d1s.linda.controller.impl.ShortLinkControllerImpl
-import dev.d1s.linda.converter.impl.shortLink.ShortLinkCreationDtoConverter
-import dev.d1s.linda.converter.impl.shortLink.ShortLinkDtoConverter
+import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkCreationDtoConverter
+import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkDtoConverter
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.testConfiguration.LocalValidatorFactoryBeanConfiguration

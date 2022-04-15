@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.shortLink
+package dev.d1s.linda.dto.converter.shortLink
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.converter.impl.shortLink.ShortLinkCreationDtoConverter
+import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkCreationDtoConverter
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.service.AliasGeneratorService
 import dev.d1s.linda.testUtil.mockAliasGenerator
@@ -28,7 +28,6 @@ import io.mockk.spyk
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration

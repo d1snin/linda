@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.impl.shortLink
+package dev.d1s.linda.dto.converter.impl.shortLink
 
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
+import dev.d1s.linda.service.AliasGeneratorService
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.checks.checkNotNull
-import dev.d1s.teabag.stdlib.collection.mapToSet
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
+class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLink> {
 
-    override fun convertToDto(entity: ShortLink): ShortLinkDto =
-        ShortLinkDto(
-            entity.id.checkNotNull("id"),
-            entity.url,
-            entity.alias,
-            entity.creationTime.checkNotNull("creation time"),
-            entity.redirects.mapToSet {
-                it.id.checkNotNull("redirect id")
-            }
+    @Autowired
+    private lateinit var aliasGeneratorService: AliasGeneratorService
+
+    override fun convertToEntity(dto: ShortLinkCreationDto): ShortLink =
+        ShortLink(
+            dto.url,
+            aliasGeneratorService
+                .getAliasGenerator(dto.aliasGeneratorId)
+                .generateAlias()
         )
 }

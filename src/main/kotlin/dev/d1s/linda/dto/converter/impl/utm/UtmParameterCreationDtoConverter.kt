@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.impl.utm
+package dev.d1s.linda.dto.converter.impl.utm
 
 import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.checks.checkNotNull
-import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
 
 @Component
-class UtmParameterDtoConverter : DtoConverter<UtmParameterDto, UtmParameter> {
+class UtmParameterCreationDtoConverter : DtoConverter<UtmParameterCreationDto, UtmParameter> {
 
-    override fun convertToDto(entity: UtmParameter): UtmParameterDto =
-        UtmParameterDto(
-            entity.id.checkNotNull("id"),
-            entity.type,
-            entity.parameterValue,
-            entity.creationTime.checkNotNull("creationTime"),
-            entity.redirects.mapToSet {
-                it.id.checkNotNull("Redirect's id")
-            }
-        )
+    override fun convertToEntity(dto: UtmParameterCreationDto): UtmParameter =
+        UtmParameter(dto.type, dto.value)
 }

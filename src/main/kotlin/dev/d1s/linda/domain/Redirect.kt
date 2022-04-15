@@ -60,6 +60,6 @@ class Redirect(
     }
 
     override fun toString(): String {
-        return "Redirect(shortLink=$shortLink, id=$id, creationTime=$creationTime)"
+        return "Redirect(shortLink=$shortLink, id=$id, creationTime=$creationTime, utmParameters=$utmParameters)"
     }
 }

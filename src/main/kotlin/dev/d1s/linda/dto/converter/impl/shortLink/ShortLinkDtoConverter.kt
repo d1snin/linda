@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.impl.redirect
+package dev.d1s.linda.dto.converter.impl.shortLink
 
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
 import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
 
 @Component
-class RedirectDtoConverter : DtoConverter<RedirectDto, Redirect> {
+class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
 
-    override fun convertToDto(entity: Redirect): RedirectDto =
-        RedirectDto(
+    override fun convertToDto(entity: ShortLink): ShortLinkDto =
+        ShortLinkDto(
             entity.id.checkNotNull("id"),
-            entity.shortLink.id.checkNotNull("short link id"),
+            entity.url,
+            entity.alias,
             entity.creationTime.checkNotNull("creation time"),
-            entity.utmParameters.mapToSet {
-                it.id.checkNotNull("UTM parameter's id")
+            entity.redirects.mapToSet {
+                it.id.checkNotNull("redirect id")
             }
         )
 }

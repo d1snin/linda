@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.redirect
+package dev.d1s.linda.dto.converter.utm
 
-import dev.d1s.linda.converter.impl.redirect.RedirectDtoConverter
-import dev.d1s.linda.testUtil.mockRedirect
-import dev.d1s.linda.testUtil.mockRedirectDto
+import dev.d1s.linda.dto.converter.impl.utm.UtmParameterCreationDtoConverter
+import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.linda.testUtil.mockUtmParameter
+import dev.d1s.teabag.testing.constant.VALID_STUB
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,21 +29,21 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [RedirectDtoConverter::class])
-internal class RedirectDtoConverterTest {
+@ContextConfiguration(classes = [UtmParameterCreationDtoConverter::class])
+class UtmParameterCreationDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: RedirectDtoConverter
-
-    private val redirect = mockRedirect(true)
-
-    // redirectDto has the same properties as the associated entity
-    private val redirectDto = mockRedirectDto()
+    private lateinit var converter: UtmParameterCreationDtoConverter
 
     @Test
-    fun `should convert to dto`() {
+    fun `should convert to entity`() {
         expectThat(
-            converter.convertToDto(redirect)
-        ) isEqualTo redirectDto
+            converter.convertToEntity(
+                UtmParameterCreationDto(
+                    UtmParameterType.CAMPAIGN,
+                    VALID_STUB
+                )
+            )
+        ) isEqualTo mockUtmParameter()
     }
 }
