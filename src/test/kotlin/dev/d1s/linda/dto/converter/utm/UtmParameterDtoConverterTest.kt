@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.utm
+package dev.d1s.linda.dto.converter.utm
 
-import dev.d1s.linda.converter.impl.utm.UtmParameterCreationDtoConverter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.linda.dto.converter.impl.utm.UtmParameterDtoConverter
 import dev.d1s.linda.testUtil.mockUtmParameter
-import dev.d1s.teabag.testing.constant.VALID_STUB
+import dev.d1s.linda.testUtil.mockUtmParameterDto
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,21 +27,16 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [UtmParameterCreationDtoConverter::class])
-class UtmParameterCreationDtoConverterTest {
+@ContextConfiguration(classes = [UtmParameterDtoConverter::class])
+internal class UtmParameterDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: UtmParameterCreationDtoConverter
+    private lateinit var converter: UtmParameterDtoConverter
 
     @Test
-    fun `should convert to entity`() {
+    fun `should convert to dto`() {
         expectThat(
-            converter.convertToEntity(
-                UtmParameterCreationDto(
-                    UtmParameterType.CAMPAIGN,
-                    VALID_STUB
-                )
-            )
-        ) isEqualTo mockUtmParameter()
+            converter.convertToDto(mockUtmParameter(true))
+        ) isEqualTo mockUtmParameterDto()
     }
 }

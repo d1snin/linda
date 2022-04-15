@@ -16,18 +16,15 @@
 
 package dev.d1s.linda.controller
 
-import dev.d1s.linda.constant.mapping.api.REDIRECTS_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.REDIRECTS_FIND_BY_ID_MAPPING
-import dev.d1s.linda.constant.mapping.api.REDIRECTS_REMOVE_BY_ID_MAPPING
+import dev.d1s.linda.constant.mapping.api.*
+import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 import javax.validation.constraints.NotBlank
 
 @Validated
@@ -37,11 +34,28 @@ interface RedirectController {
         REDIRECTS_FIND_ALL_MAPPING,
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun findAll(@RequestParam page: Int?, @RequestParam size: Int?): ResponseEntity<Page<RedirectDto>>
+    fun findAll(
+        @RequestParam page: Int?, @RequestParam size: Int?
+    ): ResponseEntity<Page<RedirectDto>>
 
     @GetMapping(REDIRECTS_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun findById(@PathVariable @NotBlank identifier: String): ResponseEntity<RedirectDto>
+    fun findById(
+        @PathVariable @NotBlank identifier: String
+    ): ResponseEntity<RedirectDto>
+
+    @PostMapping(REDIRECTS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun create(
+        @RequestBody @Valid alteration: RedirectAlterationDto
+    ): ResponseEntity<RedirectDto>
+
+    @PutMapping(REDIRECTS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun update(
+        @PathVariable @NotBlank identifier: String,
+        @RequestBody @Valid alteration: RedirectAlterationDto
+    ): ResponseEntity<RedirectDto>
 
     @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun removeById(@PathVariable @NotBlank identifier: String): ResponseEntity<*>
+    fun removeById(
+        @PathVariable @NotBlank identifier: String
+    ): ResponseEntity<*>
 }

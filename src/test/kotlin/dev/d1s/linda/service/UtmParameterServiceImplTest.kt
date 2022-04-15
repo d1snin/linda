@@ -156,6 +156,25 @@ internal class UtmParameterServiceImplTest {
     }
 
     @Test
+    fun `should update utm parameter`() {
+        expectThat(
+            utmParameterService.update(
+                VALID_STUB,
+                UtmParameter(
+                    UtmParameterType.TERM,
+                    INVALID_STUB
+                ).apply {
+                    redirects = mutableSetOf()
+                }
+            )
+        ) isEqualTo utmParameter.apply {
+            type = UtmParameterType.TERM
+            parameterValue = INVALID_STUB
+            redirects = mutableSetOf()
+        }
+    }
+
+    @Test
     fun `should throw UtmParameterAlreadyExistsException`() {
         assertThrows<UtmParameterAlreadyExistsException> {
             utmParameterService.create(utmParameter)

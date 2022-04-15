@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.impl.utm
+package dev.d1s.linda.dto.converter.impl.shortLink
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
+import dev.d1s.linda.service.RedirectService
 import dev.d1s.teabag.dto.DtoConverter
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class UtmParameterCreationDtoConverter : DtoConverter<UtmParameterCreationDto, UtmParameter> {
+class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> {
 
-    override fun convertToEntity(dto: UtmParameterCreationDto): UtmParameter =
-        UtmParameter(dto.type, dto.value)
+    @Autowired
+    private lateinit var redirectService: RedirectService
+
+    override fun convertToEntity(dto: ShortLinkUpdateDto): ShortLink = ShortLink(
+        dto.url,
+        dto.alias
+    ).apply {
+        redirects = dto.redirects.map {
+            redirectService.findById(it)
+        }.toMutableSet()
+    }
 }

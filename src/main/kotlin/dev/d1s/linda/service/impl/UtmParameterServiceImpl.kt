@@ -62,6 +62,17 @@ class UtmParameterServiceImpl : UtmParameterService {
     }
 
     @Transactional
+    override fun update(id: String, utmParameter: UtmParameter): UtmParameter {
+        val foundUtmParameter = utmParameterService.findById(id)
+
+        foundUtmParameter.type = utmParameter.type
+        foundUtmParameter.parameterValue = utmParameter.parameterValue
+        foundUtmParameter.redirects = utmParameter.redirects
+
+        return utmParameterRepository.save(foundUtmParameter)
+    }
+
+    @Transactional
     override fun removeById(id: String) {
         utmParameterRepository.deleteById(id)
     }

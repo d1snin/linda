@@ -26,7 +26,6 @@ import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byAlias
-import dev.d1s.teabag.stdlib.collection.mapOfNotNullValues
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Controller
@@ -58,24 +57,30 @@ class BaseInterfaceControllerImpl : BaseInterfaceController {
     ): RedirectView {
         val shortLink = shortLinkService.find(byAlias(alias))
 
-        val utmParameters = mapOfNotNullValues(
-            UtmParameterType.SOURCE to utmSource,
-            UtmParameterType.MEDIUM to utmMedium,
-            UtmParameterType.CAMPAIGN to utmCampaign,
-            UtmParameterType.TERM to utmTerm,
-            UtmParameterType.CONTENT to utmContent
-        ).map {
-            val utmParameter = utmParameterService.findByTypeAndValue(it.key, it.value!!)
+        val utmParameters = buildSet {
+            mapOf(
+                UtmParameterType.SOURCE to utmSource,
+                UtmParameterType.MEDIUM to utmMedium,
+                UtmParameterType.CAMPAIGN to utmCampaign,
+                UtmParameterType.TERM to utmTerm,
+                UtmParameterType.CONTENT to utmContent
+            ).forEach {
+                it.value?.let { value ->
+                    val utmParameter = utmParameterService.findByTypeAndValue(it.key, value)
 
-            if (utmParameter.isPresent) {
-                utmParameter.get()
-            } else {
-                if (properties.automaticUtmCreation) {
-                    utmParameterService.create(
-                        UtmParameter(it.key, it.value!!)
-                    )
-                } else {
-                    throw UtmParameterNotFoundException
+                    if (utmParameter.isPresent) {
+                        add(utmParameter.get())
+                    } else {
+                        if (properties.automaticUtmCreation) {
+                            add(
+                                utmParameterService.create(
+                                    UtmParameter(it.key, value)
+                                )
+                            )
+                        } else {
+                            throw UtmParameterNotFoundException
+                        }
+                    }
                 }
             }
         }

@@ -26,7 +26,7 @@ import javax.persistence.*
 @Table(name = "redirect")
 class Redirect(
     @ManyToOne(cascade = [CascadeType.MERGE])
-    val shortLink: ShortLink
+    var shortLink: ShortLink
 ) {
     @Id
     @Column
@@ -60,6 +60,6 @@ class Redirect(
     }
 
     override fun toString(): String {
-        return "Redirect(shortLink=$shortLink, id=$id, creationTime=$creationTime)"
+        return "Redirect(shortLink=$shortLink, id=$id, creationTime=$creationTime, utmParameters=$utmParameters)"
     }
 }

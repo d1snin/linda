@@ -51,6 +51,16 @@ class RedirectServiceImpl : RedirectService {
         redirectRepository.save(redirect)
 
     @Transactional
+    override fun update(id: String, redirect: Redirect): Redirect {
+        val foundRedirect = redirectService.findById(id)
+
+        foundRedirect.shortLink = redirect.shortLink
+        foundRedirect.utmParameters = redirect.utmParameters
+
+        return redirectRepository.save(foundRedirect)
+    }
+
+    @Transactional
     override fun assignUtmParameter(redirect: Redirect, utmParameter: UtmParameter) {
         redirect.utmParameters.add(utmParameter)
         utmParameter.redirects.add(redirect)

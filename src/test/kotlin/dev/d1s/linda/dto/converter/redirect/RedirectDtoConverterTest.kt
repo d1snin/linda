@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.converter.shortLink
+package dev.d1s.linda.dto.converter.redirect
 
-import dev.d1s.linda.converter.impl.shortLink.ShortLinkDtoConverter
-import dev.d1s.linda.testUtil.mockShortLink
-import dev.d1s.linda.testUtil.mockShortLinkDto
+import dev.d1s.linda.dto.converter.impl.redirect.RedirectDtoConverter
+import dev.d1s.linda.testUtil.mockRedirect
+import dev.d1s.linda.testUtil.mockRedirectDto
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,16 +27,21 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [ShortLinkDtoConverter::class])
-internal class ShortLinkDtoConverterTest {
+@ContextConfiguration(classes = [RedirectDtoConverter::class])
+internal class RedirectDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: ShortLinkDtoConverter
+    private lateinit var converter: RedirectDtoConverter
+
+    private val redirect = mockRedirect(true)
+
+    // redirectDto has the same properties as the associated entity
+    private val redirectDto = mockRedirectDto()
 
     @Test
     fun `should convert to dto`() {
         expectThat(
-            converter.convertToDto(mockShortLink(true))
-        ) isEqualTo mockShortLinkDto()
+            converter.convertToDto(redirect)
+        ) isEqualTo redirectDto
     }
 }

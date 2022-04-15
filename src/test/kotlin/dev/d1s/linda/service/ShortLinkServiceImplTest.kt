@@ -18,6 +18,7 @@ package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
+import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.impl.ShortLinkServiceImpl
@@ -136,6 +137,25 @@ internal class ShortLinkServiceImplTest {
 
         verify {
             shortLinkRepository.save(shortLink)
+        }
+    }
+
+    @Test
+    fun `should update short link`() {
+        expectThat(
+            shortLinkService.update(
+                VALID_STUB,
+                ShortLink(
+                    INVALID_STUB,
+                    INVALID_STUB
+                ).apply {
+                    redirects = setOf()
+                }
+            )
+        ) isEqualTo shortLink.apply {
+            url = VALID_STUB
+            alias = VALID_STUB
+            redirects = setOf()
         }
     }
 

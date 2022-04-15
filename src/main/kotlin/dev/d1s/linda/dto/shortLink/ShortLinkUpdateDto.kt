@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.mapping.api
+package dev.d1s.linda.dto.shortLink
 
-const val UTM_PARAMETERS_BASE_MAPPING = "$API_BASE_MAPPING/utmParameters"
-const val UTM_PARAMETERS_FIND_ALL_MAPPING = UTM_PARAMETERS_BASE_MAPPING
-const val UTM_PARAMETERS_FIND_BY_ID_MAPPING = "$UTM_PARAMETERS_BASE_MAPPING/{identifier}"
-const val UTM_PARAMETERS_CREATE_MAPPING = UTM_PARAMETERS_BASE_MAPPING
-const val UTM_PARAMETERS_UPDATE_MAPPING = "$UTM_PARAMETERS_BASE_MAPPING/{identifier}"
-const val UTM_PARAMETERS_REMOVE_BY_ID_MAPPING = "$UTM_PARAMETERS_BASE_MAPPING/{identifier}"
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Pattern
+
+data class ShortLinkUpdateDto(
+    @field:Pattern(regexp = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;]*[-a-zA-Z\\d+&@#/%=~_|]")
+    val url: String,
+
+    // note: this is a hacky way to set custom alias.
+    // This feature is not yet implemented:
+    // https://github.com/linda-project/linda/issues/11
+    @field:NotBlank
+    val alias: String,
+
+    @field:NotNull
+    val redirects: Set<String>
+)

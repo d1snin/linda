@@ -22,6 +22,7 @@ import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
+import dev.d1s.linda.strategy.shortLink.byId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -56,6 +57,17 @@ class ShortLinkServiceImpl : ShortLinkService {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     override fun create(shortLink: ShortLink): ShortLink =
         shortLinkRepository.save(shortLink)
+
+    @Transactional
+    override fun update(id: String, shortLink: ShortLink): ShortLink {
+        val foundShortLink = shortLinkService.find(byId(id))
+
+        foundShortLink.url = shortLink.url
+        foundShortLink.alias = shortLink.alias
+        foundShortLink.redirects = shortLink.redirects
+
+        return shortLinkRepository.save(foundShortLink)
+    }
 
     @Transactional
     override fun removeById(id: String) =

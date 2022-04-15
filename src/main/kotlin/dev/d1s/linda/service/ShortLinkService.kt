@@ -27,6 +27,8 @@ interface ShortLinkService {
 
     fun create(shortLink: ShortLink): ShortLink
 
+    fun update(id: String, shortLink: ShortLink): ShortLink
+
     fun removeById(id: String)
 
     fun doesAliasExist(alias: String): Boolean
