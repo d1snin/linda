@@ -29,7 +29,7 @@ interface RedirectService {
 
     fun update(id: String, redirect: Redirect): Redirect
 
-    fun assignUtmParameter(redirect: Redirect, utmParameter: UtmParameter)
+    fun assignUtmParameterAndSave(redirect: Redirect, utmParameter: UtmParameter): Redirect
 
     fun removeById(id: String)
 }

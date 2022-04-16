@@ -19,8 +19,8 @@ package dev.d1s.linda.dto.converter.utm
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.dto.converter.impl.utm.UtmParameterUpdateDtoConverter
-import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
+import dev.d1s.linda.dto.converter.impl.utm.UtmParameterAlterationDtoConverter
+import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.testUtil.mockRedirect
 import dev.d1s.teabag.testing.constant.VALID_STUB
@@ -34,11 +34,11 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [UtmParameterUpdateDtoConverter::class])
-internal class UtmParameterUpdateDtoConverterTest {
+@ContextConfiguration(classes = [UtmParameterAlterationDtoConverter::class])
+internal class UtmParameterAlterationDtoConverterTest {
 
     @Autowired
-    private lateinit var utmParameterUpdateDtoConverter: UtmParameterUpdateDtoConverter
+    private lateinit var utmParameterAlterationDtoConverter: UtmParameterAlterationDtoConverter
 
     @MockkBean
     private lateinit var redirectService: RedirectService
@@ -55,8 +55,8 @@ internal class UtmParameterUpdateDtoConverterTest {
     @Test
     fun `should return valid converted utm parameter`() {
         expectThat(
-            utmParameterUpdateDtoConverter.convertToEntity(
-                UtmParameterUpdateDto(
+            utmParameterAlterationDtoConverter.convertToEntity(
+                UtmParameterAlterationDto(
                     UtmParameterType.CAMPAIGN,
                     VALID_STUB,
                     setOf(VALID_STUB)

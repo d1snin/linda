@@ -149,7 +149,7 @@ internal class RedirectServiceImplTest {
         } returns redirect
 
         assertDoesNotThrow {
-            redirectService.assignUtmParameter(redirect, utmParameter)
+            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
         }
 
         expectThat(redirect.utmParameters).contains(utmParameter)

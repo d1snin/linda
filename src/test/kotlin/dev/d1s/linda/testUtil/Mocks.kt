@@ -25,9 +25,8 @@ import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
-import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
-import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
+import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.teabag.data.toPage
@@ -172,12 +171,7 @@ internal fun mockUtmParameterDto() = UtmParameterDto(
     setOf(VALID_STUB)
 )
 
-internal fun mockUtmParameterCreationDto() = UtmParameterCreationDto(
-    UtmParameterType.CAMPAIGN,
-    VALID_STUB
-)
-
-internal fun mockUtmParameterUpdateDto() = UtmParameterUpdateDto(
+internal fun mockUtmParameterAlterationDto() = UtmParameterAlterationDto(
     UtmParameterType.CAMPAIGN,
     VALID_STUB,
     setOf(VALID_STUB)

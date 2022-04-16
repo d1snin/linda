@@ -88,7 +88,7 @@ class BaseInterfaceControllerImpl : BaseInterfaceController {
         val redirect = redirectService.create(Redirect(shortLink))
 
         utmParameters.forEach {
-            redirectService.assignUtmParameter(redirect, it)
+            redirectService.assignUtmParameterAndSave(redirect, it)
         }
 
         return RedirectView(shortLink.url)

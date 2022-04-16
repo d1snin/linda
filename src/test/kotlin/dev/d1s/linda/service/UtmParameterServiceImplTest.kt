@@ -24,6 +24,7 @@ import dev.d1s.linda.exception.impl.alreadyExists.UtmParameterAlreadyExistsExcep
 import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.impl.UtmParameterServiceImpl
+import dev.d1s.linda.testUtil.mockRedirect
 import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
@@ -50,11 +51,16 @@ internal class UtmParameterServiceImplTest {
     @MockkBean
     private lateinit var utmParameterRepository: UtmParameterRepository
 
+    @MockkBean
+    private lateinit var redirectService: RedirectService
+
     private val utmParameter = mockUtmParameter(true)
 
     private val utmParameters = setOf(utmParameter)
 
     private val utmParametersList = utmParameters.toList()
+
+    private val redirect = mockRedirect(true)
 
     @BeforeEach
     fun setup() {
@@ -91,6 +97,10 @@ internal class UtmParameterServiceImplTest {
         justRun {
             utmParameterRepository.deleteById(VALID_STUB)
         }
+
+        every {
+            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
+        } returns redirect
     }
 
     @Test

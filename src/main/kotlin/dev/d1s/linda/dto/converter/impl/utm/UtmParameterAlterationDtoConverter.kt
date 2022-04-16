@@ -17,19 +17,19 @@
 package dev.d1s.linda.dto.converter.impl.utm
 
 import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
+import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.teabag.dto.DtoConverter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class UtmParameterUpdateDtoConverter : DtoConverter<UtmParameterUpdateDto, UtmParameter> {
+class UtmParameterAlterationDtoConverter : DtoConverter<UtmParameterAlterationDto, UtmParameter> {
 
     @Autowired
     private lateinit var redirectService: RedirectService
 
-    override fun convertToEntity(dto: UtmParameterUpdateDto): UtmParameter = UtmParameter(
+    override fun convertToEntity(dto: UtmParameterAlterationDto): UtmParameter = UtmParameter(
         dto.type,
         dto.parameterValue
     ).apply {

@@ -2,6 +2,7 @@ plugins {
     id("org.springframework.boot") version "2.6.1"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.jetbrains.kotlin.plugin.jpa") version "1.6.20"
+    id("org.springdoc.openapi-gradle-plugin") version "1.3.4"
     kotlin("jvm") version "1.6.20"
     kotlin("plugin.spring") version "1.6.20"
 }

@@ -21,6 +21,7 @@ import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.exception.impl.alreadyExists.UtmParameterAlreadyExistsException
 import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
+import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.UtmParameterService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -33,6 +34,9 @@ class UtmParameterServiceImpl : UtmParameterService {
 
     @Autowired
     private lateinit var utmParameterRepository: UtmParameterRepository
+
+    @Autowired
+    private lateinit var redirectService: RedirectService
 
     @Lazy
     @Autowired
@@ -58,6 +62,10 @@ class UtmParameterServiceImpl : UtmParameterService {
             throw UtmParameterAlreadyExistsException
         }
 
+        utmParameter.redirects.forEach {
+            redirectService.assignUtmParameterAndSave(it, utmParameter)
+        }
+
         return utmParameterRepository.save(utmParameter)
     }
 
@@ -68,6 +76,10 @@ class UtmParameterServiceImpl : UtmParameterService {
         foundUtmParameter.type = utmParameter.type
         foundUtmParameter.parameterValue = utmParameter.parameterValue
         foundUtmParameter.redirects = utmParameter.redirects
+
+        foundUtmParameter.redirects.forEach {
+            redirectService.assignUtmParameterAndSave(it, utmParameter)
+        }
 
         return utmParameterRepository.save(foundUtmParameter)
     }

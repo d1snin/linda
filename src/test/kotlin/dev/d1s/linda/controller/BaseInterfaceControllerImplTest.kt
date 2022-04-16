@@ -31,7 +31,6 @@ import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -97,9 +96,9 @@ class BaseInterfaceControllerImplTest {
             redirectService.create(redirect)
         } returns redirect
 
-        justRun {
-            redirectService.assignUtmParameter(redirect, utmParameter)
-        }
+        every {
+            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
+        } returns redirect
     }
 
     @Test
@@ -110,7 +109,7 @@ class BaseInterfaceControllerImplTest {
             shortLinkService.find(byAlias(VALID_STUB))
             utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
             redirectService.create(redirect)
-            redirectService.assignUtmParameter(redirect, utmParameter)
+            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
         }
     }
 
@@ -127,7 +126,7 @@ class BaseInterfaceControllerImplTest {
             utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
             utmParameterService.create(utmParameter)
             redirectService.create(redirect)
-            redirectService.assignUtmParameter(redirect, utmParameter)
+            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
         }
     }
 

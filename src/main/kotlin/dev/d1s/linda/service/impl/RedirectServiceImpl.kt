@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import kotlin.properties.Delegates
 
 @Service
 class RedirectServiceImpl : RedirectService {
@@ -47,24 +48,35 @@ class RedirectServiceImpl : RedirectService {
         }
 
     @Transactional
-    override fun create(redirect: Redirect): Redirect =
-        redirectRepository.save(redirect)
+    override fun create(redirect: Redirect): Redirect {
+        var result: Redirect by Delegates.notNull()
+
+        redirect.utmParameters.forEach {
+            result = redirectService.assignUtmParameterAndSave(redirect, it)
+        }
+
+        return result
+    }
 
     @Transactional
     override fun update(id: String, redirect: Redirect): Redirect {
-        val foundRedirect = redirectService.findById(id)
+        var foundRedirect = redirectService.findById(id)
 
         foundRedirect.shortLink = redirect.shortLink
         foundRedirect.utmParameters = redirect.utmParameters
 
-        return redirectRepository.save(foundRedirect)
+        foundRedirect.utmParameters.forEach {
+            foundRedirect = redirectService.assignUtmParameterAndSave(foundRedirect, it)
+        }
+
+        return foundRedirect
     }
 
     @Transactional
-    override fun assignUtmParameter(redirect: Redirect, utmParameter: UtmParameter) {
+    override fun assignUtmParameterAndSave(redirect: Redirect, utmParameter: UtmParameter): Redirect {
         redirect.utmParameters.add(utmParameter)
         utmParameter.redirects.add(redirect)
-        redirectRepository.save(redirect)
+        return redirectRepository.save(redirect)
     }
 
     @Transactional
