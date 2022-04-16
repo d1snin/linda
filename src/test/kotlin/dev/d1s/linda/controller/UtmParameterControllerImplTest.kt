@@ -18,21 +18,25 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
+import dev.d1s.linda.event.data.UtmParameterEventData
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.testConfiguration.LocalValidatorFactoryBeanConfiguration
 import dev.d1s.linda.testUtil.*
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
-import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -71,6 +75,9 @@ internal class UtmParameterControllerImplTest {
 
     @MockkBean
     private lateinit var utmParameterUpdateDtoConverter: DtoConverter<UtmParameterUpdateDto, UtmParameter>
+
+    @MockkBean(relaxed = true)
+    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -183,6 +190,11 @@ internal class UtmParameterControllerImplTest {
             utmParameterCreationDtoConverter.convertToEntity(utmParameterCreationDto)
             utmParameterService.create(utmParameter)
             utmParameterDtoConverter.convertToDto(utmParameter)
+            publisher.publish(
+                UTM_PARAMETER_CREATED_GROUP,
+                VALID_STUB,
+                UtmParameterEventData(utmParameterDto)
+            )
         }
     }
 
@@ -205,6 +217,13 @@ internal class UtmParameterControllerImplTest {
             utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
             utmParameterService.update(VALID_STUB, utmParameter)
             utmParameterDtoConverter.convertToDto(utmParameter)
+            publisher.publish(
+                UTM_PARAMETER_UPDATED_GROUP,
+                VALID_STUB,
+                UtmParameterEventData(
+                    utmParameterDto
+                )
+            )
         }
     }
 
@@ -217,8 +236,13 @@ internal class UtmParameterControllerImplTest {
                 }
             }
 
-        verify {
+        verifyAll {
             utmParameterService.removeById(VALID_STUB)
+            publisher.publish(
+                UTM_PARAMETER_REMOVED_GROUP,
+                VALID_STUB,
+                UtmParameterEventData(null)
+            )
         }
     }
 }

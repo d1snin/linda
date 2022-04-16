@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.d1s"
-version = "0.3.0.beta.0"
+version = "0.4.0.beta.0"
 
 repositories {
     mavenCentral()
@@ -23,6 +23,7 @@ val liquibaseVersion: String by project
 val caffeineVersion: String by project
 val striktVersion: String by project
 val springMockkVersion: String by project
+val longPollingStarterVersion: String by project
 
 dependencies {
     implementation(kotlin("reflect"))
@@ -41,6 +42,7 @@ dependencies {
     implementation("org.mariadb.jdbc:mariadb-java-client")
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("dev.d1s.long-polling:spring-boot-starter-lp-server-web:$longPollingStarterVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

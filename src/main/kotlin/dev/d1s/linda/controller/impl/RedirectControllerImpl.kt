@@ -16,11 +16,16 @@
 
 package dev.d1s.linda.controller.impl
 
+import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
 import dev.d1s.linda.controller.RedirectController
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.event.data.RedirectEventData
 import dev.d1s.linda.service.RedirectService
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
@@ -45,6 +50,9 @@ class RedirectControllerImpl : RedirectController {
 
     @Autowired
     private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
+
+    @Autowired
+    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     private val redirectSetDtoConverter by lazy {
         redirectDtoConverter.converterForSet()
@@ -71,24 +79,49 @@ class RedirectControllerImpl : RedirectController {
             )
         ).toDto()
 
+        publisher.publish(
+            REDIRECT_CREATED_GROUP,
+            redirect.id,
+            RedirectEventData(
+                redirect
+            )
+        )
+
         return created(
             appendUri(redirect.id)
         ).body(redirect)
     }
 
     @Secured
-    override fun update(identifier: String, alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> = ok(
-        redirectService.update(
+    override fun update(identifier: String, alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> {
+        val redirect = redirectService.update(
             identifier,
             redirectAlterationDtoConverter.convertToEntity(
                 alteration
             )
         ).toDto()
-    )
+
+        publisher.publish(
+            REDIRECT_UPDATED_GROUP,
+            redirect.id,
+            RedirectEventData(
+                redirect
+            )
+        )
+
+        return ok(redirect)
+    }
 
     @Secured
     override fun removeById(identifier: String): ResponseEntity<*> {
         redirectService.removeById(identifier)
+
+        publisher.publish(
+            REDIRECT_REMOVED_GROUP,
+            identifier,
+            RedirectEventData(null)
+        )
+
         return noContent
     }
 }

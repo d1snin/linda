@@ -26,7 +26,7 @@ services:
       - db-data-mariadb-config:/etc/mysql
 
   linda:
-    image: linda:0.3.0.beta.0
+    image: linda:0.4.0.beta.0
     container_name: linda
     networks:
       - linda-net

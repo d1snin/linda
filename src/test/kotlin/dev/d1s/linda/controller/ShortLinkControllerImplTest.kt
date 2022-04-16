@@ -18,22 +18,26 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.ShortLinkControllerImpl
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
+import dev.d1s.linda.event.data.ShortLinkEventData
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.testConfiguration.LocalValidatorFactoryBeanConfiguration
 import dev.d1s.linda.testUtil.*
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
-import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -72,6 +76,9 @@ internal class ShortLinkControllerImplTest {
 
     @MockkBean
     private lateinit var shortLinkUpdateDtoConverter: DtoConverter<ShortLinkUpdateDto, ShortLink>
+
+    @MockkBean(relaxed = true)
+    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -191,6 +198,13 @@ internal class ShortLinkControllerImplTest {
             shortLinkCreationDtoConverter.convertToEntity(shortLinkCreationDto)
             shortLinkService.create(shortLink)
             shortLinkDtoConverter.convertToDto(shortLink)
+            publisher.publish(
+                SHORT_LINK_CREATED_GROUP,
+                VALID_STUB,
+                ShortLinkEventData(
+                    shortLinkDto
+                )
+            )
         }
     }
 
@@ -213,6 +227,13 @@ internal class ShortLinkControllerImplTest {
             shortLinkUpdateDtoConverter.convertToEntity(shortLinkUpdateDto)
             shortLinkService.update(VALID_STUB, shortLink)
             shortLinkDtoConverter.convertToDto(shortLink)
+            publisher.publish(
+                SHORT_LINK_UPDATED_GROUP,
+                VALID_STUB,
+                ShortLinkEventData(
+                    shortLinkDto
+                )
+            )
         }
     }
 
@@ -225,8 +246,13 @@ internal class ShortLinkControllerImplTest {
                 }
             }
 
-        verify {
+        verifyAll {
             shortLinkService.removeById(VALID_STUB)
+            publisher.publish(
+                SHORT_LINK_REMOVED_GROUP,
+                VALID_STUB,
+                ShortLinkEventData(null)
+            )
         }
     }
 }
