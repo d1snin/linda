@@ -16,12 +16,17 @@
 
 package dev.d1s.linda.controller.impl
 
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.controller.UtmParameterController
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
+import dev.d1s.linda.event.data.UtmParameterEventData
 import dev.d1s.linda.service.UtmParameterService
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
@@ -50,6 +55,9 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Autowired
     private lateinit var utmParameterUpdateDtoConverter: DtoConverter<UtmParameterUpdateDto, UtmParameter>
 
+    @Autowired
+    private lateinit var publisher: AsyncLongPollingEventPublisher
+
     private val utmParameterDtoSetConverter by lazy {
         utmParameterDtoConverter.converterForSet()
     }
@@ -75,6 +83,14 @@ class UtmParameterControllerImpl : UtmParameterController {
             utmParameterCreationDtoConverter.convertToEntity(creation)
         ).toDto()
 
+        publisher.publish(
+            UTM_PARAMETER_CREATED_GROUP,
+            utmParameter.id,
+            UtmParameterEventData(
+                utmParameter
+            )
+        )
+
         return created(
             appendUri(utmParameter.id)
         ).body(utmParameter)
@@ -84,16 +100,33 @@ class UtmParameterControllerImpl : UtmParameterController {
     override fun update(
         identifier: String,
         utmParameterUpdateDto: UtmParameterUpdateDto
-    ): ResponseEntity<UtmParameterDto> = ok(
-        utmParameterService.update(
+    ): ResponseEntity<UtmParameterDto> {
+        val utmParameter = utmParameterService.update(
             identifier,
             utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
         ).toDto()
-    )
+
+        publisher.publish(
+            UTM_PARAMETER_UPDATED_GROUP,
+            utmParameter.id,
+            UtmParameterEventData(
+                utmParameter
+            )
+        )
+
+        return ok(utmParameter)
+    }
 
     @Secured
     override fun removeById(identifier: String): ResponseEntity<*> {
         utmParameterService.removeById(identifier)
+
+        publisher.publish(
+            UTM_PARAMETER_REMOVED_GROUP,
+            identifier,
+            UtmParameterEventData(null)
+        )
+
         return noContent
     }
 }

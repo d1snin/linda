@@ -16,14 +16,19 @@
 
 package dev.d1s.linda.controller.impl
 
+import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.controller.ShortLinkController
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
+import dev.d1s.linda.event.data.ShortLinkEventData
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
@@ -51,6 +56,9 @@ class ShortLinkControllerImpl : ShortLinkController {
 
     @Autowired
     private lateinit var shortLinkUpdateDtoConverter: DtoConverter<ShortLinkUpdateDto, ShortLink>
+
+    @Autowired
+    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     private val shortLinkDtoSetConverter by lazy {
         shortLinkDtoConverter.converterForSet()
@@ -86,6 +94,14 @@ class ShortLinkControllerImpl : ShortLinkController {
             )
         ).toDto()
 
+        publisher.publish(
+            SHORT_LINK_CREATED_GROUP,
+            shortLink.id,
+            ShortLinkEventData(
+                shortLink
+            )
+        )
+
         return created(
             appendUri(shortLink.id)
         ).body(shortLink)
@@ -93,16 +109,33 @@ class ShortLinkControllerImpl : ShortLinkController {
 
     @Secured
     override fun update(identifier: String, shortLinkUpdateDto: ShortLinkUpdateDto):
-            ResponseEntity<ShortLinkDto> = ok(
-        shortLinkService.update(
+            ResponseEntity<ShortLinkDto> {
+        val shortLink = shortLinkService.update(
             identifier,
             shortLinkUpdateDtoConverter.convertToEntity(shortLinkUpdateDto)
         ).toDto()
-    )
+
+        publisher.publish(
+            SHORT_LINK_UPDATED_GROUP,
+            shortLink.id,
+            ShortLinkEventData(
+                shortLink
+            )
+        )
+
+        return ok(shortLink)
+    }
 
     @Secured
     override fun remove(identifier: String): ResponseEntity<*> {
         shortLinkService.removeById(identifier)
+
+        publisher.publish(
+            SHORT_LINK_REMOVED_GROUP,
+            identifier,
+            ShortLinkEventData(null)
+        )
+
         return noContent
     }
 }

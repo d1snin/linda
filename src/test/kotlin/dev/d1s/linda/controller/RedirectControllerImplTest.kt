@@ -18,19 +18,23 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.RedirectControllerImpl
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.event.data.RedirectEventData
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.testUtil.*
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
-import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -60,6 +64,10 @@ internal class RedirectControllerImplTest {
 
     @MockkBean
     private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
+
+    @MockkBean(relaxed = true)
+    private lateinit var publisher: AsyncLongPollingEventPublisher
+
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper
@@ -169,6 +177,13 @@ internal class RedirectControllerImplTest {
             )
             redirectService.create(redirect)
             redirectDtoConverter.convertToDto(redirect)
+            publisher.publish(
+                REDIRECT_CREATED_GROUP,
+                VALID_STUB,
+                RedirectEventData(
+                    redirectDto
+                )
+            )
         }
     }
 
@@ -193,6 +208,13 @@ internal class RedirectControllerImplTest {
             )
             redirectService.update(VALID_STUB, redirect)
             redirectDtoConverter.convertToDto(redirect)
+            publisher.publish(
+                REDIRECT_UPDATED_GROUP,
+                VALID_STUB,
+                RedirectEventData(
+                    redirectDto
+                )
+            )
         }
     }
 
@@ -205,8 +227,13 @@ internal class RedirectControllerImplTest {
                 }
             }
 
-        verify {
+        verifyAll {
             redirectService.removeById(VALID_STUB)
+            publisher.publish(
+                REDIRECT_REMOVED_GROUP,
+                VALID_STUB,
+                RedirectEventData(null)
+            )
         }
     }
 }
