@@ -1,4 +1,9 @@
 spring:
+  # Using deprecated property,
+  # see: https://stackoverflow.com/questions/71902150/spring-config-activate-on-profile-somehow-causes-database-connection-issues
+  profiles:
+    active: "production"
+
   application:
     name: "linda"
 
@@ -18,10 +23,6 @@ spring:
 
   main:
     allow-circular-references: true
-
-  config:
-    activate:
-      on-profile: production
 
 springdoc:
   api-docs:
