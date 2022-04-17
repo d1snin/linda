@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    active: "production"
-
   application:
     name: "linda"
 
@@ -22,9 +19,13 @@ spring:
   main:
     allow-circular-references: true
 
+  config:
+    activate:
+      on-profile: production
+
 springdoc:
   api-docs:
-    path: /docs-specifications
+    path: /specs
 
   swagger-ui:
     path: /docs
