@@ -55,7 +55,7 @@ interface ShortLinkController {
         @RequestBody @Valid shortLinkUpdateDto: ShortLinkUpdateDto
     ): ResponseEntity<ShortLinkDto>
 
-    @DeleteMapping(SHORT_LINKS_REMOVE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(SHORT_LINKS_REMOVE_MAPPING)
     fun remove(
         @PathVariable @NotBlank identifier: String
     ): ResponseEntity<*>

@@ -54,7 +54,7 @@ interface RedirectController {
         @RequestBody @Valid alteration: RedirectAlterationDto
     ): ResponseEntity<RedirectDto>
 
-    @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING)
     fun removeById(
         @PathVariable @NotBlank identifier: String
     ): ResponseEntity<*>

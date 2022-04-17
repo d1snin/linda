@@ -17,8 +17,8 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
-import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
+import dev.d1s.linda.dto.utm.UtmParameterDto
 import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -52,7 +52,7 @@ interface UtmParameterController {
         @RequestBody @Valid utmParameterAlterationDto: UtmParameterAlterationDto
     ): ResponseEntity<UtmParameterDto>
 
-    @DeleteMapping(UTM_PARAMETERS_REMOVE_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(UTM_PARAMETERS_REMOVE_BY_ID_MAPPING)
     fun removeById(
         @PathVariable @NotBlank identifier: String
     ): ResponseEntity<*>
