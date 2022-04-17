@@ -1,6 +1,5 @@
 spring:
-  # Using deprecated property,
-  # see: https://stackoverflow.com/questions/71902150/spring-config-activate-on-profile-somehow-causes-database-connection-issues
+  # Using deprecated property.
   profiles:
     active: "production"
 
