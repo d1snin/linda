@@ -163,9 +163,9 @@ internal class RedirectServiceImplTest {
             redirectRepository.save(redirect)
         } returns redirect
 
-        assertDoesNotThrow {
+        expectThat(
             redirectService.assignUtmParameterAndSave(redirect, utmParameter)
-        }
+        ) isEqualTo redirect
 
         expectThat(redirect.utmParameters).contains(utmParameter)
         expectThat(utmParameter.redirects).contains(redirect)

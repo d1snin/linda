@@ -55,8 +55,13 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    override fun create(shortLink: ShortLink): ShortLink =
-        shortLinkRepository.save(shortLink)
+    override fun create(shortLink: ShortLink): ShortLink {
+        shortLink.redirects.forEach {
+            it.shortLink = shortLink
+        }
+
+        return shortLinkRepository.save(shortLink)
+    }
 
     @Transactional
     override fun update(id: String, shortLink: ShortLink): ShortLink {
