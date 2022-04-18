@@ -22,6 +22,7 @@ spring:
 
   main:
     allow-circular-references: true
+    banner-mode: off
 
 springdoc:
   api-docs:
