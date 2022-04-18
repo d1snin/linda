@@ -70,7 +70,7 @@ internal class RedirectServiceImplTest {
         } returns Optional.empty()
 
         every {
-            redirectRepository.save(redirect)
+            redirectRepository.save(any())
         } returns redirect
 
         justRun {
@@ -112,13 +112,28 @@ internal class RedirectServiceImplTest {
     }
 
     @Test
-    fun `should create redirect`() {
+    fun `should create redirect with utm parameters`() {
         expectThat(
             redirectService.create(redirect)
         ) isEqualTo redirect
 
         verify {
-            redirectRepository.save(redirect)
+            redirectService.assignUtmParameterAndSave(redirect, mockUtmParameter(true))
+        }
+    }
+
+    @Test
+    fun `should create redirect without utm parameters`() {
+        expectThat(
+            redirectService.create(
+                redirect.apply {
+                    utmParameters = mutableSetOf()
+                }
+            )
+        ) isEqualTo redirect
+
+        verify {
+            redirectRepository.save(any())
         }
     }
 

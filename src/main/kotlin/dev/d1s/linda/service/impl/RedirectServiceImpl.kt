@@ -50,9 +50,14 @@ class RedirectServiceImpl : RedirectService {
     @Transactional
     override fun create(redirect: Redirect): Redirect {
         var result: Redirect by Delegates.notNull()
+        val utmParameters = redirect.utmParameters
 
-        redirect.utmParameters.forEach {
+        utmParameters.forEach {
             result = redirectService.assignUtmParameterAndSave(redirect, it)
+        }
+
+        if (utmParameters.isEmpty()) {
+            result = redirectRepository.save(redirect)
         }
 
         return result

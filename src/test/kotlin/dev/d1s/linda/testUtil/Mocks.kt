@@ -69,6 +69,7 @@ internal fun mockShortLinkFindingStrategy() =
 
 internal fun mockShortLinkCreationDto() = ShortLinkCreationDto(
     VALID_STUB,
+    setOf(VALID_STUB),
     VALID_STUB
 )
 
