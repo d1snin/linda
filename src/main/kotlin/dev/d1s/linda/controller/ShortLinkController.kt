@@ -45,7 +45,7 @@ interface ShortLinkController {
     @GetMapping(SHORT_LINKS_FIND_ALL_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Find all Short links.",
-        description = "This endpoint makes a query to the database and returns the entire list of available Short link objects. Always returns 200."
+        description = "Answers with the entire list of available Short link objects. Always returns 200."
     )
     fun findAll(
         @RequestParam(required = false) @Parameter(description = "The page number.") page: Int?,
@@ -55,7 +55,7 @@ interface ShortLinkController {
     @GetMapping(SHORT_LINKS_FIND_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Find Short link by ID or Alias.",
-        description = "This endpoint makes a query to the database and returns the Short link object associated with the provided ID. or Alias",
+        description = "Returns the Short link object associated with the provided ID or Alias",
         responses = [
             ApiResponse(
                 description = "Found Short link.",
@@ -89,7 +89,7 @@ interface ShortLinkController {
     @PostMapping(SHORT_LINKS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Create Short link.",
-        description = "This endpoint constructs the Short link object and puts it in the database.",
+        description = "Creates the Short link object.",
         responses = [
             ApiResponse(
                 description = "Created Short link.",
@@ -104,7 +104,7 @@ interface ShortLinkController {
                 ]
             ),
             ApiResponse(
-                description = "Alias generator or one of Redirects was not found by the provided ID.",
+                description = "Alias generator was not found by the provided ID.",
                 responseCode = "404",
                 content = [
                     Content(
@@ -130,7 +130,7 @@ interface ShortLinkController {
     @PutMapping(SHORT_LINKS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Update Short link.",
-        description = "This endpoint completely updates the Short link object found by the given ID.",
+        description = "Completely updates the Short link object found by the given ID.",
         responses = [
             ApiResponse(
                 description = "Updated the Short link.",
@@ -169,7 +169,7 @@ interface ShortLinkController {
     @DeleteMapping(SHORT_LINKS_REMOVE_MAPPING)
     @Operation(
         summary = "Delete Short link.",
-        description = "This endpoint completely removes the Short link found by the provided ID from the database. " +
+        description = "Completely removes the Short link found by the provided. " +
                 "Note that this operation will remove all associated Redirects as well.",
         responses = [
             ApiResponse(

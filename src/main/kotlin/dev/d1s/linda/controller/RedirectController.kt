@@ -45,7 +45,7 @@ interface RedirectController {
     )
     @Operation(
         summary = "Find all Redirects.",
-        description = "This endpoint makes a query to the database and returns the entire list of available Redirect objects. Always returns 200."
+        description = "Answers with the entire list of available Redirect objects. Always returns 200."
     )
     fun findAll(
         @RequestParam @Parameter(description = "The page number.") page: Int?,
@@ -55,7 +55,7 @@ interface RedirectController {
     @GetMapping(REDIRECTS_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Find Redirect by ID.",
-        description = "This endpoint makes a query to the database and returns the Redirect object associated with the provided ID.",
+        description = "Returns the Redirect object associated with the provided ID.",
         responses = [
             ApiResponse(
                 description = "Found Redirect.",
@@ -84,7 +84,7 @@ interface RedirectController {
     @PostMapping(REDIRECTS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Create Redirect.",
-        description = "This endpoint constructs the Redirect object and puts it in the database.",
+        description = "Creates the Redirect object.",
         responses = [
             ApiResponse(
                 description = "Created Redirect.",
@@ -125,7 +125,7 @@ interface RedirectController {
     @PutMapping(REDIRECTS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Update Redirect.",
-        description = "This endpoint completely updates the Redirect object found by the given ID.",
+        description = "Completely updates the Redirect object found by the given ID.",
         responses = [
             ApiResponse(
                 description = "Updated the Redirect.",
@@ -164,7 +164,7 @@ interface RedirectController {
     @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING)
     @Operation(
         summary = "Delete Redirect.",
-        description = "This endpoint completely removes the Redirect found by the provided ID from the database.",
+        description = "Completely removes the Redirect found by the provided ID.",
         responses = [
             ApiResponse(
                 description = "Deleted the Redirect.",
