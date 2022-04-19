@@ -78,7 +78,7 @@ interface ShortLinkController {
         ]
     )
     fun find(
-        @PathVariable @NotBlank identifier: String,
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
         @RequestParam(
             "strategy",
             required = false
@@ -162,7 +162,7 @@ interface ShortLinkController {
         ]
     )
     fun update(
-        @PathVariable @NotBlank identifier: String,
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
         @RequestBody @Valid shortLinkUpdateDto: ShortLinkUpdateDto
     ): ResponseEntity<ShortLinkDto>
 
@@ -188,6 +188,6 @@ interface ShortLinkController {
         ]
     )
     fun remove(
-        @PathVariable @NotBlank identifier: String
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
     ): ResponseEntity<*>
 }

@@ -30,7 +30,7 @@ interface BaseInterfaceController {
 
     @GetMapping(BASE_INTERFACE_MAPPING)
     fun redirect(
-        @PathVariable @NotBlank alias: String,
+        @PathVariable @NotBlank(message = "alias must not be blank.") alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
         @RequestParam(UTM_MEDIUM, required = false) utmMedium: String?,
         @RequestParam(UTM_CAMPAIGN, required = false) utmCampaign: String?,

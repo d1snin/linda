@@ -78,7 +78,7 @@ interface RedirectController {
         ]
     )
     fun findById(
-        @PathVariable @NotBlank identifier: String
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
     ): ResponseEntity<RedirectDto>
 
     @PostMapping(REDIRECTS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -157,7 +157,7 @@ interface RedirectController {
         ]
     )
     fun update(
-        @PathVariable @NotBlank identifier: String,
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
         @RequestBody @Valid alteration: RedirectAlterationDto
     ): ResponseEntity<RedirectDto>
 
@@ -182,6 +182,6 @@ interface RedirectController {
         ]
     )
     fun removeById(
-        @PathVariable @NotBlank identifier: String
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
     ): ResponseEntity<*>
 }

@@ -21,12 +21,12 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class UtmParameterUpdateDto(
-    @field:NotNull
+    @field:NotNull(message = "type must not be null.")
     val type: UtmParameterType,
 
-    @field:NotBlank
+    @field:NotBlank(message = "parameterValue must not be blank.")
     val parameterValue: String,
 
-    @field:NotNull
+    @field:NotNull(message = "redirects field must not be null.")
     val redirects: Set<String>
 )
