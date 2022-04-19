@@ -27,7 +27,10 @@ import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.*
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.spyk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -70,7 +73,7 @@ internal class RedirectServiceImplTest {
         } returns Optional.empty()
 
         every {
-            redirectRepository.save(redirect)
+            redirectRepository.save(any())
         } returns redirect
 
         justRun {
@@ -112,13 +115,28 @@ internal class RedirectServiceImplTest {
     }
 
     @Test
-    fun `should create redirect`() {
+    fun `should create redirect with utm parameters`() {
         expectThat(
             redirectService.create(redirect)
         ) isEqualTo redirect
 
         verify {
-            redirectRepository.save(redirect)
+            redirectService.assignUtmParametersAndSave(redirect, setOf(mockUtmParameter(true)))
+        }
+    }
+
+    @Test
+    fun `should create redirect without utm parameters`() {
+        expectThat(
+            redirectService.create(
+                redirect.apply {
+                    utmParameters = mutableSetOf()
+                }
+            )
+        ) isEqualTo redirect
+
+        verify {
+            redirectRepository.save(any())
         }
     }
 
@@ -137,10 +155,14 @@ internal class RedirectServiceImplTest {
             shortLink = mockShortLink()
             utmParameters = mutableSetOf()
         }
+
+        verify {
+            redirectService.assignUtmParametersAndSave(redirect, setOf())
+        }
     }
 
     @Test
-    fun `should assign utm parameter to the redirect`() {
+    fun `should assign utm parameters to the redirect`() {
         val redirect = spyk(mockRedirect())
         val utmParameter = spyk(mockUtmParameter())
 
@@ -148,14 +170,14 @@ internal class RedirectServiceImplTest {
             redirectRepository.save(redirect)
         } returns redirect
 
-        assertDoesNotThrow {
-            redirectService.assignUtmParameter(redirect, utmParameter)
-        }
+        expectThat(
+            redirectService.assignUtmParametersAndSave(redirect, setOf(utmParameter))
+        ) isEqualTo redirect
 
         expectThat(redirect.utmParameters).contains(utmParameter)
         expectThat(utmParameter.redirects).contains(redirect)
 
-        verifyAll {
+        verify {
             redirectRepository.save(redirect)
         }
     }

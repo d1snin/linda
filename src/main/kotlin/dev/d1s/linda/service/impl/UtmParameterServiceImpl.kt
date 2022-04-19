@@ -16,11 +16,13 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.exception.impl.alreadyExists.UtmParameterAlreadyExistsException
 import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
+import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.UtmParameterService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -33,6 +35,9 @@ class UtmParameterServiceImpl : UtmParameterService {
 
     @Autowired
     private lateinit var utmParameterRepository: UtmParameterRepository
+
+    @Autowired
+    private lateinit var redirectService: RedirectService
 
     @Lazy
     @Autowired
@@ -58,6 +63,10 @@ class UtmParameterServiceImpl : UtmParameterService {
             throw UtmParameterAlreadyExistsException
         }
 
+        utmParameter.redirects.forEach {
+            redirectService.assignUtmParametersAndSave(it, setOf(utmParameter))
+        }
+
         return utmParameterRepository.save(utmParameter)
     }
 
@@ -69,7 +78,18 @@ class UtmParameterServiceImpl : UtmParameterService {
         foundUtmParameter.parameterValue = utmParameter.parameterValue
         foundUtmParameter.redirects = utmParameter.redirects
 
-        return utmParameterRepository.save(foundUtmParameter)
+        return utmParameterService.assignRedirectsAndSave(foundUtmParameter, foundUtmParameter.redirects)
+    }
+
+    @Transactional
+    override fun assignRedirectsAndSave(utmParameter: UtmParameter, redirects: Set<Redirect>): UtmParameter {
+        utmParameter.redirects.addAll(redirects)
+
+        redirects.forEach {
+            it.utmParameters.add(utmParameter)
+        }
+
+        return utmParameterRepository.save(utmParameter)
     }
 
     @Transactional

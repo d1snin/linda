@@ -46,25 +46,6 @@ import java.io.File
 )
 internal class FriendlyAliasGeneratorTest {
 
-    private companion object {
-        private val friendlyAliases = FriendlyAliases(
-            setOf(VALID_STUB),
-            setOf(VALID_STUB)
-        )
-    }
-
-    // not using MockkBean due to the @PostConstruct usage
-    @TestConfiguration
-    internal class FriendlyAliasGeneratorTestConfiguration {
-
-        @Bean
-        internal fun objectMapper() = mockk<ObjectMapper> {
-            every {
-                readValue(any<File>(), FriendlyAliases::class.java)
-            } returns friendlyAliases
-        }
-    }
-
     @Autowired
     private lateinit var generator: FriendlyAliasGenerator
 
@@ -97,6 +78,25 @@ internal class FriendlyAliasGeneratorTest {
 
         verify {
             shortLinkService.doesAliasExist("v-v")
+        }
+    }
+
+    private companion object {
+        private val friendlyAliases = FriendlyAliases(
+            setOf(VALID_STUB),
+            setOf(VALID_STUB)
+        )
+    }
+
+    // not using MockkBean due to the @PostConstruct usage
+    @TestConfiguration
+    internal class FriendlyAliasGeneratorTestConfiguration {
+
+        @Bean
+        internal fun objectMapper() = mockk<ObjectMapper> {
+            every {
+                readValue(any<File>(), FriendlyAliases::class.java)
+            } returns friendlyAliases
         }
     }
 }

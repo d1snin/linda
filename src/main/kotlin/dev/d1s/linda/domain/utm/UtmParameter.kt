@@ -41,12 +41,7 @@ class UtmParameter(
     @CreationTimestamp
     var creationTime: Instant? = null
 
-    @ManyToMany(cascade = [CascadeType.ALL])
-    @JoinTable(
-        name = "redirect_utm",
-        joinColumns = [JoinColumn(name = "utm_id")],
-        inverseJoinColumns = [JoinColumn(name = "redirect_id")]
-    )
+    @ManyToMany(mappedBy = "utmParameters")
     var redirects: MutableSet<Redirect> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {

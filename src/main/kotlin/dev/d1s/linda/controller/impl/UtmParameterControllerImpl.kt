@@ -78,9 +78,9 @@ class UtmParameterControllerImpl : UtmParameterController {
     )
 
     @Secured
-    override fun create(creation: UtmParameterCreationDto): ResponseEntity<UtmParameterDto> {
+    override fun create(alteration: UtmParameterCreationDto): ResponseEntity<UtmParameterDto> {
         val utmParameter = utmParameterService.create(
-            utmParameterCreationDtoConverter.convertToEntity(creation)
+            this.utmParameterCreationDtoConverter.convertToEntity(alteration)
         ).toDto()
 
         publisher.publish(

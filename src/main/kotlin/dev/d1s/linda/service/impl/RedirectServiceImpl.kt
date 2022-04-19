@@ -47,24 +47,38 @@ class RedirectServiceImpl : RedirectService {
         }
 
     @Transactional
-    override fun create(redirect: Redirect): Redirect =
-        redirectRepository.save(redirect)
+    override fun create(redirect: Redirect): Redirect {
+        val utmParameters = redirect.utmParameters
+
+        return if (utmParameters.isEmpty()) {
+            redirectRepository.save(redirect)
+        } else {
+            redirectService.assignUtmParametersAndSave(redirect, utmParameters)
+        }
+    }
 
     @Transactional
     override fun update(id: String, redirect: Redirect): Redirect {
         val foundRedirect = redirectService.findById(id)
 
         foundRedirect.shortLink = redirect.shortLink
-        foundRedirect.utmParameters = redirect.utmParameters
 
-        return redirectRepository.save(foundRedirect)
+        val utmParameters = redirect.utmParameters
+
+        foundRedirect.utmParameters = utmParameters
+
+        return redirectService.assignUtmParametersAndSave(foundRedirect, utmParameters)
     }
 
     @Transactional
-    override fun assignUtmParameter(redirect: Redirect, utmParameter: UtmParameter) {
-        redirect.utmParameters.add(utmParameter)
-        utmParameter.redirects.add(redirect)
-        redirectRepository.save(redirect)
+    override fun assignUtmParametersAndSave(redirect: Redirect, utmParameters: Set<UtmParameter>): Redirect {
+        redirect.utmParameters.addAll(utmParameters)
+
+        utmParameters.forEach {
+            it.redirects.add(redirect)
+        }
+
+        return redirectRepository.save(redirect)
     }
 
     @Transactional

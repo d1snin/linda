@@ -20,9 +20,9 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class RedirectAlterationDto(
-    @field:NotBlank
+    @field:NotBlank(message = "shortLink must not be blank.")
     val shortLink: String,
 
-    @field:NotNull
+    @field:NotNull(message = "utmParameters field must not be null.")
     val utmParameters: Set<String>
 )

@@ -21,9 +21,9 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class UtmParameterCreationDto(
-    @field:NotNull
+    @field:NotNull(message = "type must not be null.")
     val type: UtmParameterType,
 
-    @field:NotBlank
-    val value: String
+    @field:NotBlank(message = "parameterValue must not be blank.")
+    val parameterValue: String,
 )

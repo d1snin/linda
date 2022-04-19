@@ -21,15 +21,18 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
 
 data class ShortLinkUpdateDto(
-    @field:Pattern(regexp = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;]*[-a-zA-Z\\d+&@#/%=~_|]")
+    @field:Pattern(
+        regexp = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;]*[-a-zA-Z\\d+&@#/%=~_|]",
+        message = "The provided URL must be valid."
+    )
     val url: String,
 
     // note: this is a hacky way to set custom alias.
     // This feature is not yet implemented:
     // https://github.com/linda-project/linda/issues/11
-    @field:NotBlank
+    @field:NotBlank(message = "aliasGeneratorId must not be blank.")
     val alias: String,
 
-    @field:NotNull
+    @field:NotNull(message = "redirects field must not be null.")
     val redirects: Set<String>
 )

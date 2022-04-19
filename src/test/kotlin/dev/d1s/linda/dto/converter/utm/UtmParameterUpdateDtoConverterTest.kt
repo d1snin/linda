@@ -53,7 +53,7 @@ internal class UtmParameterUpdateDtoConverterTest {
     }
 
     @Test
-    fun `should return valid converted utm parameter`() {
+    fun `should return valid entity`() {
         expectThat(
             utmParameterUpdateDtoConverter.convertToEntity(
                 UtmParameterUpdateDto(

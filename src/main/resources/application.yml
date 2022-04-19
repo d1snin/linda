@@ -1,4 +1,5 @@
 spring:
+  # Using deprecated property.
   profiles:
     active: "production"
 
@@ -21,10 +22,11 @@ spring:
 
   main:
     allow-circular-references: true
+    banner-mode: off
 
 springdoc:
   api-docs:
-    path: /docs-specifications
+    path: /specs
 
   swagger-ui:
     path: /docs

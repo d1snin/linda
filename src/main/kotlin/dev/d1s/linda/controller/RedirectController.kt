@@ -19,6 +19,14 @@ package dev.d1s.linda.controller
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.teabag.web.dto.ErrorDto
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.headers.Header
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -28,34 +36,152 @@ import javax.validation.Valid
 import javax.validation.constraints.NotBlank
 
 @Validated
+@Tag(name = "Redirects", description = "Find, create, update and delete Redirects.")
 interface RedirectController {
 
     @GetMapping(
         REDIRECTS_FIND_ALL_MAPPING,
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
+    @Operation(
+        summary = "Find all Redirects.",
+        description = "Answers with the entire list of available Redirect objects. Always returns 200."
+    )
     fun findAll(
-        @RequestParam page: Int?, @RequestParam size: Int?
+        @RequestParam @Parameter(description = "The page number.") page: Int?,
+        @RequestParam @Parameter(description = "The page size.") size: Int?
     ): ResponseEntity<Page<RedirectDto>>
 
     @GetMapping(REDIRECTS_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(
+        summary = "Find Redirect by ID.",
+        description = "Returns the Redirect object associated with the provided ID.",
+        responses = [
+            ApiResponse(
+                description = "Found Redirect.",
+                responseCode = "200",
+                content = [
+                    Content(
+                        schema = Schema(implementation = RedirectDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Requested Redirect was not found.",
+                responseCode = "404",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun findById(
-        @PathVariable @NotBlank identifier: String
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
     ): ResponseEntity<RedirectDto>
 
     @PostMapping(REDIRECTS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(
+        summary = "Create Redirect.",
+        description = "Creates the Redirect object.",
+        responses = [
+            ApiResponse(
+                description = "Created Redirect.",
+                responseCode = "201",
+                headers = [
+                    Header(name = "Location", description = "The location of newly created Redirect.")
+                ],
+                content = [
+                    Content(
+                        schema = Schema(implementation = RedirectDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Short link or one of UTM parameters was not found by the provided ID.",
+                responseCode = "404",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Request body is invalid.",
+                responseCode = "400",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun create(
         @RequestBody @Valid alteration: RedirectAlterationDto
     ): ResponseEntity<RedirectDto>
 
     @PutMapping(REDIRECTS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(
+        summary = "Update Redirect.",
+        description = "Completely updates the Redirect object found by the given ID.",
+        responses = [
+            ApiResponse(
+                description = "Updated the Redirect.",
+                responseCode = "200",
+                content = [
+                    Content(
+                        schema = Schema(implementation = RedirectDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Requested Redirect, Short link or one of UTM parameters was not found by the provided ID.",
+                responseCode = "404",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Request body is invalid.",
+                responseCode = "400",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun update(
-        @PathVariable @NotBlank identifier: String,
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
         @RequestBody @Valid alteration: RedirectAlterationDto
     ): ResponseEntity<RedirectDto>
 
-    @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING)
+    @Operation(
+        summary = "Delete Redirect.",
+        description = "Completely removes the Redirect object found by the provided ID.",
+        responses = [
+            ApiResponse(
+                description = "Deleted the Redirect.",
+                responseCode = "204"
+            ),
+            ApiResponse(
+                description = "Requested Redirect was not found.",
+                responseCode = "404",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun removeById(
-        @PathVariable @NotBlank identifier: String
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
     ): ResponseEntity<*>
 }

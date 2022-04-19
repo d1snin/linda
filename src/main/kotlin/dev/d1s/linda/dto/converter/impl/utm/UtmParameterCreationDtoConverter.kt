@@ -25,5 +25,8 @@ import org.springframework.stereotype.Component
 class UtmParameterCreationDtoConverter : DtoConverter<UtmParameterCreationDto, UtmParameter> {
 
     override fun convertToEntity(dto: UtmParameterCreationDto): UtmParameter =
-        UtmParameter(dto.type, dto.value)
+        UtmParameter(
+            dto.type,
+            dto.parameterValue
+        )
 }

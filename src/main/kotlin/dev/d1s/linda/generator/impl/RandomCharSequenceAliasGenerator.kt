@@ -27,10 +27,6 @@ class RandomCharSequenceAliasGenerator : AliasGenerator {
 
     override val identity = "random-char-sequence"
 
-    private companion object {
-        private const val INITIAL_LENGTH = 4
-    }
-
     @Autowired
     private lateinit var shortLinkService: ShortLinkService
 
@@ -68,5 +64,9 @@ class RandomCharSequenceAliasGenerator : AliasGenerator {
                 })
             }
         }
+    }
+
+    private companion object {
+        private const val INITIAL_LENGTH = 4
     }
 }

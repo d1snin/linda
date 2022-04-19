@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.dto.converter.utm
 
-import dev.d1s.linda.dto.converter.impl.utm.UtmParameterCreationDtoConverter
 import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.dto.converter.impl.utm.UtmParameterCreationDtoConverter
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.VALID_STUB
@@ -30,20 +30,22 @@ import strikt.assertions.isEqualTo
 
 @SpringBootTest
 @ContextConfiguration(classes = [UtmParameterCreationDtoConverter::class])
-class UtmParameterCreationDtoConverterTest {
+internal class UtmParameterCreationDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: UtmParameterCreationDtoConverter
+    private lateinit var utmParameterCreationDtoConverter: UtmParameterCreationDtoConverter
+
+    private val utmParameter = mockUtmParameter()
 
     @Test
-    fun `should convert to entity`() {
+    fun `should return valid converted utm parameter`() {
         expectThat(
-            converter.convertToEntity(
+            utmParameterCreationDtoConverter.convertToEntity(
                 UtmParameterCreationDto(
                     UtmParameterType.CAMPAIGN,
                     VALID_STUB
                 )
             )
-        ) isEqualTo mockUtmParameter()
+        ) isEqualTo utmParameter
     }
 }
