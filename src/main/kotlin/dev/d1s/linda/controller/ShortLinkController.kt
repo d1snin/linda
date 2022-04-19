@@ -169,12 +169,12 @@ interface ShortLinkController {
     @DeleteMapping(SHORT_LINKS_REMOVE_MAPPING)
     @Operation(
         summary = "Delete Short link.",
-        description = "Completely removes the Short link found by the provided. " +
+        description = "Completely removes the Short link object found by the provided ID. " +
                 "Note that this operation will remove all associated Redirects as well.",
         responses = [
             ApiResponse(
                 description = "Deleted the Short link.",
-                responseCode = "200"
+                responseCode = "204"
             ),
             ApiResponse(
                 description = "Requested Short link was not found.",

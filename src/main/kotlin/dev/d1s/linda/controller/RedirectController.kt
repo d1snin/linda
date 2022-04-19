@@ -164,11 +164,11 @@ interface RedirectController {
     @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING)
     @Operation(
         summary = "Delete Redirect.",
-        description = "Completely removes the Redirect found by the provided ID.",
+        description = "Completely removes the Redirect object found by the provided ID.",
         responses = [
             ApiResponse(
                 description = "Deleted the Redirect.",
-                responseCode = "200"
+                responseCode = "204"
             ),
             ApiResponse(
                 description = "Requested Redirect was not found.",
