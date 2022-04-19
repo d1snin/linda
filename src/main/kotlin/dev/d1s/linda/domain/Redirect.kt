@@ -38,7 +38,7 @@ class Redirect(
     @CreationTimestamp
     var creationTime: Instant? = null
 
-    @ManyToMany(mappedBy = "redirects")
+    @ManyToMany
     @JoinTable(
         name = "redirect_utm",
         joinColumns = [JoinColumn(name = "redirect_id")],

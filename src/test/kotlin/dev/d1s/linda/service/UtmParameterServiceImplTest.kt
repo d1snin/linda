@@ -99,7 +99,7 @@ internal class UtmParameterServiceImplTest {
         }
 
         every {
-            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
+            redirectService.assignUtmParametersAndSave(redirect, setOf(utmParameter))
         } returns redirect
     }
 
@@ -166,6 +166,20 @@ internal class UtmParameterServiceImplTest {
     }
 
     @Test
+    fun `should throw UtmParameterAlreadyExistsException`() {
+        assertThrows<UtmParameterAlreadyExistsException> {
+            utmParameterService.create(utmParameter)
+        }
+
+        verify {
+            utmParameterService.findByTypeAndValue(
+                UtmParameterType.CAMPAIGN,
+                VALID_STUB
+            )
+        }
+    }
+
+    @Test
     fun `should update utm parameter`() {
         expectThat(
             utmParameterService.update(
@@ -181,20 +195,6 @@ internal class UtmParameterServiceImplTest {
             type = UtmParameterType.TERM
             parameterValue = INVALID_STUB
             redirects = mutableSetOf()
-        }
-    }
-
-    @Test
-    fun `should throw UtmParameterAlreadyExistsException`() {
-        assertThrows<UtmParameterAlreadyExistsException> {
-            utmParameterService.create(utmParameter)
-        }
-
-        verify {
-            utmParameterService.findByTypeAndValue(
-                UtmParameterType.CAMPAIGN,
-                VALID_STUB
-            )
         }
     }
 

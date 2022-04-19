@@ -95,10 +95,6 @@ class BaseInterfaceControllerImplTest {
         every {
             redirectService.create(redirect)
         } returns redirect
-
-        every {
-            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
-        } returns redirect
     }
 
     @Test
@@ -108,8 +104,7 @@ class BaseInterfaceControllerImplTest {
         verifyAll {
             shortLinkService.find(byAlias(VALID_STUB))
             utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
-            redirectService.create(redirect)
-            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
+            redirectService.create(any())
         }
     }
 
@@ -125,8 +120,7 @@ class BaseInterfaceControllerImplTest {
             shortLinkService.find(byAlias(VALID_STUB))
             utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
             utmParameterService.create(utmParameter)
-            redirectService.create(redirect)
-            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
+            redirectService.create(any())
         }
     }
 

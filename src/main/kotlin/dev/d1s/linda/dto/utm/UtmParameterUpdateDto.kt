@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.service
+package dev.d1s.linda.dto.utm
 
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
-import java.util.*
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
-interface UtmParameterService {
+data class UtmParameterUpdateDto(
+    @field:NotNull
+    val type: UtmParameterType,
 
-    fun findAll(): Set<UtmParameter>
+    @field:NotBlank
+    val parameterValue: String,
 
-    fun findById(id: String): UtmParameter
-
-    fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
-
-    fun create(utmParameter: UtmParameter): UtmParameter
-
-    fun update(id: String, utmParameter: UtmParameter): UtmParameter
-
-    fun assignRedirectsAndSave(utmParameter: UtmParameter, redirects: Set<Redirect>): UtmParameter
-
-    fun removeById(id: String)
-}
+    @field:NotNull
+    val redirects: Set<String>
+)

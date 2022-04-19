@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.exception.impl.alreadyExists.UtmParameterAlreadyExistsException
@@ -63,7 +64,7 @@ class UtmParameterServiceImpl : UtmParameterService {
         }
 
         utmParameter.redirects.forEach {
-            redirectService.assignUtmParameterAndSave(it, utmParameter)
+            redirectService.assignUtmParametersAndSave(it, setOf(utmParameter))
         }
 
         return utmParameterRepository.save(utmParameter)
@@ -77,11 +78,18 @@ class UtmParameterServiceImpl : UtmParameterService {
         foundUtmParameter.parameterValue = utmParameter.parameterValue
         foundUtmParameter.redirects = utmParameter.redirects
 
-        foundUtmParameter.redirects.forEach {
-            redirectService.assignUtmParameterAndSave(it, utmParameter)
+        return utmParameterService.assignRedirectsAndSave(foundUtmParameter, foundUtmParameter.redirects)
+    }
+
+    @Transactional
+    override fun assignRedirectsAndSave(utmParameter: UtmParameter, redirects: Set<Redirect>): UtmParameter {
+        utmParameter.redirects.addAll(redirects)
+
+        redirects.forEach {
+            it.utmParameters.add(utmParameter)
         }
 
-        return utmParameterRepository.save(foundUtmParameter)
+        return utmParameterRepository.save(utmParameter)
     }
 
     @Transactional

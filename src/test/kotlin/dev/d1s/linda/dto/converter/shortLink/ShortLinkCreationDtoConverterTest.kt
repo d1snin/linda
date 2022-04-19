@@ -20,9 +20,7 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkCreationDtoConverter
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.service.AliasGeneratorService
-import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.testUtil.mockAliasGenerator
-import dev.d1s.linda.testUtil.mockRedirect
 import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
@@ -44,9 +42,6 @@ internal class ShortLinkCreationDtoConverterTest {
     private lateinit var converter: ShortLinkCreationDtoConverter
 
     @MockkBean
-    private lateinit var redirectService: RedirectService
-
-    @MockkBean
     private lateinit var aliasGeneratorService: AliasGeneratorService
 
     private val aliasGenerator = spyk(
@@ -55,14 +50,8 @@ internal class ShortLinkCreationDtoConverterTest {
 
     private val shortLink = mockShortLink()
 
-    private val redirect = mockRedirect()
-
     @BeforeEach
     fun setup() {
-        every {
-            redirectService.findById(VALID_STUB)
-        } returns redirect
-
         every {
             aliasGeneratorService.getAliasGenerator(VALID_STUB)
         } returns aliasGenerator
@@ -72,7 +61,7 @@ internal class ShortLinkCreationDtoConverterTest {
     fun `should convert to entity`() {
         expectThat(
             converter.convertToEntity(
-                ShortLinkCreationDto(VALID_STUB, setOf(VALID_STUB), VALID_STUB)
+                ShortLinkCreationDto(VALID_STUB, VALID_STUB)
             )
         ) isEqualTo shortLink
 

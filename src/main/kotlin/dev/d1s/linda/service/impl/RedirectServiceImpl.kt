@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.properties.Delegates
 
 @Service
 class RedirectServiceImpl : RedirectService {
@@ -49,38 +48,36 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional
     override fun create(redirect: Redirect): Redirect {
-        var result: Redirect by Delegates.notNull()
         val utmParameters = redirect.utmParameters
 
-        utmParameters.forEach {
-            result = redirectService.assignUtmParameterAndSave(redirect, it)
+        return if (utmParameters.isEmpty()) {
+            redirectRepository.save(redirect)
+        } else {
+            redirectService.assignUtmParametersAndSave(redirect, utmParameters)
         }
-
-        if (utmParameters.isEmpty()) {
-            result = redirectRepository.save(redirect)
-        }
-
-        return result
     }
 
     @Transactional
     override fun update(id: String, redirect: Redirect): Redirect {
-        var foundRedirect = redirectService.findById(id)
+        val foundRedirect = redirectService.findById(id)
 
         foundRedirect.shortLink = redirect.shortLink
-        foundRedirect.utmParameters = redirect.utmParameters
 
-        foundRedirect.utmParameters.forEach {
-            foundRedirect = redirectService.assignUtmParameterAndSave(foundRedirect, it)
-        }
+        val utmParameters = redirect.utmParameters
 
-        return foundRedirect
+        foundRedirect.utmParameters = utmParameters
+
+        return redirectService.assignUtmParametersAndSave(foundRedirect, utmParameters)
     }
 
     @Transactional
-    override fun assignUtmParameterAndSave(redirect: Redirect, utmParameter: UtmParameter): Redirect {
-        redirect.utmParameters.add(utmParameter)
-        utmParameter.redirects.add(redirect)
+    override fun assignUtmParametersAndSave(redirect: Redirect, utmParameters: Set<UtmParameter>): Redirect {
+        redirect.utmParameters.addAll(utmParameters)
+
+        utmParameters.forEach {
+            it.redirects.add(redirect)
+        }
+
         return redirectRepository.save(redirect)
     }
 

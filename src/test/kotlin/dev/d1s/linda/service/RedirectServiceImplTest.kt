@@ -27,7 +27,10 @@ import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.*
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.spyk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -118,7 +121,7 @@ internal class RedirectServiceImplTest {
         ) isEqualTo redirect
 
         verify {
-            redirectService.assignUtmParameterAndSave(redirect, mockUtmParameter(true))
+            redirectService.assignUtmParametersAndSave(redirect, setOf(mockUtmParameter(true)))
         }
     }
 
@@ -152,10 +155,14 @@ internal class RedirectServiceImplTest {
             shortLink = mockShortLink()
             utmParameters = mutableSetOf()
         }
+
+        verify {
+            redirectService.assignUtmParametersAndSave(redirect, setOf())
+        }
     }
 
     @Test
-    fun `should assign utm parameter to the redirect`() {
+    fun `should assign utm parameters to the redirect`() {
         val redirect = spyk(mockRedirect())
         val utmParameter = spyk(mockUtmParameter())
 
@@ -164,13 +171,13 @@ internal class RedirectServiceImplTest {
         } returns redirect
 
         expectThat(
-            redirectService.assignUtmParameterAndSave(redirect, utmParameter)
+            redirectService.assignUtmParametersAndSave(redirect, setOf(utmParameter))
         ) isEqualTo redirect
 
         expectThat(redirect.utmParameters).contains(utmParameter)
         expectThat(utmParameter.redirects).contains(redirect)
 
-        verifyAll {
+        verify {
             redirectRepository.save(redirect)
         }
     }

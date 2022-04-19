@@ -19,17 +19,12 @@ package dev.d1s.linda.dto.converter.impl.shortLink
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.service.AliasGeneratorService
-import dev.d1s.linda.service.RedirectService
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
 class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLink> {
-
-    @Autowired
-    private lateinit var redirectService: RedirectService
 
     @Autowired
     private lateinit var aliasGeneratorService: AliasGeneratorService
@@ -40,9 +35,5 @@ class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLi
             aliasGeneratorService
                 .getAliasGenerator(dto.aliasGeneratorId)
                 .generateAlias()
-        ).apply {
-            redirects = dto.redirects.mapToSet {
-                redirectService.findById(it)
-            }
-        }
+        )
 }

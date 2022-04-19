@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.utm
+package dev.d1s.linda.dto.converter.impl.utm
 
-import dev.d1s.linda.domain.utm.UtmParameterType
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.teabag.dto.DtoConverter
+import org.springframework.stereotype.Component
 
-data class UtmParameterAlterationDto(
-    @field:NotNull
-    val type: UtmParameterType,
+@Component
+class UtmParameterCreationDtoConverter : DtoConverter<UtmParameterCreationDto, UtmParameter> {
 
-    @field:NotBlank
-    val parameterValue: String,
-
-    @field:NotNull
-    val redirects: Set<String>
-)
+    override fun convertToEntity(dto: UtmParameterCreationDto): UtmParameter =
+        UtmParameter(
+            dto.type,
+            dto.parameterValue
+        )
+}

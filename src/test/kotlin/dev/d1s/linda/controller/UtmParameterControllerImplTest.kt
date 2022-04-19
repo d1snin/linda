@@ -24,8 +24,9 @@ import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
 import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
+import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.event.data.UtmParameterEventData
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.testConfiguration.LocalValidatorFactoryBeanConfiguration
@@ -70,7 +71,10 @@ internal class UtmParameterControllerImplTest {
     private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
 
     @MockkBean
-    private lateinit var utmParameterAlterationDtoConverter: DtoConverter<UtmParameterAlterationDto, UtmParameter>
+    private lateinit var utmParameterCreationDtoConverter: DtoConverter<UtmParameterCreationDto, UtmParameter>
+
+    @MockkBean
+    private lateinit var utmParameterUpdateDtoConverter: DtoConverter<UtmParameterUpdateDto, UtmParameter>
 
     @MockkBean(relaxed = true)
     private lateinit var publisher: AsyncLongPollingEventPublisher
@@ -86,7 +90,9 @@ internal class UtmParameterControllerImplTest {
 
     private val utmParametersDto = setOf(utmParameterDto)
 
-    private val utmParameterAlterationDto = mockUtmParameterAlterationDto()
+    private val utmParameterCreationDto = mockUtmParameterCreationDto()
+
+    private val utmParameterUpdateDto = mockUtmParameterUpdateDto()
 
     @BeforeEach
     fun setup() {
@@ -111,7 +117,11 @@ internal class UtmParameterControllerImplTest {
         } returns utmParameterDto
 
         every {
-            utmParameterAlterationDtoConverter.convertToEntity(utmParameterAlterationDto)
+            utmParameterCreationDtoConverter.convertToEntity(utmParameterCreationDto)
+        } returns utmParameter
+
+        every {
+            utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
         } returns utmParameter
 
         justRun {
@@ -165,7 +175,7 @@ internal class UtmParameterControllerImplTest {
     fun `should create utm parameter`() {
         mockMvc.post(UTM_PARAMETERS_CREATE_MAPPING) {
             contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(utmParameterAlterationDto)
+            content = objectMapper.writeValueAsString(utmParameterCreationDto)
         }.andExpect {
             status {
                 isCreated()
@@ -177,7 +187,7 @@ internal class UtmParameterControllerImplTest {
         }
 
         verifyAll {
-            utmParameterAlterationDtoConverter.convertToEntity(utmParameterAlterationDto)
+            utmParameterCreationDtoConverter.convertToEntity(utmParameterCreationDto)
             utmParameterService.create(utmParameter)
             utmParameterDtoConverter.convertToDto(utmParameter)
             publisher.publish(
@@ -192,7 +202,7 @@ internal class UtmParameterControllerImplTest {
     fun `should update utm parameter`() {
         mockMvc.put(UTM_PARAMETERS_UPDATE_MAPPING.setId()) {
             contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(utmParameterAlterationDto)
+            content = objectMapper.writeValueAsString(utmParameterUpdateDto)
         }.andExpect {
             status {
                 isOk()
@@ -204,7 +214,7 @@ internal class UtmParameterControllerImplTest {
         }
 
         verifyAll {
-            utmParameterAlterationDtoConverter.convertToEntity(utmParameterAlterationDto)
+            utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
             utmParameterService.update(VALID_STUB, utmParameter)
             utmParameterDtoConverter.convertToDto(utmParameter)
             publisher.publish(

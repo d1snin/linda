@@ -21,8 +21,9 @@ import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.controller.UtmParameterController
 import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
+import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.event.data.UtmParameterEventData
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
@@ -49,7 +50,10 @@ class UtmParameterControllerImpl : UtmParameterController {
     private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
 
     @Autowired
-    private lateinit var utmParameterAlterationDtoConverter: DtoConverter<UtmParameterAlterationDto, UtmParameter>
+    private lateinit var utmParameterCreationDtoConverter: DtoConverter<UtmParameterCreationDto, UtmParameter>
+
+    @Autowired
+    private lateinit var utmParameterUpdateDtoConverter: DtoConverter<UtmParameterUpdateDto, UtmParameter>
 
     @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
@@ -74,9 +78,9 @@ class UtmParameterControllerImpl : UtmParameterController {
     )
 
     @Secured
-    override fun create(alteration: UtmParameterAlterationDto): ResponseEntity<UtmParameterDto> {
+    override fun create(alteration: UtmParameterCreationDto): ResponseEntity<UtmParameterDto> {
         val utmParameter = utmParameterService.create(
-            this.utmParameterAlterationDtoConverter.convertToEntity(alteration)
+            this.utmParameterCreationDtoConverter.convertToEntity(alteration)
         ).toDto()
 
         publisher.publish(
@@ -95,11 +99,11 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Secured
     override fun update(
         identifier: String,
-        utmParameterAlterationDto: UtmParameterAlterationDto
+        utmParameterUpdateDto: UtmParameterUpdateDto
     ): ResponseEntity<UtmParameterDto> {
         val utmParameter = utmParameterService.update(
             identifier,
-            this.utmParameterAlterationDtoConverter.convertToEntity(utmParameterAlterationDto)
+            utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
         ).toDto()
 
         publisher.publish(
