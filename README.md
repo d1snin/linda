@@ -6,4 +6,5 @@
 [![total-lines](https://img.shields.io/tokei/lines/github/linda-project/linda?color=blue)](https://github.com/linda-project/linda)
 [![Java CI with Gradle](https://github.com/linda-project/linda/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/linda-project/linda/actions/workflows/gradle.yml)
 
-Redirecting service with UTM support. Work in progress.
+Redirecting service with UTM parameters support.
+ ## [*Documentation is available on GitBook!*](https://d1snin.gitbook.io/linda/)
