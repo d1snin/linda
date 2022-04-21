@@ -26,9 +26,7 @@ import org.springframework.stereotype.Component
 class DataAccessExceptionMapper : ExceptionMapper {
 
     override fun map(exception: Exception): ErrorResponseData? =
-        if (exception is DataAccessException) {
+        (exception as? DataAccessException)?.let {
             ErrorResponseData(HttpStatus.BAD_REQUEST, exception.message!!)
-        } else {
-            null
         }
 }
