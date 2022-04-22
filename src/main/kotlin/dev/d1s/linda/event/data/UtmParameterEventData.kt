@@ -19,5 +19,5 @@ package dev.d1s.linda.event.data
 import dev.d1s.linda.dto.utm.UtmParameterDto
 
 data class UtmParameterEventData(
-    val utmParameterDto: UtmParameterDto?
+    val utmParameter: UtmParameterDto?
 )
