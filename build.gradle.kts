@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "dev.d1s"
-version = "0.4.2.beta.0"
+version = "0.5.0-beta.0"
 
 repositories {
     mavenCentral()
