@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.controller.impl
 
+import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
@@ -33,7 +34,8 @@ import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
-import dev.d1s.teabag.web.appendUri
+import dev.d1s.teabag.web.buildFromCurrentRequest
+import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -59,6 +61,9 @@ class UtmParameterControllerImpl : UtmParameterController {
 
     @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @Autowired
+    private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     private val utmParameterDtoSetConverter by lazy {
         utmParameterDtoConverter.converterForSet()
@@ -101,7 +106,11 @@ class UtmParameterControllerImpl : UtmParameterController {
         )
 
         return created(
-            appendUri(utmParameter.id)
+            buildFromCurrentRequest {
+                configureSsl(sslConfigurationProperties.fallbackToHttps)
+                path("/${utmParameter.id}")
+                build().toUri()
+            }
         ).body(utmParameter)
     }
 

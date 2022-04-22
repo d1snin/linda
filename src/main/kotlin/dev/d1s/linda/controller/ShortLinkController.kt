@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Page
+import org.springframework.data.repository.query.Param
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -124,7 +125,11 @@ interface ShortLinkController {
         ]
     )
     fun create(
-        @RequestBody @Valid shortLinkCreationDto: ShortLinkCreationDto
+        @RequestBody @Valid shortLinkCreationDto: ShortLinkCreationDto,
+        // note that this parameter is only used for documentation purposes. 'custom' alias generator uses currentRequest to access the parameter.
+        @RequestParam(required = false)
+        @Param("Custom alias. Must be used together with the 'custom' alias generator.")
+        customAlias: String? = null
     ): ResponseEntity<ShortLinkDto>
 
     @PutMapping(SHORT_LINKS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])

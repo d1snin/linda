@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.controller.impl
 
+import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
@@ -33,7 +34,8 @@ import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
-import dev.d1s.teabag.web.appendUri
+import dev.d1s.teabag.web.buildFromCurrentRequest
+import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -59,6 +61,9 @@ class ShortLinkControllerImpl : ShortLinkController {
 
     @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @Autowired
+    private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     private val shortLinkDtoSetConverter by lazy {
         shortLinkDtoConverter.converterForSet()
@@ -86,8 +91,10 @@ class ShortLinkControllerImpl : ShortLinkController {
     )
 
     @Secured
-    override fun create(shortLinkCreationDto: ShortLinkCreationDto):
-            ResponseEntity<ShortLinkDto> {
+    override fun create(
+        shortLinkCreationDto: ShortLinkCreationDto,
+        customAlias: String?
+    ): ResponseEntity<ShortLinkDto> {
         val shortLink = shortLinkService.create(
             shortLinkCreationDtoConverter.convertToEntity(
                 shortLinkCreationDto
@@ -103,7 +110,11 @@ class ShortLinkControllerImpl : ShortLinkController {
         )
 
         return created(
-            appendUri(shortLink.id)
+            buildFromCurrentRequest {
+                configureSsl(sslConfigurationProperties.fallbackToHttps)
+                path("/${shortLink.id}")
+                build().toUri()
+            }
         ).body(shortLink)
     }
 

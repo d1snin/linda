@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.controller.impl
 
+import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
@@ -30,7 +31,8 @@ import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
-import dev.d1s.teabag.web.appendUri
+import dev.d1s.teabag.web.buildFromCurrentRequest
+import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -53,6 +55,9 @@ class RedirectControllerImpl : RedirectController {
 
     @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @Autowired
+    private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     private val redirectSetDtoConverter by lazy {
         redirectDtoConverter.converterForSet()
@@ -88,7 +93,11 @@ class RedirectControllerImpl : RedirectController {
         )
 
         return created(
-            appendUri(redirect.id)
+            buildFromCurrentRequest {
+                configureSsl(sslConfigurationProperties.fallbackToHttps)
+                path("/${redirect.id}")
+                build().toUri()
+            }
         ).body(redirect)
     }
 
