@@ -27,6 +27,7 @@ internal class UtmParameterMappingConstantsTest {
         expectThat(UTM_PARAMETERS_BASE_MAPPING) isEqualTo "/api/utmParameters"
         expectThat(UTM_PARAMETERS_FIND_ALL_MAPPING) isEqualTo "/api/utmParameters"
         expectThat(UTM_PARAMETERS_FIND_BY_ID_MAPPING) isEqualTo "/api/utmParameters/{identifier}"
+        expectThat(UTM_PARAMETERS_FIND_BY_TYPE_AND_VALUE_MAPPING) isEqualTo "/api/utmParameters/{type}/{value}"
         expectThat(UTM_PARAMETERS_CREATE_MAPPING) isEqualTo "/api/utmParameters"
         expectThat(UTM_PARAMETERS_REMOVE_BY_ID_MAPPING) isEqualTo "/api/utmParameters/{identifier}"
     }

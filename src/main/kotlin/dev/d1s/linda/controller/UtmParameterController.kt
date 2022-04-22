@@ -17,6 +17,7 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
+import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
@@ -75,13 +76,43 @@ interface UtmParameterController {
         ]
     )
     fun findById(
-        @PathVariable @NotBlank identifier: String
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
+    ): ResponseEntity<UtmParameterDto>
+
+    @GetMapping(UTM_PARAMETERS_FIND_BY_TYPE_AND_VALUE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(
+        summary = "Find UTM parameter by type and value.",
+        description = "Returns the UTM parameter object associated with the given type and value.",
+        responses = [
+            ApiResponse(
+                description = "Found UTM parameter.",
+                responseCode = "200",
+                content = [
+                    Content(
+                        schema = Schema(implementation = UtmParameterDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Requested UTM parameter was not found.",
+                responseCode = "404",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun findByTypeAndValue(
+        @PathVariable type: UtmParameterType,
+        @PathVariable @NotBlank(message = "UTM parameter value must not be blank.") value: String
     ): ResponseEntity<UtmParameterDto>
 
     @PostMapping(UTM_PARAMETERS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Create UTM parameter.",
-        description = "Creates the UTM parameter object.",
+        description = "Creates UTM parameter object.",
         responses = [
             ApiResponse(
                 description = "Created UTM parameter.",
@@ -154,7 +185,7 @@ interface UtmParameterController {
         ]
     )
     fun update(
-        @PathVariable @NotBlank identifier: String,
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
         @RequestBody @Valid utmParameterUpdateDto: UtmParameterUpdateDto
     ): ResponseEntity<UtmParameterDto>
 
@@ -179,6 +210,6 @@ interface UtmParameterController {
         ]
     )
     fun removeById(
-        @PathVariable @NotBlank identifier: String
+        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
     ): ResponseEntity<*>
 }

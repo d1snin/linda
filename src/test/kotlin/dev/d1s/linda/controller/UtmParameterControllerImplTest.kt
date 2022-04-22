@@ -24,6 +24,7 @@ import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
 import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
@@ -34,6 +35,7 @@ import dev.d1s.linda.testUtil.*
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.stdlib.text.replacePlaceholder
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
@@ -47,6 +49,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.*
+import java.util.*
 
 @ContextConfiguration(
     classes = [
@@ -103,6 +106,10 @@ internal class UtmParameterControllerImplTest {
         every {
             utmParameterService.findById(VALID_STUB)
         } returns utmParameter
+
+        every {
+            utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
+        } returns Optional.of(utmParameter)
 
         every {
             utmParameterService.create(utmParameter)
@@ -167,6 +174,28 @@ internal class UtmParameterControllerImplTest {
 
         verifyAll {
             utmParameterService.findById(VALID_STUB)
+            utmParameterDtoConverter.convertToDto(utmParameter)
+        }
+    }
+
+    @Test
+    fun `should find by type and value`() {
+        mockMvc.get(
+            UTM_PARAMETERS_FIND_BY_TYPE_AND_VALUE_MAPPING
+                .replacePlaceholder("type" to "CAMPAIGN")
+                .replacePlaceholder("value" to VALID_STUB)
+        ).andExpect {
+            status {
+                isOk()
+            }
+
+            content {
+                json(objectMapper.writeValueAsString(utmParameterDto))
+            }
+        }
+
+        verifyAll {
+            utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
             utmParameterDtoConverter.convertToDto(utmParameter)
         }
     }
