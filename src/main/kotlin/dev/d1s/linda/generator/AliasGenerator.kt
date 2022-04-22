@@ -16,9 +16,11 @@
 
 package dev.d1s.linda.generator
 
+import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
+
 interface AliasGenerator {
 
-    val identity: String
+    val identifier: String
 
-    fun generateAlias(): String
+    fun generateAlias(creation: ShortLinkCreationDto): String
 }

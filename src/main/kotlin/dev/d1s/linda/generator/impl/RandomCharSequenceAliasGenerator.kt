@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.generator.impl
 
+import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,12 +26,12 @@ import java.util.concurrent.ThreadLocalRandom
 @Component
 class RandomCharSequenceAliasGenerator : AliasGenerator {
 
-    override val identity = "random-char-sequence"
+    override val identifier = "random-char-sequence"
 
     @Autowired
     private lateinit var shortLinkService: ShortLinkService
 
-    override fun generateAlias(): String {
+    override fun generateAlias(creation: ShortLinkCreationDto): String {
         var length = INITIAL_LENGTH
         var aliasCandidate = this.getRandomCharSequence(length)
 

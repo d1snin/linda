@@ -34,6 +34,6 @@ class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLi
             dto.url,
             aliasGeneratorService
                 .getAliasGenerator(dto.aliasGeneratorId)
-                .generateAlias()
+                .generateAlias(dto)
         )
 }

@@ -18,6 +18,7 @@ package dev.d1s.linda.generator.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.d1s.linda.domain.alias.FriendlyAliases
+import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +29,7 @@ import javax.annotation.PostConstruct
 @Component
 class FriendlyAliasGenerator : AliasGenerator {
 
-    override val identity = "friendly"
+    override val identifier = "friendly"
 
     @Autowired
     private lateinit var resourceLoader: ResourceLoader
@@ -41,7 +42,7 @@ class FriendlyAliasGenerator : AliasGenerator {
 
     private lateinit var aliases: FriendlyAliases
 
-    override fun generateAlias(): String {
+    override fun generateAlias(creation: ShortLinkCreationDto): String {
         var adjectiveCandidate = aliases.adjectives.random()
 
         while (true) {

@@ -29,6 +29,6 @@ class AliasGeneratorServiceImpl : AliasGeneratorService {
     private lateinit var aliasGenerators: Set<AliasGenerator>
 
     override fun getAliasGenerator(identifier: String): AliasGenerator = aliasGenerators.firstOrNull {
-        it.identity == identifier
+        it.identifier == identifier
     } ?: throw AliasGeneratorNotFoundException
 }

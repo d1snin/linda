@@ -21,6 +21,7 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.domain.alias.FriendlyAliases
 import dev.d1s.linda.generator.impl.FriendlyAliasGenerator
 import dev.d1s.linda.service.ShortLinkService
+import dev.d1s.linda.testUtil.mockShortLinkCreationDto
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.mockk
@@ -59,6 +60,8 @@ internal class FriendlyAliasGeneratorTest {
     @MockkBean
     private lateinit var shortLinkService: ShortLinkService
 
+    private val shortLinkCreationDto = mockShortLinkCreationDto()
+
     @BeforeEach
     fun setup() {
         every {
@@ -73,7 +76,7 @@ internal class FriendlyAliasGeneratorTest {
     @Test
     fun `should return valid alias`() {
         expectThat(
-            generator.generateAlias()
+            generator.generateAlias(shortLinkCreationDto)
         ) isEqualTo "v-v"
 
         verify {
