@@ -21,10 +21,12 @@ import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.controller.UtmParameterController
 import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.event.data.UtmParameterEventData
+import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
@@ -75,6 +77,13 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Secured
     override fun findById(identifier: String): ResponseEntity<UtmParameterDto> = ok(
         utmParameterService.findById(identifier).toDto()
+    )
+
+    @Secured
+    override fun findByTypeAndValue(type: UtmParameterType, value: String): ResponseEntity<UtmParameterDto> = ok(
+        utmParameterService.findByTypeAndValue(type, value).orElseThrow {
+            UtmParameterNotFoundException
+        }.toDto()
     )
 
     @Secured
