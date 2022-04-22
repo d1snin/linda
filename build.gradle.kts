@@ -48,7 +48,6 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.h2database:h2")
     testImplementation("io.strikt:strikt-jvm:$striktVersion")
     testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
