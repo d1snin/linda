@@ -45,7 +45,7 @@ internal class AliasGeneratorServiceImplTest {
     @BeforeEach
     fun setup() {
         every {
-            aliasGenerator.identity
+            aliasGenerator.identifier
         } returns VALID_STUB
     }
 

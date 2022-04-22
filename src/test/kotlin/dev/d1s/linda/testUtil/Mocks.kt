@@ -149,8 +149,8 @@ internal fun <D : Any, E : Any> withStaticMocks(
 }
 
 internal fun mockAliasGenerator() = object : AliasGenerator {
-    override val identity = VALID_STUB
-    override fun generateAlias() = VALID_STUB
+    override val identifier = VALID_STUB
+    override fun generateAlias(creation: ShortLinkCreationDto): String = VALID_STUB
 }
 
 internal fun mockUtmParameter(configure: Boolean = false) = UtmParameter(

@@ -17,7 +17,7 @@
 package dev.d1s.linda.generator
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.generator.impl.RandomCharSequenceAliasGenerator
+import dev.d1s.linda.generator.impl.Crc32AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.testUtil.mockShortLinkCreationDto
 import io.mockk.every
@@ -29,14 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import strikt.api.expectThat
-import strikt.assertions.isGreaterThanOrEqualTo
+import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [RandomCharSequenceAliasGenerator::class])
-internal class RandomCharSequenceAliasGeneratorTest {
+@ContextConfiguration(classes = [Crc32AliasGenerator::class])
+internal class Crc32AliasGeneratorTest {
 
     @Autowired
-    private lateinit var generator: RandomCharSequenceAliasGenerator
+    private lateinit var generator: Crc32AliasGenerator
 
     @MockkBean
     private lateinit var shortLinkService: ShortLinkService
@@ -51,14 +51,14 @@ internal class RandomCharSequenceAliasGeneratorTest {
     }
 
     @Test
-    fun `should return alias which is greater than or equal to 4 characters in length`() {
+    fun `should return valid alias which length is equal to 8`() {
         val alias = assertDoesNotThrow {
             generator.generateAlias(shortLinkCreationDto)
         }
 
         expectThat(
             alias.length
-        ).isGreaterThanOrEqualTo(4)
+        ).isEqualTo(8)
 
         verify {
             shortLinkService.doesAliasExist(alias)
