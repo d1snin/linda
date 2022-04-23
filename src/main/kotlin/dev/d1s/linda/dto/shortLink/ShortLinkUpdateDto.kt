@@ -27,9 +27,6 @@ data class ShortLinkUpdateDto(
     )
     val url: String,
 
-    // note: this is a hacky way to set custom alias.
-    // This feature is not yet implemented:
-    // https://github.com/linda-project/linda/issues/11
     @field:NotBlank(message = "aliasGeneratorId must not be blank.")
     val alias: String,
 
