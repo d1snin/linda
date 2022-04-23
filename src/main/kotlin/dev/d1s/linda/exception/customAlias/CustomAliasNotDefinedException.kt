@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus
 
 object CustomAliasNotDefinedException : HttpStatusException(
     ErrorResponseData(
-        HttpStatus.UNPROCESSABLE_ENTITY,
+        HttpStatus.BAD_REQUEST,
         "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
     )
 )

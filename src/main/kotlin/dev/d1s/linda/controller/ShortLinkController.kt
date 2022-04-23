@@ -156,8 +156,20 @@ interface ShortLinkController {
                 ]
             ),
             ApiResponse(
-                description = "Short link with the same alias already exists or the request body is invalid.",
+                description = "The request body is invalid. " +
+                        "Or in case if you use 'custom' alias generator: " +
+                        "'customAlias' request parameter is not defined or 'customAlias' parameter value is empty.",
                 responseCode = "400",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "The provided alias already exists with the same name. " +
+                        "This happens only in case if you use 'custom' alias generator.",
+                responseCode = "422",
                 content = [
                     Content(
                         schema = Schema(implementation = ErrorDto::class)
