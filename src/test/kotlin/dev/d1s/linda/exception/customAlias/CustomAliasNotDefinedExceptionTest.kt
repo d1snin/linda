@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.impl
+package dev.d1s.linda.exception.customAlias
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import org.springframework.http.HttpStatus
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-object CustomAliasNotDefinedException : HttpStatusException(
-    ErrorResponseData(
-        HttpStatus.UNPROCESSABLE_ENTITY,
-        "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
-    )
-)
+internal class CustomAliasNotDefinedExceptionTest {
+
+    @Test
+    fun `should return valid exception message`() {
+        expectThat(
+            CustomAliasNotDefinedException.message
+        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
+    }
+}

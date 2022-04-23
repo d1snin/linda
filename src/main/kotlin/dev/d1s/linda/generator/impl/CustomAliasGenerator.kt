@@ -16,8 +16,10 @@
 
 package dev.d1s.linda.generator.impl
 
+import dev.d1s.linda.constant.parameter.CUSTOM_ALIAS_PARAMETER
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
-import dev.d1s.linda.exception.impl.CustomAliasNotDefinedException
+import dev.d1s.linda.exception.customAlias.CustomAliasNotDefinedException
+import dev.d1s.linda.exception.customAlias.EmptyCustomAliasException
 import dev.d1s.linda.exception.impl.alreadyExists.AliasAlreadyExistsException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
@@ -34,8 +36,12 @@ class CustomAliasGenerator : AliasGenerator {
     private lateinit var shortLinkService: ShortLinkService
 
     override fun generateAlias(creation: ShortLinkCreationDto): String {
-        val customAlias = currentRequest.getParameter("customAlias")
+        val customAlias = currentRequest.getParameter(CUSTOM_ALIAS_PARAMETER)
             ?: throw CustomAliasNotDefinedException
+
+        if (customAlias.isEmpty()) {
+            throw EmptyCustomAliasException
+        }
 
         if (shortLinkService.doesAliasExist(customAlias)) {
             throw AliasAlreadyExistsException
