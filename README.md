@@ -7,4 +7,4 @@
 [![Java CI with Gradle](https://github.com/linda-project/linda/actions/workflows/gradle.yml/badge.svg?branch=main)](https://github.com/linda-project/linda/actions/workflows/gradle.yml)
 
 Redirecting service with UTM parameters support.
- ## [*Documentation is available on GitBook!*](https://d1snin.gitbook.io/linda/)
+ ## [*Documentation is available on GitBook!*](https://linda.d1s.dev/)
