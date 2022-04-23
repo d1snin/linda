@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.exception.impl.customAlias
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
 import org.springframework.http.HttpStatus
 
-object EmptyCustomAliasException : HttpStatusException(
-    ErrorResponseData(HttpStatus.BAD_REQUEST, "Alias must not be empty.")
+object CustomAliasNotDefinedException : HttpStatusException(
+    ErrorResponseData(
+        HttpStatus.BAD_REQUEST,
+        "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
+    )
 )
