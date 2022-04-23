@@ -18,6 +18,7 @@ package dev.d1s.linda.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
+import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
@@ -79,6 +80,10 @@ internal class ShortLinkControllerImplTest {
 
     @MockkBean(relaxed = true)
     private lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @Suppress("unused")
+    @MockkBean(relaxed = true)
+    private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     @Autowired
     private lateinit var objectMapper: ObjectMapper

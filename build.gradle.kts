@@ -50,6 +50,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.strikt:strikt-jvm:$striktVersion")
     testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
+    testImplementation("dev.d1s.teabags:teabag-testing-spring-web:$teabagsVersion")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 }
 
