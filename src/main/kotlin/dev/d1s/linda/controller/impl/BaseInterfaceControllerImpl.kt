@@ -16,16 +16,8 @@
 
 package dev.d1s.linda.controller.impl
 
-import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
 import dev.d1s.linda.controller.BaseInterfaceController
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
-import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.service.UtmParameterService
-import dev.d1s.linda.strategy.shortLink.byAlias
+import dev.d1s.linda.service.BaseInterfaceService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Controller
@@ -36,16 +28,7 @@ import org.springframework.web.servlet.view.RedirectView
 class BaseInterfaceControllerImpl : BaseInterfaceController {
 
     @Autowired
-    private lateinit var shortLinkService: ShortLinkService
-
-    @Autowired
-    private lateinit var redirectService: RedirectService
-
-    @Autowired
-    private lateinit var utmParameterService: UtmParameterService
-
-    @Autowired
-    private lateinit var properties: BaseInterfaceConfigurationProperties
+    private lateinit var baseInterfaceService: BaseInterfaceService
 
     override fun redirect(
         alias: String,
@@ -54,43 +37,7 @@ class BaseInterfaceControllerImpl : BaseInterfaceController {
         utmCampaign: String?,
         utmTerm: String?,
         utmContent: String?
-    ): RedirectView {
-        val shortLink = shortLinkService.find(byAlias(alias))
-
-        val utmParameters = buildSet {
-            mapOf(
-                UtmParameterType.SOURCE to utmSource,
-                UtmParameterType.MEDIUM to utmMedium,
-                UtmParameterType.CAMPAIGN to utmCampaign,
-                UtmParameterType.TERM to utmTerm,
-                UtmParameterType.CONTENT to utmContent
-            ).forEach {
-                it.value?.let { value ->
-                    val utmParameter = utmParameterService.findByTypeAndValue(it.key, value)
-
-                    if (utmParameter.isPresent) {
-                        add(utmParameter.get())
-                    } else {
-                        if (properties.automaticUtmCreation) {
-                            add(
-                                utmParameterService.create(
-                                    UtmParameter(it.key, value)
-                                )
-                            )
-                        } else {
-                            throw UtmParameterNotFoundException
-                        }
-                    }
-                }
-            }
-        }
-
-        redirectService.create(
-            Redirect(shortLink).apply {
-                this.utmParameters = utmParameters.toMutableSet()
-            }
-        )
-
-        return RedirectView(shortLink.url)
-    }
+    ): RedirectView = baseInterfaceService.createRedirectView(
+        alias, utmSource, utmMedium, utmCampaign, utmTerm, utmContent
+    )
 }
