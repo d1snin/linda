@@ -31,5 +31,8 @@ data class ShortLinkUpdateDto(
     val alias: String,
 
     @field:NotNull(message = "redirects field must not be null.")
-    val redirects: Set<String>
+    val redirects: Set<String>,
+
+    @field:NotNull(message = "availabilityChanges field must not be null.")
+    val availabilityChanges: Set<String>
 )

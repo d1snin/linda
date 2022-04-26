@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.exception.impl.notFound
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.exception.DomainNotFoundException
 
-internal class CustomAliasNotDefinedExceptionTest {
-
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(
-            CustomAliasNotDefinedException.message
-        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
-    }
-}
+object AvailabilityChangeNotFoundException : DomainNotFoundException(
+    "Requested availability change was not found."
+)

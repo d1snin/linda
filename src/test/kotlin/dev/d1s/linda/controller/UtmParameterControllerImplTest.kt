@@ -145,8 +145,7 @@ internal class UtmParameterControllerImplTest {
     fun `should find all utm parameters`() {
         withStaticMocks(utmParameterDtoConverter, utmParametersDto, utmParameters) { page, converter ->
             mockMvc.get(UTM_PARAMETERS_FIND_ALL_MAPPING) {
-                param("page", "0")
-                param("size", "0")
+                setPagination()
             }.andExpect {
                 status {
                     isOk()

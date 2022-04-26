@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.converter.impl.shortLink
+package dev.d1s.linda.dto.converter.impl.availability
 
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.domain.availability.AvailabilityChange
+import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
-import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
 
 @Component
-class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
+class AvailabilityChangeDtoConverter : DtoConverter<AvailabilityChangeDto, AvailabilityChange> {
 
-    override fun convertToDto(entity: ShortLink): ShortLinkDto =
-        ShortLinkDto(
-            entity.id.checkNotNull("id"),
-            entity.url,
-            entity.alias,
-            entity.creationTime.checkNotNull("creation time"),
-            entity.redirects.mapToSet {
-                it.id.checkNotNull("redirect id")
-            },
-            entity.availabilityChanges.mapToSet {
-                it.id.checkNotNull("availability change's id")
-            }
-        )
+    override fun convertToDto(entity: AvailabilityChange): AvailabilityChangeDto = AvailabilityChangeDto(
+        entity.id.checkNotNull("id"),
+        entity.shortLink.id.checkNotNull("short link's id"),
+        entity.available,
+        entity.unavailabilityReason,
+        entity.creationTime.checkNotNull("creation time")
+    )
 }

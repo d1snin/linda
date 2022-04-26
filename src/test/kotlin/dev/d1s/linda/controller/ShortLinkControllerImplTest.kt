@@ -144,8 +144,7 @@ internal class ShortLinkControllerImplTest {
     fun `should find all short links`() {
         withStaticMocks(shortLinkDtoConverter, shortLinksDto, shortLinks) { page, converter ->
             mockMvc.get(SHORT_LINKS_FIND_ALL_MAPPING) {
-                param("page", "0")
-                param("size", "0")
+                setPagination()
             }.andExpect {
                 status {
                     isOk()

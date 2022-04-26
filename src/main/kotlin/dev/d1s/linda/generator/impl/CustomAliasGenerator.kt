@@ -18,8 +18,8 @@ package dev.d1s.linda.generator.impl
 
 import dev.d1s.linda.constant.parameter.CUSTOM_ALIAS_PARAMETER
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
-import dev.d1s.linda.exception.customAlias.CustomAliasNotDefinedException
-import dev.d1s.linda.exception.customAlias.EmptyCustomAliasException
+import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
+import dev.d1s.linda.exception.impl.customAlias.EmptyCustomAliasException
 import dev.d1s.linda.exception.impl.alreadyExists.AliasAlreadyExistsException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService

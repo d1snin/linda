@@ -23,5 +23,6 @@ data class ShortLinkDto(
     val url: String,
     val alias: String,
     val creationTime: Instant,
-    val redirects: Set<String>
+    val redirects: Set<String>,
+    val availabilityChanges: Set<String>
 )

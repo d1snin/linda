@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.repository
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.domain.availability.AvailabilityChange
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.stereotype.Repository
+import java.util.*
 
-internal class CustomAliasNotDefinedExceptionTest {
+@Repository
+interface AvailabilityChangeRepository : JpaRepository<AvailabilityChange, String> {
 
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(
-            CustomAliasNotDefinedException.message
-        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
-    }
+    @Query(
+        nativeQuery = true,
+        value = "select * from availability_change where short_link_id = ? order by creation_time desc limit 1"
+    )
+    fun findLast(shortLinkId: String): Optional<AvailabilityChange>
 }

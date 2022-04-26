@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.constant.mapping.api
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
-
-internal class CustomAliasNotDefinedExceptionTest {
-
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(
-            CustomAliasNotDefinedException.message
-        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
-    }
-}
+const val AVAILABILITY_CHANGES_BASE_MAPPING = "$API_BASE_MAPPING/availabilityChanges"
+const val AVAILABILITY_CHANGES_FIND_ALL_MAPPING = AVAILABILITY_CHANGES_BASE_MAPPING
+const val AVAILABILITY_CHANGES_FIND_BY_ID_MAPPING = "$AVAILABILITY_CHANGES_BASE_MAPPING/{identifier}"
+const val AVAILABILITY_CHANGES_TRIGGER_CHECKS = AVAILABILITY_CHANGES_BASE_MAPPING
+const val AVAILABILITY_CHANGES_REMOVE_BY_ID_MAPPING = "$AVAILABILITY_CHANGES_BASE_MAPPING/{identifier}"

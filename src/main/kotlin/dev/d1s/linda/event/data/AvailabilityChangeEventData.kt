@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.event.data
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import org.springframework.http.HttpStatus
+import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 
-object EmptyCustomAliasException : HttpStatusException(
-    ErrorResponseData(HttpStatus.BAD_REQUEST, "Alias must not be empty.")
+data class AvailabilityChangeEventData(
+    val availabilityChange: AvailabilityChangeDto?
 )

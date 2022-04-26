@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.constant.lp
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-internal class CustomAliasNotDefinedExceptionTest {
+internal class AvailabilityChangeLongPollingConstantsTest {
 
     @Test
-    fun `should return valid exception message`() {
-        expectThat(
-            CustomAliasNotDefinedException.message
-        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
+    fun `should return valid event groups`() {
+        expectThat(AVAILABILITY_CHANGE_CREATED_GROUP) isEqualTo
+                "availability-change-created"
+
+        expectThat(AVAILABILITY_CHANGE_REMOVED_GROUP) isEqualTo
+                "availability-change-removed"
     }
 }

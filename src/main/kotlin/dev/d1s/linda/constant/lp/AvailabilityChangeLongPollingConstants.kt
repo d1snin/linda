@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.constant.lp
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import org.springframework.http.HttpStatus
-
-object CustomAliasNotDefinedException : HttpStatusException(
-    ErrorResponseData(
-        HttpStatus.BAD_REQUEST,
-        "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
-    )
-)
+const val AVAILABILITY_CHANGE_CREATED_GROUP = "availability-change-created"
+const val AVAILABILITY_CHANGE_REMOVED_GROUP = "availability-change-removed"

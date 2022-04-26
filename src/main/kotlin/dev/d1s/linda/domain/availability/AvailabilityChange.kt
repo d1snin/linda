@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.domain.availability
 
-import dev.d1s.linda.domain.availability.AvailabilityChange
-import org.hibernate.annotations.CreationTimestamp
+import dev.d1s.linda.domain.ShortLink
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import javax.persistence.*
 
 @Entity
-@Table(name = "short_link")
-class ShortLink(
-    @Column(nullable = false)
-    var url: String,
+@Table(name = "availability_change")
+class AvailabilityChange(
+    @ManyToOne(cascade = [CascadeType.MERGE])
+    var shortLink: ShortLink,
 
-    @Column(nullable = false, unique = true)
-    var alias: String
+    @Column(nullable = false)
+    var available: Boolean,
+
+    @Column
+    var unavailabilityReason: UnavailabilityReason?
 ) {
     @Id
     @Column
@@ -38,35 +40,39 @@ class ShortLink(
     var id: String? = null
 
     @Column
-    @CreationTimestamp
     var creationTime: Instant? = null
 
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    var redirects: Set<Redirect> = setOf()
-
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    var availabilityChanges: Set<AvailabilityChange> = setOf()
+    // I have no ANY idea why the hell creationTime is null after saving, so I just use @PrePersist
+    @PrePersist
+    fun setCreationTime() {
+        creationTime = Instant.now()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ShortLink) return false
+        if (javaClass != other?.javaClass) return false
 
-        if (url != other.url) return false
-        if (alias != other.alias) return false
+        other as AvailabilityChange
+
+        if (shortLink != other.shortLink) return false
+        if (available != other.available) return false
+        if (unavailabilityReason != other.unavailabilityReason) return false
         if (id != other.id) return false
         if (creationTime != other.creationTime) return false
+
         return true
     }
 
     override fun hashCode(): Int {
-        var result = url.hashCode()
-        result = 31 * result + alias.hashCode()
+        var result = shortLink.hashCode()
+        result = 31 * result + available.hashCode()
+        result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
         result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + (creationTime?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "ShortLink(url='$url', alias='$alias', id=$id, creationTime=$creationTime, redirects=$redirects)"
+        return "AvailabilityChange(shortLink=$shortLink, available=$available, unavailabilityReason=$unavailabilityReason, id=$id, creationTime=$creationTime)"
     }
 }

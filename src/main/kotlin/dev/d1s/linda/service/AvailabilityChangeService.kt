@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.service
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.domain.availability.AvailabilityChange
 
-internal class CustomAliasNotDefinedExceptionTest {
+interface AvailabilityChangeService {
 
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(
-            CustomAliasNotDefinedException.message
-        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
-    }
+    fun findAll(): Set<AvailabilityChange>
+
+    fun findById(id: String): AvailabilityChange
+
+    fun findLast(shortLinkId: String): AvailabilityChange?
+
+    fun create(availability: AvailabilityChange): AvailabilityChange
+
+    fun removeById(id: String)
+
+    fun checkAvailability(shortLink: ShortLink): AvailabilityChange?
+
+    fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange?>
 }

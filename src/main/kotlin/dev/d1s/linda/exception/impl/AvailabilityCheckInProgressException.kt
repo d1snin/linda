@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.exception.impl
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-internal class CustomAliasNotDefinedExceptionTest {
-
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(
-            CustomAliasNotDefinedException.message
-        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
-    }
-}
+object AvailabilityCheckInProgressException : HttpStatusException(
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, "Availability check is already in progress.")
+)

@@ -121,8 +121,7 @@ internal class RedirectControllerImplTest {
     fun `should return all redirects`() {
         withStaticMocks(redirectDtoConverter, redirectsDto, redirects) { page, converter ->
             mockMvc.get(REDIRECTS_FIND_ALL_MAPPING) {
-                param("page", "0")
-                param("size", "0")
+                setPagination()
             }.andExpect {
                 status {
                     isOk()

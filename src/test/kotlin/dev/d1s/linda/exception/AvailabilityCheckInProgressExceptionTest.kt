@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias
+package dev.d1s.linda.exception
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
+import dev.d1s.linda.exception.impl.AvailabilityCheckInProgressException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-internal class CustomAliasNotDefinedExceptionTest {
+internal class AvailabilityCheckInProgressExceptionTest {
 
     @Test
     fun `should return valid exception message`() {
-        expectThat(
-            CustomAliasNotDefinedException.message
-        ) isEqualTo "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
+        expectThat(AvailabilityCheckInProgressException.message!!) isEqualTo
+                "Availability check is already in progress."
     }
 }

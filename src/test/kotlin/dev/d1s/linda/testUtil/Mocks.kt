@@ -18,8 +18,10 @@ package dev.d1s.linda.testUtil
 
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
@@ -39,10 +41,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import org.springframework.data.domain.Page
+import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 import java.time.Instant
 
 // used to prevent stack overflow
 private val configuredMockRedirect: Redirect = mockRedirect(true)
+private val configuredMockAvailabilityChange = mockAvailabilityChange()
 
 internal fun mockShortLink(configure: Boolean = false): ShortLink = ShortLink(
     VALID_STUB,
@@ -54,6 +58,9 @@ internal fun mockShortLink(configure: Boolean = false): ShortLink = ShortLink(
         redirects = setOf(
             configuredMockRedirect
         )
+        availabilityChanges = setOf(
+            configuredMockAvailabilityChange
+        )
     }
 }
 
@@ -62,6 +69,7 @@ internal fun mockShortLinkDto() = ShortLinkDto(
     VALID_STUB,
     VALID_STUB,
     Instant.EPOCH,
+    setOf(VALID_STUB),
     setOf(VALID_STUB)
 )
 
@@ -76,6 +84,7 @@ internal fun mockShortLinkCreationDto() = ShortLinkCreationDto(
 internal fun mockShortLinkUpdateDto() = ShortLinkUpdateDto(
     VALID_STUB,
     VALID_STUB,
+    setOf(VALID_STUB),
     setOf(VALID_STUB)
 )
 
@@ -94,6 +103,25 @@ internal fun mockRedirectDto() = RedirectDto(
     VALID_STUB,
     Instant.EPOCH,
     setOf(VALID_STUB)
+)
+
+internal fun mockAvailabilityChange(configure: Boolean = true) = AvailabilityChange(
+    mockShortLink(true),
+    true,
+    null
+).apply {
+    if (configure) {
+        id = VALID_STUB
+        creationTime = Instant.EPOCH
+    }
+}
+
+internal fun mockAvailabilityChangeDto() = AvailabilityChangeDto(
+    VALID_STUB,
+    VALID_STUB,
+    true,
+    null,
+    Instant.EPOCH
 )
 
 internal fun <D : Any, E : Any> mockDtoSetConverterFacade(
@@ -187,3 +215,8 @@ internal fun mockRedirectAlterationDto() = RedirectAlterationDto(
     VALID_STUB,
     setOf(VALID_STUB)
 )
+
+internal fun MockHttpServletRequestDsl.setPagination() {
+    param("page", "0")
+    param("size", "0")
+}
