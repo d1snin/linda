@@ -17,34 +17,21 @@
 package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
 import dev.d1s.linda.constant.utm.UTM_CAMPAIGN
 import dev.d1s.linda.controller.impl.BaseInterfaceControllerImpl
-import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
-import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.service.UtmParameterService
-import dev.d1s.linda.strategy.shortLink.byAlias
-import dev.d1s.linda.testUtil.mockRedirect
-import dev.d1s.linda.testUtil.mockShortLink
-import dev.d1s.linda.testUtil.mockUtmParameter
+import dev.d1s.linda.service.BaseInterfaceService
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
-import io.mockk.verifyAll
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
-import org.springframework.web.util.NestedServletException
-import strikt.api.expectThat
-import strikt.assertions.isA
-import java.util.*
+import org.springframework.web.servlet.view.RedirectView
 
 @ContextConfiguration(classes = [BaseInterfaceControllerImpl::class])
 @WebMvcTest(
@@ -57,91 +44,24 @@ class BaseInterfaceControllerImplTest {
     private lateinit var mockMvc: MockMvc
 
     @MockkBean
-    private lateinit var shortLinkService: ShortLinkService
-
-    @MockkBean
-    private lateinit var redirectService: RedirectService
-
-    @MockkBean
-    private lateinit var utmParameterService: UtmParameterService
-
-    @MockkBean
-    private lateinit var properties: BaseInterfaceConfigurationProperties
-
-    private val shortLink = mockShortLink(true)
-
-    private val utmParameter = mockUtmParameter()
-
-    private val redirect = mockRedirect()
+    private lateinit var baseInterfaceService: BaseInterfaceService
 
     @BeforeEach
     fun setup() {
         every {
-            shortLinkService.find(byAlias(VALID_STUB))
-        } returns shortLink
-
-        every {
-            utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
-        } returns Optional.of(utmParameter)
-
-        every {
-            properties.automaticUtmCreation
-        } returns true
-
-        every {
-            utmParameterService.create(utmParameter)
-        } returns utmParameter
-
-        every {
-            redirectService.create(redirect)
-        } returns redirect
+            baseInterfaceService.createRedirectView(
+                VALID_STUB,
+                null,
+                null,
+                VALID_STUB,
+                null,
+                null
+            )
+        } returns RedirectView(VALID_STUB)
     }
 
     @Test
     fun `should perform redirect`() {
-        this.performRedirect()
-
-        verifyAll {
-            shortLinkService.find(byAlias(VALID_STUB))
-            utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
-            redirectService.create(any())
-        }
-    }
-
-    @Test
-    fun `should perform redirect and create utm parameter`() {
-        every {
-            utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
-        } returns Optional.empty()
-
-        this.performRedirect()
-
-        verifyAll {
-            shortLinkService.find(byAlias(VALID_STUB))
-            utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
-            utmParameterService.create(utmParameter)
-            redirectService.create(any())
-        }
-    }
-
-    @Test
-    fun `should throw UtmParameterNotFoundException`() {
-        every {
-            utmParameterService.findByTypeAndValue(UtmParameterType.CAMPAIGN, VALID_STUB)
-        } returns Optional.empty()
-
-        every {
-            properties.automaticUtmCreation
-        } returns false
-
-        val exception = assertThrows<NestedServletException> {
-            this.performRedirect()
-        }
-
-        expectThat(exception.rootCause).isA<UtmParameterNotFoundException>()
-    }
-
-    private fun performRedirect() {
         mockMvc.get("/$VALID_STUB") {
             param(UTM_CAMPAIGN, VALID_STUB)
         }.andExpect {
@@ -150,6 +70,17 @@ class BaseInterfaceControllerImplTest {
             }
 
             redirectedUrl(VALID_STUB)
+        }
+
+        verify {
+            baseInterfaceService.createRedirectView(
+                VALID_STUB,
+                null,
+                null,
+                VALID_STUB,
+                null,
+                null
+            )
         }
     }
 }
