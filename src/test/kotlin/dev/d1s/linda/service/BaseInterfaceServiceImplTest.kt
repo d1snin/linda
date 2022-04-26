@@ -27,6 +27,7 @@ import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockUtmParameter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
+import io.mockk.slot
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,6 +39,7 @@ import org.springframework.web.servlet.view.RedirectView
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 import java.util.*
+import java.util.concurrent.Executor
 
 @SpringBootTest
 @ContextConfiguration(classes = [BaseInterfaceServiceImpl::class])
@@ -57,6 +59,9 @@ internal class BaseInterfaceServiceImplTest {
 
     @MockkBean
     private lateinit var properties: BaseInterfaceConfigurationProperties
+
+    @MockkBean
+    private lateinit var taskExecutor: Executor
 
     private val shortLink = mockShortLink(true)
 
@@ -85,6 +90,14 @@ internal class BaseInterfaceServiceImplTest {
         every {
             redirectService.create(redirect)
         } returns redirect
+
+        val slot = slot<Runnable>()
+
+        every {
+            taskExecutor.execute(capture(slot))
+        } answers {
+            slot.captured.run()
+        }
     }
 
     @Test

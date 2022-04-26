@@ -29,6 +29,7 @@ import dev.d1s.linda.strategy.shortLink.byAlias
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.view.RedirectView
+import java.util.concurrent.Executor
 
 @Service
 class BaseInterfaceServiceImpl : BaseInterfaceService {
@@ -44,6 +45,9 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
 
     @Autowired
     private lateinit var properties: BaseInterfaceConfigurationProperties
+
+    @Autowired
+    private lateinit var taskExecutor: Executor
 
     override fun createRedirectView(
         alias: String,
@@ -83,11 +87,13 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             }
         }
 
-        redirectService.create(
-            Redirect(shortLink).apply {
-                this.utmParameters = utmParameters.toMutableSet()
-            }
-        )
+        taskExecutor.execute {
+            redirectService.create(
+                Redirect(shortLink).apply {
+                    this.utmParameters = utmParameters.toMutableSet()
+                }
+            )
+        }
 
         return RedirectView(shortLink.url)
     }
