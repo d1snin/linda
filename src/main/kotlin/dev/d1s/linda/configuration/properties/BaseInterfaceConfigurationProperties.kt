@@ -23,5 +23,6 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties("linda.base-interface")
 data class BaseInterfaceConfigurationProperties(
     val enabled: Boolean = true,
-    val automaticUtmCreation: Boolean = false
+    val automaticUtmCreation: Boolean = false,
+    val async: Boolean = false
 )
