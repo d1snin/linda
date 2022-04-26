@@ -24,6 +24,7 @@ val liquibaseVersion: String by project
 val striktVersion: String by project
 val springMockkVersion: String by project
 val longPollingStarterVersion: String by project
+val coroutinesVersion: String by project
 
 dependencies {
     implementation(kotlin("reflect"))
@@ -44,6 +45,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("dev.d1s.long-polling:spring-boot-starter-lp-server-web:$longPollingStarterVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.strikt:strikt-jvm:$striktVersion")

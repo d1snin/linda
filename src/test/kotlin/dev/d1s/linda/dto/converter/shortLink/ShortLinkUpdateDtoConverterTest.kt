@@ -20,7 +20,9 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.converter.impl.shortLink.ShortLinkUpdateDtoConverter
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
+import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.RedirectService
+import dev.d1s.linda.testUtil.mockAvailabilityChange
 import dev.d1s.linda.testUtil.mockRedirect
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
@@ -36,19 +38,29 @@ import strikt.assertions.isEqualTo
 @ContextConfiguration(classes = [ShortLinkUpdateDtoConverter::class])
 internal class ShortLinkUpdateDtoConverterTest {
 
+
     @Autowired
     private lateinit var shortLinkUpdateDtoConverter: ShortLinkUpdateDtoConverter
 
     @MockkBean
     private lateinit var redirectService: RedirectService
 
+    @MockkBean
+    private lateinit var availabilityChangeService: AvailabilityChangeService
+
     private val redirect = mockRedirect()
+
+    private val availabilityChange = mockAvailabilityChange()
 
     @BeforeEach
     fun setup() {
         every {
             redirectService.findById(VALID_STUB)
         } returns redirect
+
+        every {
+            availabilityChangeService.findById(VALID_STUB)
+        } returns availabilityChange
     }
 
     @Test
@@ -58,6 +70,7 @@ internal class ShortLinkUpdateDtoConverterTest {
                 ShortLinkUpdateDto(
                     VALID_STUB,
                     VALID_STUB,
+                    setOf(VALID_STUB),
                     setOf(VALID_STUB)
                 )
             )
@@ -66,6 +79,7 @@ internal class ShortLinkUpdateDtoConverterTest {
             VALID_STUB
         ).apply {
             redirects = mutableSetOf(redirect)
+            availabilityChanges = setOf(availabilityChange)
         }
     }
 }

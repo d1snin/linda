@@ -147,7 +147,7 @@ interface ShortLinkController {
                 ]
             ),
             ApiResponse(
-                description = "Requested Short link or one of Redirects was not found by the provided ID.",
+                description = "Requested Short link, one of Redirects or one of Availability changes was not found by the provided ID.",
                 responseCode = "404",
                 content = [
                     Content(

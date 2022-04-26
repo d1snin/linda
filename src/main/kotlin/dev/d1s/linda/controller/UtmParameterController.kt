@@ -82,7 +82,7 @@ interface UtmParameterController {
     @GetMapping(UTM_PARAMETERS_FIND_BY_TYPE_AND_VALUE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Find UTM parameter by type and value.",
-        description = "Returns the UTM parameter object associated with the given type and value.",
+        description = "Returns an UTM parameter object associated with the given type and value.",
         responses = [
             ApiResponse(
                 description = "Found UTM parameter.",

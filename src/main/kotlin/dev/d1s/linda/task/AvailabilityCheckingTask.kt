@@ -14,36 +14,25 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.converter.impl.shortLink
+package dev.d1s.linda.task
 
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
 import dev.d1s.linda.service.AvailabilityChangeService
-import dev.d1s.linda.service.RedirectService
-import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 
 @Component
-class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> {
-
-    @Autowired
-    private lateinit var redirectService: RedirectService
+class AvailabilityCheckingTask {
 
     @Autowired
     private lateinit var availabilityChangeService: AvailabilityChangeService
 
-    override fun convertToEntity(dto: ShortLinkUpdateDto): ShortLink = ShortLink(
-        dto.url,
-        dto.alias
-    ).apply {
-        redirects = dto.redirects.map {
-            redirectService.findById(it)
-        }.toMutableSet()
-
-        availabilityChanges = dto.availabilityChanges.mapToSet {
-            availabilityChangeService.findById(it)
+    @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.SECONDS)
+    fun checkAvailability() {
+        // ignoring exceptions
+        runCatching {
+            availabilityChangeService.checkAvailabilityOfAllShortLinks()
         }
     }
 }

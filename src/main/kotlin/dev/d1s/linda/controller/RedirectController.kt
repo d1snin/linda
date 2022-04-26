@@ -55,7 +55,7 @@ interface RedirectController {
     @GetMapping(REDIRECTS_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Find Redirect by ID.",
-        description = "Returns the Redirect object associated with the provided ID.",
+        description = "Returns a Redirect object associated with the provided ID.",
         responses = [
             ApiResponse(
                 description = "Found Redirect.",
@@ -84,7 +84,7 @@ interface RedirectController {
     @PostMapping(REDIRECTS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Create Redirect.",
-        description = "Creates the Redirect object.",
+        description = "Creates a Redirect object.",
         responses = [
             ApiResponse(
                 description = "Created Redirect.",
@@ -125,7 +125,7 @@ interface RedirectController {
     @PutMapping(REDIRECTS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
         summary = "Update Redirect.",
-        description = "Completely updates the Redirect object found by the given ID.",
+        description = "Completely updates a Redirect object found by the given ID.",
         responses = [
             ApiResponse(
                 description = "Updated the Redirect.",
@@ -164,7 +164,7 @@ interface RedirectController {
     @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING)
     @Operation(
         summary = "Delete Redirect.",
-        description = "Completely removes the Redirect object found by the provided ID.",
+        description = "Completely removes a Redirect object found by the provided ID.",
         responses = [
             ApiResponse(
                 description = "Deleted the Redirect.",

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.shortLink
+package dev.d1s.linda.constant.lp
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-data class ShortLinkDto(
-    val id: String,
-    val url: String,
-    val alias: String,
-    val creationTime: Instant,
-    val redirects: Set<String>,
-    val availabilityChanges: Set<String>
-)
+internal class AvailabilityChangeLongPollingConstantsTest {
+
+    @Test
+    fun `should return valid event groups`() {
+        expectThat(AVAILABILITY_CHANGE_CREATED_GROUP) isEqualTo
+                "availability-change-created"
+
+        expectThat(AVAILABILITY_CHANGE_REMOVED_GROUP) isEqualTo
+                "availability-change-removed"
+    }
+}
