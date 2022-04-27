@@ -31,7 +31,9 @@ interface AvailabilityChangeService {
 
     fun removeById(id: String)
 
-    fun checkAvailability(shortLink: ShortLink): AvailabilityChange?
+    fun checkAvailability(shortLink: ShortLink): AvailabilityChange
+
+    fun checkAndSaveAvailability(shortLink: ShortLink): AvailabilityChange?
 
     fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange?>
 }

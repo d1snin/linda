@@ -29,7 +29,8 @@ data class AvailabilityChecksConfigurationProperties(
     // from HttpURLConnection.getResponseCode() javadocs:
     // Returns -1 if no code can be discerned from the response
     // (i.e., the response is not valid HTTP).
-    private val badStatusCodeRanges: String = "-1..-1,400..526"
+    private val badStatusCodeRanges: String = "-1..-1,400..526",
+    val eagerAvailabilityCheck: Boolean = true
 ) {
     lateinit var badStatusCodeIntRanges: Set<IntRange>
 

@@ -18,18 +18,21 @@ package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
+import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.impl.ShortLinkServiceImpl
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
+import dev.d1s.linda.testUtil.mockAvailabilityChange
 import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.verify
+import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -52,11 +55,19 @@ internal class ShortLinkServiceImplTest {
     @MockkBean
     private lateinit var shortLinkRepository: ShortLinkRepository
 
+    @MockkBean
+    private lateinit var availabilityChangeService: AvailabilityChangeService
+
+    @MockkBean
+    private lateinit var availabilityChecksConfigurationProperties: AvailabilityChecksConfigurationProperties
+
     private val shortLink = mockShortLink(true)
 
     private val shortLinks = setOf(shortLink)
 
     private val shortLinksList = shortLinks.toList()
+
+    private val availabilityChange = mockAvailabilityChange()
 
     @BeforeEach
     fun setup() {
@@ -83,6 +94,18 @@ internal class ShortLinkServiceImplTest {
         every {
             shortLinkRepository.save(shortLink)
         } returns shortLink
+
+        every {
+            availabilityChangeService.checkAvailability(shortLink)
+        } returns availabilityChange
+
+        every {
+            availabilityChangeService.checkAndSaveAvailability(shortLink)
+        } returns availabilityChange
+
+        every {
+            availabilityChecksConfigurationProperties.eagerAvailabilityCheck
+        } returns true
 
         justRun {
             shortLinkRepository.deleteById(VALID_STUB)
@@ -135,8 +158,9 @@ internal class ShortLinkServiceImplTest {
             shortLinkService.create(shortLink)
         ) isEqualTo shortLink
 
-        verify {
+        verifyAll {
             shortLinkRepository.save(shortLink)
+            availabilityChangeService.checkAvailability(shortLink)
         }
     }
 
