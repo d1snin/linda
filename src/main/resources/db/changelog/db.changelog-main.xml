@@ -56,9 +56,6 @@
             </column>
             <column name="short_link_id" type="VARCHAR(255)"/>
             <column name="creation_time" type="DATETIME"/>
-            <column name="available" type="bool">
-                <constraints nullable="true"/>
-            </column>
             <column name="unavailability_reason" type="VARCHAR(255)">
                 <constraints nullable="true"/>
             </column>
