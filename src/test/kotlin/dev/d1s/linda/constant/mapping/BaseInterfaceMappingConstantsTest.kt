@@ -25,5 +25,7 @@ internal class BaseInterfaceMappingConstantsTest {
     @Test
     fun `should return valid mapping`() {
         expectThat(BASE_INTERFACE_MAPPING) isEqualTo "/{alias}"
+        expectThat(BASE_INTERFACE_CONFIRMATION_SEGMENT) isEqualTo "/confirmed"
+        expectThat(BASE_INTERFACE_CONFIRMATION_MAPPING) isEqualTo "/{alias}/confirmed"
     }
 }

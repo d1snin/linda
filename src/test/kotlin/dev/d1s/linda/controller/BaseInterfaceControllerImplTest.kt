@@ -17,9 +17,12 @@
 package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
+import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
+import dev.d1s.linda.constant.mapping.BASE_INTERFACE_MAPPING
 import dev.d1s.linda.constant.utm.UTM_CAMPAIGN
 import dev.d1s.linda.controller.impl.BaseInterfaceControllerImpl
 import dev.d1s.linda.service.BaseInterfaceService
+import dev.d1s.teabag.stdlib.text.replacePlaceholder
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.verify
@@ -55,22 +58,15 @@ class BaseInterfaceControllerImplTest {
                 null,
                 VALID_STUB,
                 null,
-                null
+                null,
+                any()
             )
         } returns RedirectView(VALID_STUB)
     }
 
     @Test
-    fun `should perform redirect`() {
-        mockMvc.get("/$VALID_STUB") {
-            param(UTM_CAMPAIGN, VALID_STUB)
-        }.andExpect {
-            status {
-                isFound()
-            }
-
-            redirectedUrl(VALID_STUB)
-        }
+    fun `should perform unconfirmed redirect`() {
+        this.performRedirect(BASE_INTERFACE_MAPPING)
 
         verify {
             baseInterfaceService.createRedirectView(
@@ -79,8 +75,42 @@ class BaseInterfaceControllerImplTest {
                 null,
                 VALID_STUB,
                 null,
-                null
+                null,
+                false
             )
+        }
+    }
+
+    @Test
+    fun `should return confirmed redirect`() {
+        this.performRedirect(BASE_INTERFACE_CONFIRMATION_MAPPING)
+
+        verify {
+            baseInterfaceService.createRedirectView(
+                VALID_STUB,
+                null,
+                null,
+                VALID_STUB,
+                null,
+                null,
+                true
+            )
+        }
+    }
+
+    private fun performRedirect(path: String) {
+        mockMvc.get(
+            path.replacePlaceholder(
+                "alias" to VALID_STUB
+            )
+        ) {
+            param(UTM_CAMPAIGN, VALID_STUB)
+        }.andExpect {
+            status {
+                isFound()
+            }
+
+            redirectedUrl(VALID_STUB)
         }
     }
 }

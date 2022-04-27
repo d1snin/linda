@@ -29,5 +29,6 @@ internal class BaseInterfaceConfigurationPropertiesTest {
     fun `should return valid default values`() {
         expectThat(configurationProperties.enabled).isTrue()
         expectThat(configurationProperties.automaticUtmCreation).isFalse()
+        expectThat(configurationProperties.requireConfirmation).isTrue()
     }
 }

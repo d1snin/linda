@@ -16,6 +16,12 @@
 
 package dev.d1s.linda.domain.utm
 
-enum class UtmParameterType {
-    SOURCE, MEDIUM, CAMPAIGN, TERM, CONTENT
+import dev.d1s.linda.constant.utm.*
+
+enum class UtmParameterType(val rawParameter: String) {
+    SOURCE(UTM_SOURCE),
+    MEDIUM(UTM_MEDIUM),
+    CAMPAIGN(UTM_CAMPAIGN),
+    TERM(UTM_TERM),
+    CONTENT(UTM_CONTENT)
 }

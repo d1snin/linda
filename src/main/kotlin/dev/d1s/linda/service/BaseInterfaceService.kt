@@ -26,6 +26,7 @@ interface BaseInterfaceService {
         utmMedium: String?,
         utmCampaign: String?,
         utmTerm: String?,
-        utmContent: String?
+        utmContent: String?,
+        confirmed: Boolean
     ): RedirectView
 }
