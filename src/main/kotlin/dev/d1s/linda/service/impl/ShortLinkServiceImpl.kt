@@ -16,9 +16,11 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
+import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
@@ -34,6 +36,12 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @Autowired
     private lateinit var shortLinkRepository: ShortLinkRepository
+
+    @Autowired
+    private lateinit var availabilityChangeService: AvailabilityChangeService
+
+    @Autowired
+    private lateinit var availabilityChecksConfigurationProperties: AvailabilityChecksConfigurationProperties
 
     @Lazy
     @Autowired
@@ -56,7 +64,17 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     override fun create(shortLink: ShortLink): ShortLink =
-        shortLinkRepository.save(shortLink)
+        shortLinkRepository.save(
+            shortLink.apply {
+                availabilityChanges = if (availabilityChecksConfigurationProperties.eagerAvailabilityCheck) {
+                    setOf(
+                        availabilityChangeService.checkAvailability(shortLink)
+                    )
+                } else {
+                    setOf()
+                }
+            }
+        )
 
     @Transactional
     override fun update(id: String, shortLink: ShortLink): ShortLink {

@@ -110,11 +110,10 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         availabilityChangeRepository.deleteById(id)
     }
 
-    override fun checkAvailability(shortLink: ShortLink): AvailabilityChange? {
+    override fun checkAvailability(shortLink: ShortLink): AvailabilityChange {
         var available = true
         var unavailabilityReason: UnavailabilityReason? = null
         var response: ClientHttpResponse by Delegates.notNull()
-        val lastChange = availabilityChangeService.findLast(shortLink.id!!)
 
         try {
             response = requestFactory.createRequest(
@@ -141,10 +140,18 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             }
         }
 
-        return if (lastChange == null || lastChange.available != available) {
-            availabilityChangeService.create(
-                AvailabilityChange(shortLink, unavailabilityReason)
-            )
+        return AvailabilityChange(
+            shortLink,
+            unavailabilityReason
+        )
+    }
+
+    override fun checkAndSaveAvailability(shortLink: ShortLink): AvailabilityChange? {
+        val lastChange = availabilityChangeService.findLast(shortLink.id!!)
+        val availabilityChange = availabilityChangeService.checkAvailability(shortLink)
+
+        return if (lastChange == null || lastChange.available != availabilityChange.available) {
+            availabilityChangeService.create(availabilityChange)
         } else {
             null
         }
@@ -161,7 +168,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
         changes = shortLinkService.findAll().map {
             async {
-                availabilityChangeService.checkAvailability(it)
+                availabilityChangeService.checkAndSaveAvailability(it)
             }
         }.awaitAll().toSet()
 

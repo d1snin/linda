@@ -22,7 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource
 import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import strikt.assertions.containsExactly
+import strikt.assertions.isTrue
 
 @SpringBootTest
 @ContextConfiguration(classes = [AvailabilityChecksConfigurationProperties::class])
@@ -34,10 +35,19 @@ internal class AvailabilityChecksConfigurationPropertiesTest {
     private lateinit var properties: AvailabilityChecksConfigurationProperties
 
     @Test
+    fun `should return valid default values`() {
+        val nonBeanProperties = AvailabilityChecksConfigurationProperties()
+
+        expectThat(
+            nonBeanProperties.eagerAvailabilityCheck
+        ).isTrue()
+    }
+
+    @Test
     fun `should return valid bad status code int ranges`() {
         expectThat(
             properties.badStatusCodeIntRanges
-        ) isEqualTo setOf(
+        ).containsExactly(
             -1..-1, 400..526
         )
     }

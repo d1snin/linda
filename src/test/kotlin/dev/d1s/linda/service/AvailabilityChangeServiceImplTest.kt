@@ -147,7 +147,7 @@ internal class AvailabilityChangeServiceImplTest {
 
         every {
             properties.badStatusCodeIntRanges
-        } returns setOf(200..200)
+        } returns setOf(0..0)
     }
 
     @Test
@@ -238,9 +238,19 @@ internal class AvailabilityChangeServiceImplTest {
     }
 
     @Test
-    fun `should check an availability and return valid availability change`() {
+    fun `should check the availability`() {
         expectThat(
             availabilityChangeService.checkAvailability(shortLink)
+        ) isEqualTo AvailabilityChange(
+            shortLink,
+            null
+        )
+    }
+
+    @Test
+    fun `should check and save availability`() {
+        expectThat(
+            availabilityChangeService.checkAndSaveAvailability(shortLink)
         ) isEqualTo availabilityChange
     }
 
