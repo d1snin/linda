@@ -27,9 +27,6 @@ class AvailabilityChange(
     @ManyToOne(cascade = [CascadeType.MERGE])
     var shortLink: ShortLink,
 
-    @Column(nullable = false)
-    var available: Boolean,
-
     @Column
     var unavailabilityReason: UnavailabilityReason?
 ) {
@@ -48,6 +45,8 @@ class AvailabilityChange(
         creationTime = Instant.now()
     }
 
+    val available get() = unavailabilityReason == null
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -55,7 +54,6 @@ class AvailabilityChange(
         other as AvailabilityChange
 
         if (shortLink != other.shortLink) return false
-        if (available != other.available) return false
         if (unavailabilityReason != other.unavailabilityReason) return false
         if (id != other.id) return false
         if (creationTime != other.creationTime) return false
@@ -65,7 +63,6 @@ class AvailabilityChange(
 
     override fun hashCode(): Int {
         var result = shortLink.hashCode()
-        result = 31 * result + available.hashCode()
         result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
         result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + (creationTime?.hashCode() ?: 0)
@@ -73,6 +70,6 @@ class AvailabilityChange(
     }
 
     override fun toString(): String {
-        return "AvailabilityChange(shortLink=$shortLink, available=$available, unavailabilityReason=$unavailabilityReason, id=$id, creationTime=$creationTime)"
+        return "AvailabilityChange(shortLink=$shortLink, unavailabilityReason=$unavailabilityReason, id=$id, creationTime=$creationTime)"
     }
 }

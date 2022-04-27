@@ -107,7 +107,6 @@ internal fun mockRedirectDto() = RedirectDto(
 
 internal fun mockAvailabilityChange(configure: Boolean = true) = AvailabilityChange(
     mockShortLink(true),
-    true,
     null
 ).apply {
     if (configure) {

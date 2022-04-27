@@ -123,7 +123,7 @@ internal class AvailabilityChangeServiceImplTest {
         } returns Optional.empty()
 
         every {
-            availabilityChangeRepository.save(availabilityChange)
+            availabilityChangeRepository.save(any())
         } returns availabilityChange
 
         every {

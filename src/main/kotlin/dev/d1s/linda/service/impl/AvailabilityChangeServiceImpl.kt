@@ -133,7 +133,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         if (available) {
             response.use {
                 properties.badStatusCodeIntRanges.forEach { range ->
-                    if (it.rawStatusCode !in range) {
+                    if (it.rawStatusCode in range) {
                         available = false
                         unavailabilityReason = UnavailabilityReason.BAD_STATUS
                     }
@@ -143,7 +143,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
         return if (lastChange == null || lastChange.available != available) {
             availabilityChangeService.create(
-                AvailabilityChange(shortLink, available, unavailabilityReason)
+                AvailabilityChange(shortLink, unavailabilityReason)
             )
         } else {
             null
