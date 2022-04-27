@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.controller
 
+import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_MAPPING
 import dev.d1s.linda.constant.utm.*
 import org.springframework.validation.annotation.Validated
@@ -30,6 +31,17 @@ interface BaseInterfaceController {
 
     @GetMapping(BASE_INTERFACE_MAPPING)
     fun redirect(
+        @PathVariable @NotBlank(message = "alias must not be blank.") alias: String,
+        @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
+        @RequestParam(UTM_MEDIUM, required = false) utmMedium: String?,
+        @RequestParam(UTM_CAMPAIGN, required = false) utmCampaign: String?,
+        @RequestParam(UTM_TERM, required = false) utmTerm: String?,
+        @RequestParam(UTM_CONTENT, required = false) utmContent: String?
+    ): RedirectView
+
+    // I think I'm dumb.
+    @GetMapping(BASE_INTERFACE_CONFIRMATION_MAPPING)
+    fun confirmRedirect(
         @PathVariable @NotBlank(message = "alias must not be blank.") alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
         @RequestParam(UTM_MEDIUM, required = false) utmMedium: String?,

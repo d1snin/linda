@@ -38,6 +38,17 @@ class BaseInterfaceControllerImpl : BaseInterfaceController {
         utmTerm: String?,
         utmContent: String?
     ): RedirectView = baseInterfaceService.createRedirectView(
-        alias, utmSource, utmMedium, utmCampaign, utmTerm, utmContent
+        alias, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, false
+    )
+
+    override fun confirmRedirect(
+        alias: String,
+        utmSource: String?,
+        utmMedium: String?,
+        utmCampaign: String?,
+        utmTerm: String?,
+        utmContent: String?
+    ): RedirectView = baseInterfaceService.createRedirectView(
+        alias, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, true
     )
 }

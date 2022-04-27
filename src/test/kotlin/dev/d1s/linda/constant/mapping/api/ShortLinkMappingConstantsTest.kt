@@ -24,7 +24,6 @@ internal class ShortLinkMappingConstantsTest {
 
     @Test
     fun `should return valid mapping`() {
-        expectThat(SHORT_LINKS_BASE_NAME) isEqualTo "shortLinks"
         expectThat(SHORT_LINKS_BASE_MAPPING) isEqualTo "/api/shortLinks"
         expectThat(SHORT_LINKS_FIND_ALL_MAPPING) isEqualTo "/api/shortLinks"
         expectThat(SHORT_LINKS_FIND_MAPPING) isEqualTo "/api/shortLinks/{identifier}"

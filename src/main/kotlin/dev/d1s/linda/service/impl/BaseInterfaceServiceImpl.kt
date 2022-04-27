@@ -17,6 +17,8 @@
 package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
+import dev.d1s.linda.configuration.properties.SslConfigurationProperties
+import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
@@ -26,8 +28,11 @@ import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byAlias
+import dev.d1s.teabag.web.buildFromCurrentRequest
+import dev.d1s.teabag.web.configureSsl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.servlet.view.RedirectView
 import java.util.concurrent.Executor
 
@@ -47,6 +52,9 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
     private lateinit var properties: BaseInterfaceConfigurationProperties
 
     @Autowired
+    private lateinit var sslConfigurationProperties: SslConfigurationProperties
+
+    @Autowired
     private lateinit var taskExecutor: Executor
 
     override fun createRedirectView(
@@ -55,18 +63,40 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
         utmMedium: String?,
         utmCampaign: String?,
         utmTerm: String?,
-        utmContent: String?
+        utmContent: String?,
+        confirmed: Boolean
     ): RedirectView {
+        val utmMap = mapOf(
+            UtmParameterType.SOURCE to utmSource,
+            UtmParameterType.MEDIUM to utmMedium,
+            UtmParameterType.CAMPAIGN to utmCampaign,
+            UtmParameterType.TERM to utmTerm,
+            UtmParameterType.CONTENT to utmContent
+        )
+
+        if (!confirmed && properties.requireConfirmation) {
+            return RedirectView(
+                buildFromCurrentRequest {
+                    configureSsl(sslConfigurationProperties.fallbackToHttps)
+                    path(BASE_INTERFACE_CONFIRMATION_SEGMENT)
+                    replaceQueryParams(
+                        LinkedMultiValueMap<String, String>().apply {
+                            utmMap.forEach { entry ->
+                                entry.value?.let {
+                                    add(entry.key.rawParameter, it)
+                                }
+                            }
+                        }
+                    )
+                    toUriString()
+                }
+            )
+        }
+
         val shortLink = shortLinkService.find(byAlias(alias))
 
         val utmParameters = buildSet {
-            mapOf(
-                UtmParameterType.SOURCE to utmSource,
-                UtmParameterType.MEDIUM to utmMedium,
-                UtmParameterType.CAMPAIGN to utmCampaign,
-                UtmParameterType.TERM to utmTerm,
-                UtmParameterType.CONTENT to utmContent
-            ).forEach {
+            utmMap.forEach {
                 it.value?.let { value ->
                     val utmParameter = utmParameterService.findByTypeAndValue(it.key, value)
 

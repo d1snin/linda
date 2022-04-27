@@ -18,6 +18,8 @@ package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
+import dev.d1s.linda.configuration.properties.SslConfigurationProperties
+import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
 import dev.d1s.linda.service.impl.BaseInterfaceServiceImpl
@@ -25,16 +27,17 @@ import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.testUtil.mockRedirect
 import dev.d1s.linda.testUtil.mockShortLink
 import dev.d1s.linda.testUtil.mockUtmParameter
+import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.every
-import io.mockk.slot
-import io.mockk.verifyAll
+import dev.d1s.teabag.web.configureSsl
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import org.springframework.web.servlet.view.RedirectView
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
@@ -60,6 +63,10 @@ internal class BaseInterfaceServiceImplTest {
     @MockkBean
     private lateinit var properties: BaseInterfaceConfigurationProperties
 
+    @Suppress("unused")
+    @MockkBean(relaxed = true)
+    private lateinit var sslConfigurationProperties: SslConfigurationProperties
+
     @MockkBean
     private lateinit var taskExecutor: Executor
 
@@ -68,6 +75,8 @@ internal class BaseInterfaceServiceImplTest {
     private val utmParameter = mockUtmParameter()
 
     private val redirect = mockRedirect()
+
+    private val builder = mockk<ServletUriComponentsBuilder>(relaxed = true)
 
     @BeforeEach
     fun setup() {
@@ -81,6 +90,10 @@ internal class BaseInterfaceServiceImplTest {
 
         every {
             properties.automaticUtmCreation
+        } returns true
+
+        every {
+            properties.requireConfirmation
         } returns true
 
         every {
@@ -98,12 +111,42 @@ internal class BaseInterfaceServiceImplTest {
         } answers {
             slot.captured.run()
         }
+
+        every {
+            builder.toUriString()
+        } returns INVALID_STUB
+    }
+
+    @Test
+    fun `should redirect to the confirmation url`() {
+        mockkStatic("org.springframework.web.servlet.support.ServletUriComponentsBuilder") {
+            every {
+                ServletUriComponentsBuilder.fromCurrentRequest()
+            } returns builder
+
+            mockkStatic("dev.d1s.teabag.web.ServletUriComponentsBuilderKt") {
+                justRun {
+                    builder.configureSsl(false)
+                }
+
+                expectThat(
+                    this.createRedirectView(false)
+                ) isEqualTo RedirectView(INVALID_STUB).url
+
+                verifyAll {
+                    builder.configureSsl(false)
+                    builder.path(BASE_INTERFACE_CONFIRMATION_SEGMENT)
+                    builder.replaceQueryParams(any())
+                    builder.toUriString()
+                }
+            }
+        }
     }
 
     @Test
     fun `should create RedirectView`() {
         expectThat(
-            this.createRedirectView().url
+            this.createRedirectView()
         ) isEqualTo RedirectView(VALID_STUB).url
 
         verifyAll {
@@ -120,7 +163,7 @@ internal class BaseInterfaceServiceImplTest {
         } returns Optional.empty()
 
         expectThat(
-            this.createRedirectView().url
+            this.createRedirectView()
         ) isEqualTo RedirectView(VALID_STUB).url
 
         verifyAll {
@@ -151,13 +194,14 @@ internal class BaseInterfaceServiceImplTest {
         }
     }
 
-    private fun createRedirectView() =
+    private fun createRedirectView(confirmed: Boolean = true) =
         baseInterfaceService.createRedirectView(
             VALID_STUB,
             null,
             null,
             VALID_STUB,
             null,
-            null
-        )
+            null,
+            confirmed
+        ).url
 }
