@@ -21,7 +21,7 @@ import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperti
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
+import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.impl.BaseInterfaceServiceImpl
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.testUtil.mockRedirect

@@ -16,7 +16,6 @@
 
 package dev.d1s.linda.exception
 
-import dev.d1s.linda.exception.impl.AvailabilityCheckInProgressException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo

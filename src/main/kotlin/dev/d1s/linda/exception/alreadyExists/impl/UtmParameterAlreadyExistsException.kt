@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.impl.alreadyExists
+package dev.d1s.linda.exception.alreadyExists.impl
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
 import org.springframework.http.HttpStatus
 
-object AliasAlreadyExistsException : HttpStatusException(
-    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, "The provided alias already exists.")
+object UtmParameterAlreadyExistsException : HttpStatusException(
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, "UTM parameter already exists.")
 )

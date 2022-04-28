@@ -23,7 +23,7 @@ import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_CREATED_GROUP
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.event.data.AvailabilityChangeEventData
-import dev.d1s.linda.exception.impl.notFound.AvailabilityChangeNotFoundException
+import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.impl.AvailabilityChangeServiceImpl
 import dev.d1s.linda.testUtil.mockAvailabilityChange

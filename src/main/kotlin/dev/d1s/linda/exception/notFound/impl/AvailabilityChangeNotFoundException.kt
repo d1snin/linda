@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.alreadyExists
+package dev.d1s.linda.exception.notFound.impl
 
-import dev.d1s.linda.exception.alreadyExists.impl.UtmParameterAlreadyExistsException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-internal class UtmParameterAlreadyExistsExceptionTest {
-
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(UtmParameterAlreadyExistsException.message!!) isEqualTo
-                "UTM parameter already exists."
-    }
-}
+object AvailabilityChangeNotFoundException : DomainNotFoundException(
+    "Requested availability change was not found."
+)

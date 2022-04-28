@@ -22,7 +22,7 @@ import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
+import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.BaseInterfaceService
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService

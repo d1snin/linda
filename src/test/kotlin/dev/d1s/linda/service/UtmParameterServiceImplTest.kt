@@ -20,8 +20,8 @@ import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.impl.alreadyExists.UtmParameterAlreadyExistsException
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
+import dev.d1s.linda.exception.alreadyExists.impl.UtmParameterAlreadyExistsException
+import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.impl.UtmParameterServiceImpl
 import dev.d1s.linda.testUtil.mockRedirect

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.impl.notFound
+package dev.d1s.linda.exception.customAlias.impl
 
-import dev.d1s.linda.exception.DomainNotFoundException
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-object ShortLinkNotFoundException : DomainNotFoundException(
-    "The requested short link was not found."
+object EmptyCustomAliasException : HttpStatusException(
+    ErrorResponseData(HttpStatus.BAD_REQUEST, "Alias must not be empty.")
 )

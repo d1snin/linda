@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.impl.customAlias
+package dev.d1s.linda.exception.notFound.impl
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import org.springframework.http.HttpStatus
+import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-object EmptyCustomAliasException : HttpStatusException(
-    ErrorResponseData(HttpStatus.BAD_REQUEST, "Alias must not be empty.")
+object AliasGeneratorNotFoundException : DomainNotFoundException(
+    "The requested generator was not found."
 )

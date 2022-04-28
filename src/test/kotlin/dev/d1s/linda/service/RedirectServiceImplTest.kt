@@ -19,7 +19,7 @@ package dev.d1s.linda.service
 import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.exception.impl.notFound.RedirectNotFoundException
+import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.impl.RedirectServiceImpl
 import dev.d1s.linda.testUtil.mockRedirect

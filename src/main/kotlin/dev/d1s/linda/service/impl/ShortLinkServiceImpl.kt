@@ -18,7 +18,7 @@ package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
+import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService

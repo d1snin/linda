@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.impl
+package dev.d1s.linda.exception.notFound.impl
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import org.springframework.http.HttpStatus
+import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-object AvailabilityCheckInProgressException : HttpStatusException(
-    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, "Availability check is already in progress.")
+object UtmParameterNotFoundException : DomainNotFoundException(
+    "UTM parameter was not found."
 )

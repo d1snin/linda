@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.exception.alreadyExists
 
-import dev.d1s.linda.exception.impl.alreadyExists.AliasAlreadyExistsException
+import dev.d1s.linda.exception.alreadyExists.impl.AliasAlreadyExistsException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo

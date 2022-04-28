@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.impl.notFound
+package dev.d1s.linda.exception.customAlias.impl
 
-import dev.d1s.linda.exception.DomainNotFoundException
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-object AliasGeneratorNotFoundException : DomainNotFoundException(
-    "The requested generator was not found."
+object CustomAliasNotDefinedException : HttpStatusException(
+    ErrorResponseData(
+        HttpStatus.BAD_REQUEST,
+        "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
+    )
 )

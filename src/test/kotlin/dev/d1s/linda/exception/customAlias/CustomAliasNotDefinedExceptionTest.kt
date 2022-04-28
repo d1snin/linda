@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.exception.customAlias
 
-import dev.d1s.linda.exception.impl.customAlias.CustomAliasNotDefinedException
+import dev.d1s.linda.exception.customAlias.impl.CustomAliasNotDefinedException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo

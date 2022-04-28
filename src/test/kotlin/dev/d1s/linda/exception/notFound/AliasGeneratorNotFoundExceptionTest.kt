@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.exception.notFound
 
-import dev.d1s.linda.exception.impl.notFound.AliasGeneratorNotFoundException
+import dev.d1s.linda.exception.notFound.impl.AliasGeneratorNotFoundException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo

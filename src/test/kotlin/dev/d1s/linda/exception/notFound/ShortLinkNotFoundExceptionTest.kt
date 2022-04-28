@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.exception.notFound
 
-import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
+import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.impl.notFound
+package dev.d1s.linda.exception.alreadyExists.impl
 
-import dev.d1s.linda.exception.DomainNotFoundException
+import dev.d1s.linda.exception.alreadyExists.DomainAlreadyExistsException
 
-object RedirectNotFoundException : DomainNotFoundException(
-    "The requested redirect was not found."
+object AliasAlreadyExistsException : DomainAlreadyExistsException(
+    "The provided alias already exists."
 )

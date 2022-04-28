@@ -18,7 +18,7 @@ package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.exception.impl.notFound.RedirectNotFoundException
+import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
 import org.springframework.beans.factory.annotation.Autowired

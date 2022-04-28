@@ -20,7 +20,7 @@ import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
+import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.impl.ShortLinkServiceImpl
 import dev.d1s.linda.strategy.shortLink.byAlias

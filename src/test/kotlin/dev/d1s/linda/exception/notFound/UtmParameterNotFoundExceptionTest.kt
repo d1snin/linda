@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.exception.notFound
 
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
+import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
