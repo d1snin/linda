@@ -18,6 +18,6 @@ package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-object ShortLinkNotFoundException : DomainNotFoundException(
-    "The requested short link was not found."
+class ShortLinkNotFoundException(id: String) : DomainNotFoundException(
+    "Requested short link ($id) was not found."
 )

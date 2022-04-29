@@ -18,6 +18,6 @@ package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-object UtmParameterNotFoundException : DomainNotFoundException(
-    "UTM parameter was not found."
+class UtmParameterNotFoundException(id: String) : DomainNotFoundException(
+    "Requested UTM parameter ($id) was not found."
 )

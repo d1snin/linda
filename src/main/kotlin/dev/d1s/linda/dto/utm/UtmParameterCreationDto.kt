@@ -21,9 +21,18 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class UtmParameterCreationDto(
-    @field:NotNull(message = "type must not be null.")
+    @field:NotNull(message = "type field must not be null.")
     val type: UtmParameterType,
 
-    @field:NotBlank(message = "parameterValue must not be blank.")
+    @field:NotBlank(message = "parameterValue field must not be blank.")
     val parameterValue: String,
+
+    @field:NotNull(message = "allowOverride field must not be null.")
+    val allowOverride: Boolean,
+
+    @field:NotNull(message = "defaultForShortLinks field must not be null.")
+    val defaultForShortLinks: Set<String>,
+
+    @field:NotNull(message = "allowedForShortLinks field must not be null.")
+    val allowedForShortLinks: Set<String>
 )

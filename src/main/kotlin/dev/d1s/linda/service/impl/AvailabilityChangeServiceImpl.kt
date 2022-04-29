@@ -83,7 +83,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     @Transactional(readOnly = true)
     override fun findById(id: String): AvailabilityChange =
         availabilityChangeRepository.findById(id).orElseThrow {
-            AvailabilityChangeNotFoundException
+            AvailabilityChangeNotFoundException(id)
         }
 
     @Transactional(readOnly = true)

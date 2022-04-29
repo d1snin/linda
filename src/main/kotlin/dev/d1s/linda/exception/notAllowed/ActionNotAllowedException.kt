@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.alreadyExists
+package dev.d1s.linda.exception.notAllowed
 
-import dev.d1s.linda.exception.alreadyExists.impl.UtmParameterAlreadyExistsException
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-internal class UtmParameterAlreadyExistsExceptionTest {
-
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(UtmParameterAlreadyExistsException.message!!) isEqualTo
-                "UTM parameter already exists."
-    }
-}
+abstract class ActionNotAllowedException(message: String) : HttpStatusException(
+    ErrorResponseData(HttpStatus.BAD_REQUEST, message)
+)

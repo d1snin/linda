@@ -15,7 +15,3 @@ spring:
 simple-security:
   authentication-secret: secret
   enabled: false
-
-linda:
-  base-interface:
-    automatic-utm-creation: true

@@ -20,7 +20,9 @@ import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.RedirectService
+import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -34,16 +36,28 @@ class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> 
     @Autowired
     private lateinit var availabilityChangeService: AvailabilityChangeService
 
+    @Autowired
+    private lateinit var utmParameterService: UtmParameterService
+
     override fun convertToEntity(dto: ShortLinkUpdateDto): ShortLink = ShortLink(
         dto.url,
-        dto.alias
+        dto.alias,
+        dto.allowUtmParameters
     ).apply {
-        redirects = dto.redirects.map {
+        redirects = dto.redirects.mapToMutableSet {
             redirectService.findById(it)
-        }.toMutableSet()
-
-        availabilityChanges = dto.availabilityChanges.mapToSet {
-            availabilityChangeService.findById(it)
         }
+
+        availabilityChanges = dto.availabilityChanges.mapToSet(
+            availabilityChangeService::findById
+        )
+
+        defaultUtmParameters = dto.defaultUtmParameters.mapToMutableSet(
+            utmParameterService::findById
+        )
+
+        allowedUtmParameters = dto.allowedUtmParameters.mapToMutableSet(
+            utmParameterService::findById
+        )
     }
 }

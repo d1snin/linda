@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.configuration.properties
+package dev.d1s.linda.exception.notAllowed.impl
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isFalse
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
-internal class SslConfigurationPropertiesTest {
-
-    @Test
-    fun `should return valid default values`() {
-        expectThat(
-            SslConfigurationProperties().fallbackToHttps
-        ).isFalse()
-    }
-}
+class DefaultUtmParameterOverrideNotAllowedException(utmParameter: UtmParameter) :
+    ActionNotAllowedException(
+        "It's not allowed to override default UTM parameter $utmParameter"
+    )

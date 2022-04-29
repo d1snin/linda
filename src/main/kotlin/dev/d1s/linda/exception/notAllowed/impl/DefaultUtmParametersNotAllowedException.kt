@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.mapping.api
+package dev.d1s.linda.exception.notAllowed.impl
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
-internal class RedirectMappingConstantsTest {
-
-    @Test
-    fun `should return valid mapping`() {
-        expectThat(REDIRECTS_BASE_MAPPING) isEqualTo "/api/redirects"
-        expectThat(REDIRECTS_FIND_ALL_MAPPING) isEqualTo "/api/redirects"
-        expectThat(REDIRECTS_FIND_BY_ID_MAPPING) isEqualTo "/api/redirects/{identifier}"
-        expectThat(REDIRECTS_REMOVE_BY_ID_MAPPING) isEqualTo "/api/redirects/{identifier}"
-    }
-}
+class DefaultUtmParametersNotAllowedException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
+    "Default UTM parameters $utmParameters are not allowed if the allowUtmParameters property is set to true."
+)

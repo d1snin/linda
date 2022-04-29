@@ -87,7 +87,7 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Secured
     override fun findByTypeAndValue(type: UtmParameterType, value: String): ResponseEntity<UtmParameterDto> = ok(
         utmParameterService.findByTypeAndValue(type, value).orElseThrow {
-            UtmParameterNotFoundException
+            UtmParameterNotFoundException("${type.rawParameter}=$value")
         }.toDto()
     )
 

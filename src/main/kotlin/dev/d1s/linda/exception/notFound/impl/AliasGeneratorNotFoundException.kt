@@ -18,6 +18,6 @@ package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-object AliasGeneratorNotFoundException : DomainNotFoundException(
-    "The requested generator was not found."
+class AliasGeneratorNotFoundException(aliasGenerator: String) : DomainNotFoundException(
+    "Requested generator ($aliasGenerator) was not found."
 )

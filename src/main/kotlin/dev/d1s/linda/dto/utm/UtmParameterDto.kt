@@ -22,7 +22,10 @@ import java.time.Instant
 data class UtmParameterDto(
     val id: String,
     val type: UtmParameterType,
-    val value: String,
+    val parameterValue: String,
+    val allowOverride: Boolean,
+    val defaultForShortLinks: Set<String>,
+    val allowedForShortLinks: Set<String>,
     val creationTime: Instant,
     val redirects: Set<String>
 )

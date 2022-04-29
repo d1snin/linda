@@ -18,6 +18,6 @@ package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-object AvailabilityChangeNotFoundException : DomainNotFoundException(
-    "Requested availability change was not found."
+class AvailabilityChangeNotFoundException(id: String) : DomainNotFoundException(
+    "Requested availability change ($id) was not found."
 )

@@ -18,6 +18,6 @@ package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-object RedirectNotFoundException : DomainNotFoundException(
-    "The requested redirect was not found."
+class RedirectNotFoundException(id: String) : DomainNotFoundException(
+    "Requested redirect ($id) was not found."
 )

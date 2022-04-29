@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.lp
+package dev.d1s.linda.exception.notAllowed.impl
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
-internal class UtmParameterLongPollingConstantsTest {
-
-    @Test
-    fun `should return valid group names`() {
-        expectThat(UTM_PARAMETER_CREATED_GROUP) isEqualTo "utm-parameter-created"
-        expectThat(UTM_PARAMETER_UPDATED_GROUP) isEqualTo "utm-parameter-updated"
-        expectThat(UTM_PARAMETER_REMOVED_GROUP) isEqualTo "utm-parameter-removed"
-    }
-}
+class IllegalUtmParametersException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
+    "Provided UTM parameters $utmParameters are not allowed for this short link."
+)

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.testUtil
+package dev.d1s.linda.exception.notAllowed.impl
 
-import dev.d1s.teabag.stdlib.text.replacePlaceholder
-import dev.d1s.teabag.testing.constant.VALID_STUB
+import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
-internal fun String.setId() =
-    this.replacePlaceholder("identifier" to VALID_STUB)
+object UtmParametersNotAllowedException : ActionNotAllowedException(
+    "UTM parameters are not allowed for this short link."
+)

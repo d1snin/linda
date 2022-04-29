@@ -30,5 +30,5 @@ class AliasGeneratorServiceImpl : AliasGeneratorService {
 
     override fun getAliasGenerator(identifier: String): AliasGenerator = aliasGenerators.firstOrNull {
         it.identifier == identifier
-    } ?: throw AliasGeneratorNotFoundException
+    } ?: throw AliasGeneratorNotFoundException(identifier)
 }

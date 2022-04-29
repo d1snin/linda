@@ -18,6 +18,9 @@ package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParameterOverrideNotAllowedException
+import dev.d1s.linda.exception.notAllowed.impl.IllegalUtmParametersException
+import dev.d1s.linda.exception.notAllowed.impl.UtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
@@ -43,36 +46,50 @@ class RedirectServiceImpl : RedirectService {
     @Transactional(readOnly = true)
     override fun findById(id: String): Redirect =
         redirectRepository.findById(id).orElseThrow {
-            RedirectNotFoundException
+            RedirectNotFoundException(id)
         }
 
     @Transactional
-    override fun create(redirect: Redirect): Redirect {
-        val utmParameters = redirect.utmParameters
+    override fun create(redirect: Redirect): Redirect =
+        redirectService.assignUtmParametersAndSave(
+            redirect.apply {
+                validate()
 
-        return if (utmParameters.isEmpty()) {
-            redirectRepository.save(redirect)
-        } else {
-            redirectService.assignUtmParametersAndSave(redirect, utmParameters)
-        }
-    }
+                val defaultUtmParameters = shortLink.defaultUtmParameters
+
+                defaultUtmParameters.forEach { defaultUtmParameter ->
+                    utmParameters.forEach { utmParameter ->
+                        if (utmParameter.type == defaultUtmParameter.type && !defaultUtmParameter.allowOverride) {
+                            throw DefaultUtmParameterOverrideNotAllowedException(defaultUtmParameter)
+                        }
+                    }
+
+                    if (
+                        defaultUtmParameter.type !in utmParameters.map {
+                            it.type
+                        }
+                    ) {
+                        utmParameters.add(defaultUtmParameter)
+                    }
+                }
+            },
+            redirect.utmParameters
+        )
 
     @Transactional
     override fun update(id: String, redirect: Redirect): Redirect {
+        redirect.validate()
+
         val foundRedirect = redirectService.findById(id)
 
         foundRedirect.shortLink = redirect.shortLink
 
-        val utmParameters = redirect.utmParameters
-
-        foundRedirect.utmParameters = utmParameters
-
-        return redirectService.assignUtmParametersAndSave(foundRedirect, utmParameters)
+        return redirectService.assignUtmParametersAndSave(foundRedirect, redirect.utmParameters)
     }
 
     @Transactional
     override fun assignUtmParametersAndSave(redirect: Redirect, utmParameters: Set<UtmParameter>): Redirect {
-        redirect.utmParameters.addAll(utmParameters)
+        redirect.utmParameters = utmParameters.toMutableSet()
 
         utmParameters.forEach {
             it.redirects.add(redirect)
@@ -84,4 +101,24 @@ class RedirectServiceImpl : RedirectService {
     @Transactional
     override fun removeById(id: String) =
         redirectRepository.deleteById(id)
+
+    private fun Redirect.validate() {
+        if (utmParameters.isNotEmpty()) {
+            if (!shortLink.allowUtmParameters) {
+                throw UtmParametersNotAllowedException
+            }
+
+            val allowedUtmParameters = shortLink.allowedUtmParameters
+
+            if (allowedUtmParameters.isNotEmpty()) {
+                if (!allowedUtmParameters.containsAll(utmParameters)) {
+                    throw IllegalUtmParametersException(
+                        utmParameters.filter {
+                            it !in allowedUtmParameters
+                        }.toSet()
+                    )
+                }
+            }
+        }
+    }
 }

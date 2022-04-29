@@ -17,6 +17,7 @@
 package dev.d1s.linda.domain.utm
 
 import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.domain.ShortLink
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
@@ -29,7 +30,16 @@ class UtmParameter(
     var type: UtmParameterType,
 
     @Column(nullable = false)
-    var parameterValue: String
+    var parameterValue: String,
+
+    @Column(nullable = false)
+    var allowOverride: Boolean,
+
+    @ManyToMany(mappedBy = "defaultUtmParameters")
+    var defaultForShortLinks: MutableSet<ShortLink>,
+
+    @ManyToMany(mappedBy = "allowedUtmParameters")
+    var allowedForShortLinks: MutableSet<ShortLink>
 ) {
     @Id
     @Column
@@ -46,12 +56,13 @@ class UtmParameter(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is UtmParameter) return false
+        if (javaClass != other?.javaClass) return false
+
+        other as UtmParameter
 
         if (type != other.type) return false
         if (parameterValue != other.parameterValue) return false
         if (id != other.id) return false
-        if (creationTime != other.creationTime) return false
 
         return true
     }
@@ -60,11 +71,8 @@ class UtmParameter(
         var result = type.hashCode()
         result = 31 * result + parameterValue.hashCode()
         result = 31 * result + (id?.hashCode() ?: 0)
-        result = 31 * result + (creationTime?.hashCode() ?: 0)
         return result
     }
 
-    override fun toString(): String {
-        return "UtmParameter(type=$type, parameterValue='$parameterValue', id=$id, creationTime=$creationTime, redirects=$redirects)"
-    }
+    override fun toString(): String = "${id ?: "unsaved"} (${type.rawParameter}=$parameterValue)"
 }

@@ -74,3 +74,7 @@ tasks.withType<Test> {
         )
     }
 }
+
+sourceSets.getByName("test") {
+    java.srcDir("test")
+}
