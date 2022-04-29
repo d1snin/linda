@@ -40,9 +40,9 @@ class Redirect(
 
     @ManyToMany
     @JoinTable(
-        name = "redirect_utm",
+        name = "redirect_utm_parameter",
         joinColumns = [JoinColumn(name = "redirect_id")],
-        inverseJoinColumns = [JoinColumn(name = "utm_id")]
+        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
     )
     var utmParameters: MutableSet<UtmParameter> = mutableSetOf()
 

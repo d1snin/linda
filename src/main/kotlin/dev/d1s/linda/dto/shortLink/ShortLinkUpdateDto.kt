@@ -30,9 +30,18 @@ data class ShortLinkUpdateDto(
     @field:NotBlank(message = "aliasGeneratorId must not be blank.")
     val alias: String,
 
+    @field:NotNull(message = "allowUtmParameters field must not be null.")
+    val allowUtmParameters: Boolean,
+
     @field:NotNull(message = "redirects field must not be null.")
     val redirects: Set<String>,
 
     @field:NotNull(message = "availabilityChanges field must not be null.")
-    val availabilityChanges: Set<String>
+    val availabilityChanges: Set<String>,
+
+    @field:NotNull(message = "defaultUtmParameters field must not be null")
+    val defaultUtmParameters: Set<String>,
+
+    @field:NotNull(message = "allowedUtmParameters field must not be null")
+    val allowedUtmParameters: Set<String>
 )

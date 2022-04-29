@@ -31,9 +31,16 @@ class UtmParameterDtoConverter : DtoConverter<UtmParameterDto, UtmParameter> {
             entity.id.checkNotNull("id"),
             entity.type,
             entity.parameterValue,
+            entity.allowOverride,
+            entity.defaultForShortLinks.mapToSet {
+                it.id.checkNotNull("short link's id")
+            },
+            entity.allowedForShortLinks.mapToSet {
+                it.id.checkNotNull("short link's id")
+            },
             entity.creationTime.checkNotNull("creationTime"),
             entity.redirects.mapToSet {
-                it.id.checkNotNull("Redirect's id")
+                it.id.checkNotNull("redirect's id")
             }
         )
 }

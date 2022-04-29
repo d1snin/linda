@@ -20,9 +20,8 @@ import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperti
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
+import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.BaseInterfaceService
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.servlet.view.RedirectView
-import java.util.concurrent.Executor
 
 @Service
 class BaseInterfaceServiceImpl : BaseInterfaceService {
@@ -53,9 +51,6 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
 
     @Autowired
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
-
-    @Autowired
-    private lateinit var taskExecutor: Executor
 
     override fun createRedirectView(
         alias: String,
@@ -96,34 +91,22 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
         val shortLink = shortLinkService.find(byAlias(alias))
 
         val utmParameters = buildSet {
-            utmMap.forEach {
-                it.value?.let { value ->
-                    val utmParameter = utmParameterService.findByTypeAndValue(it.key, value)
-
-                    if (utmParameter.isPresent) {
-                        add(utmParameter.get())
-                    } else {
-                        if (properties.automaticUtmCreation) {
-                            add(
-                                utmParameterService.create(
-                                    UtmParameter(it.key, value)
-                                )
-                            )
-                        } else {
-                            throw UtmParameterNotFoundException
+            utmMap.forEach { (type, nullableValue) ->
+                nullableValue?.let { value ->
+                    add(
+                        utmParameterService.findByTypeAndValue(type, value).orElseThrow {
+                            UtmParameterNotFoundException("${type.rawParameter}=$value")
                         }
-                    }
+                    )
                 }
             }
         }
 
-        taskExecutor.execute {
-            redirectService.create(
-                Redirect(shortLink).apply {
-                    this.utmParameters = utmParameters.toMutableSet()
-                }
-            )
-        }
+        redirectService.create(
+            Redirect(shortLink).apply {
+                this.utmParameters = utmParameters.toMutableSet()
+            }
+        )
 
         return RedirectView(shortLink.url)
     }

@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.utm
+package dev.d1s.linda.exception.notAllowed.impl
 
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.time.Instant
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
-data class UtmParameterDto(
-    val id: String,
-    val type: UtmParameterType,
-    val parameterValue: String,
-    val allowOverride: Boolean,
-    val defaultForShortLinks: Set<String>,
-    val allowedForShortLinks: Set<String>,
-    val creationTime: Instant,
-    val redirects: Set<String>
-)
+class DefaultUtmParameterOverrideNotAllowedException(utmParameter: UtmParameter) :
+    ActionNotAllowedException(
+        "It's not allowed to override default UTM parameter $utmParameter"
+    )

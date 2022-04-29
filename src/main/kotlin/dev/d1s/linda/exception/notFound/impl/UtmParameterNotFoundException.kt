@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.utm
+package dev.d1s.linda.exception.notFound.impl
 
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.time.Instant
+import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
-data class UtmParameterDto(
-    val id: String,
-    val type: UtmParameterType,
-    val parameterValue: String,
-    val allowOverride: Boolean,
-    val defaultForShortLinks: Set<String>,
-    val allowedForShortLinks: Set<String>,
-    val creationTime: Instant,
-    val redirects: Set<String>
+class UtmParameterNotFoundException(id: String) : DomainNotFoundException(
+    "Requested UTM parameter ($id) was not found."
 )

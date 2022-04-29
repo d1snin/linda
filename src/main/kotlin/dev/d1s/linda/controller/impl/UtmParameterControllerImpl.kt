@@ -27,7 +27,7 @@ import dev.d1s.linda.dto.utm.UtmParameterCreationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.event.data.UtmParameterEventData
-import dev.d1s.linda.exception.impl.notFound.UtmParameterNotFoundException
+import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
@@ -87,7 +87,7 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Secured
     override fun findByTypeAndValue(type: UtmParameterType, value: String): ResponseEntity<UtmParameterDto> = ok(
         utmParameterService.findByTypeAndValue(type, value).orElseThrow {
-            UtmParameterNotFoundException
+            UtmParameterNotFoundException("${type.rawParameter}=$value")
         }.toDto()
     )
 

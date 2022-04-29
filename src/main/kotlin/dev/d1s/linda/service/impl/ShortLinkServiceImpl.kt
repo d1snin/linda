@@ -18,7 +18,9 @@ package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.exception.impl.notFound.ShortLinkNotFoundException
+import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParametersNotAllowedException
+import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
@@ -59,32 +61,57 @@ class ShortLinkServiceImpl : ShortLinkService {
                 shortLinkFindingStrategy.identifier
             )
         }.orElseThrow {
-            ShortLinkNotFoundException
+            ShortLinkNotFoundException(shortLinkFindingStrategy.identifier)
         }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     override fun create(shortLink: ShortLink): ShortLink =
         shortLinkRepository.save(
             shortLink.apply {
+                validate()
+
                 availabilityChanges = if (availabilityChecksConfigurationProperties.eagerAvailabilityCheck) {
-                    setOf(
-                        availabilityChangeService.checkAvailability(shortLink)
-                    )
+                    setOf(availabilityChangeService.checkAvailability(shortLink))
                 } else {
                     setOf()
                 }
+
+                shortLinkService.assignDefaultUtmParameters(this, shortLink.defaultUtmParameters)
+                shortLinkService.assignAllowedUtmParameters(this, shortLink.allowedUtmParameters)
             }
         )
 
     @Transactional
     override fun update(id: String, shortLink: ShortLink): ShortLink {
+        shortLink.validate()
+
         val foundShortLink = shortLinkService.find(byId(id))
 
         foundShortLink.url = shortLink.url
         foundShortLink.alias = shortLink.alias
+        foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
         foundShortLink.redirects = shortLink.redirects
 
+        shortLinkService.assignDefaultUtmParameters(foundShortLink, shortLink.defaultUtmParameters)
+        shortLinkService.assignAllowedUtmParameters(foundShortLink, shortLink.allowedUtmParameters)
+
         return shortLinkRepository.save(foundShortLink)
+    }
+
+    override fun assignDefaultUtmParameters(shortLink: ShortLink, utmParameters: Set<UtmParameter>) {
+        shortLink.defaultUtmParameters = utmParameters.toMutableSet()
+
+        utmParameters.forEach {
+            it.defaultForShortLinks.add(shortLink)
+        }
+    }
+
+    override fun assignAllowedUtmParameters(shortLink: ShortLink, utmParameters: Set<UtmParameter>) {
+        shortLink.allowedUtmParameters = utmParameters.toMutableSet()
+
+        utmParameters.forEach {
+            it.allowedForShortLinks.add(shortLink)
+        }
     }
 
     @Transactional
@@ -96,5 +123,11 @@ class ShortLinkServiceImpl : ShortLinkService {
         true
     } catch (_: ShortLinkNotFoundException) {
         false
+    }
+
+    private fun ShortLink.validate() {
+        if (!allowUtmParameters && defaultUtmParameters.isNotEmpty()) {
+            throw DefaultUtmParametersNotAllowedException(defaultUtmParameters)
+        }
     }
 }

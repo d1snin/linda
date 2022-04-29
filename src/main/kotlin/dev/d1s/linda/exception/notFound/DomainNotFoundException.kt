@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.utm
+package dev.d1s.linda.exception.notFound
 
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.time.Instant
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-data class UtmParameterDto(
-    val id: String,
-    val type: UtmParameterType,
-    val parameterValue: String,
-    val allowOverride: Boolean,
-    val defaultForShortLinks: Set<String>,
-    val allowedForShortLinks: Set<String>,
-    val creationTime: Instant,
-    val redirects: Set<String>
+open class DomainNotFoundException(message: String) : HttpStatusException(
+    ErrorResponseData(HttpStatus.NOT_FOUND, message)
 )

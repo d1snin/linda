@@ -17,6 +17,7 @@
 package dev.d1s.linda.domain
 
 import dev.d1s.linda.domain.availability.AvailabilityChange
+import dev.d1s.linda.domain.utm.UtmParameter
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
@@ -29,7 +30,10 @@ class ShortLink(
     var url: String,
 
     @Column(nullable = false, unique = true)
-    var alias: String
+    var alias: String,
+
+    @Column(nullable = false)
+    var allowUtmParameters: Boolean
 ) {
     @Id
     @Column
@@ -47,14 +51,32 @@ class ShortLink(
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
     var availabilityChanges: Set<AvailabilityChange> = setOf()
 
+    @ManyToMany
+    @JoinTable(
+        name = "short_link_default_utm_parameter",
+        joinColumns = [JoinColumn(name = "short_link_id")],
+        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
+    )
+    var defaultUtmParameters: MutableSet<UtmParameter> = mutableSetOf()
+
+    @ManyToMany
+    @JoinTable(
+        name = "short_link_allowed_utm_parameter",
+        joinColumns = [JoinColumn(name = "short_link_id")],
+        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
+    )
+    var allowedUtmParameters: MutableSet<UtmParameter> = mutableSetOf()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ShortLink) return false
+        if (javaClass != other?.javaClass) return false
+
+        other as ShortLink
 
         if (url != other.url) return false
         if (alias != other.alias) return false
         if (id != other.id) return false
-        if (creationTime != other.creationTime) return false
+
         return true
     }
 
@@ -62,11 +84,10 @@ class ShortLink(
         var result = url.hashCode()
         result = 31 * result + alias.hashCode()
         result = 31 * result + (id?.hashCode() ?: 0)
-        result = 31 * result + (creationTime?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "ShortLink(url='$url', alias='$alias', id=$id, creationTime=$creationTime, redirects=$redirects)"
+        return "ShortLink(url='$url', alias='$alias', allowUtmParameters=$allowUtmParameters, id=$id, creationTime=$creationTime, redirects=$redirects, availabilityChanges=$availabilityChanges, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters)"
     }
 }

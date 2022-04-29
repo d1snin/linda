@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.utm
+package dev.d1s.linda.exception
 
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.time.Instant
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-data class UtmParameterDto(
-    val id: String,
-    val type: UtmParameterType,
-    val parameterValue: String,
-    val allowOverride: Boolean,
-    val defaultForShortLinks: Set<String>,
-    val allowedForShortLinks: Set<String>,
-    val creationTime: Instant,
-    val redirects: Set<String>
+object AvailabilityCheckInProgressException : HttpStatusException(
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, "Availability check is already in progress.")
 )
