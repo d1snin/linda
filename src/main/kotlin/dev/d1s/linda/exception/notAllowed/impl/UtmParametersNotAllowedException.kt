@@ -16,8 +16,9 @@
 
 package dev.d1s.linda.exception.notAllowed.impl
 
+import dev.d1s.linda.constant.error.UTM_PARAMETERS_NOT_ALLOWED_ERROR
 import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
 object UtmParametersNotAllowedException : ActionNotAllowedException(
-    "UTM parameters are not allowed for this short link."
+    UTM_PARAMETERS_NOT_ALLOWED_ERROR
 )

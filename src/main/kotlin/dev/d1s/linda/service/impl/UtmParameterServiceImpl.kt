@@ -26,6 +26,9 @@ import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.UtmParameterService
+import dev.d1s.linda.util.mapToIdSet
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -45,19 +48,35 @@ class UtmParameterServiceImpl : UtmParameterService {
     @Autowired
     private lateinit var utmParameterService: UtmParameterServiceImpl
 
+    private val log = logger()
+
     @Transactional(readOnly = true)
     override fun findAll(): Set<UtmParameter> =
-        utmParameterRepository.findAll().toSet()
+        utmParameterRepository.findAll().toSet().also {
+            log.lazyDebug {
+                "found all utm parameters: ${
+                    it.mapToIdSet()
+                }"
+            }
+        }
 
     @Transactional(readOnly = true)
     override fun findById(id: String): UtmParameter =
         utmParameterRepository.findById(id).orElseThrow {
             UtmParameterNotFoundException(id)
+        }.also {
+            log.lazyDebug {
+                "found utm parameter by id $id"
+            }
         }
 
     @Transactional(readOnly = true)
     override fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter> =
-        utmParameterRepository.findUtmParameterByTypeAndValue(type, value)
+        utmParameterRepository.findUtmParameterByTypeAndValue(type, value).also {
+            log.lazyDebug {
+                "utm parameter by type and value ($type, $value): $it"
+            }
+        }
 
     @Transactional
     override fun create(utmParameter: UtmParameter): UtmParameter {
@@ -70,7 +89,14 @@ class UtmParameterServiceImpl : UtmParameterService {
         utmParameterService.assignDefaultUtmParameterShortLinks(utmParameter, utmParameter.defaultForShortLinks)
         utmParameterService.assignAllowedUtmParameterShortLinks(utmParameter, utmParameter.allowedForShortLinks)
 
-        return utmParameterService.assignRedirectsAndSave(utmParameter, utmParameter.redirects)
+        return utmParameterService.assignRedirectsAndSave(
+            utmParameter,
+            utmParameter.redirects
+        ).also {
+            log.lazyDebug {
+                "created utm parameter: $it"
+            }
+        }
     }
 
     @Transactional
@@ -86,7 +112,14 @@ class UtmParameterServiceImpl : UtmParameterService {
         utmParameterService.assignDefaultUtmParameterShortLinks(foundUtmParameter, utmParameter.defaultForShortLinks)
         utmParameterService.assignAllowedUtmParameterShortLinks(foundUtmParameter, utmParameter.allowedForShortLinks)
 
-        return utmParameterService.assignRedirectsAndSave(foundUtmParameter, foundUtmParameter.redirects)
+        return utmParameterService.assignRedirectsAndSave(
+            foundUtmParameter,
+            foundUtmParameter.redirects
+        ).also {
+            log.lazyDebug {
+                "updated utm parameter: $it"
+            }
+        }
     }
 
     @Transactional
@@ -119,6 +152,10 @@ class UtmParameterServiceImpl : UtmParameterService {
     @Transactional
     override fun removeById(id: String) {
         utmParameterRepository.deleteById(id)
+
+        log.lazyDebug {
+            "removed utm parameter with id $id"
+        }
     }
 
     private fun UtmParameter.validate() {

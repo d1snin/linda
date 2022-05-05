@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.domain.availability
 
+import dev.d1s.linda.domain.Identifiable
 import dev.d1s.linda.domain.ShortLink
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
@@ -29,12 +30,12 @@ class AvailabilityChange(
 
     @Column
     var unavailabilityReason: UnavailabilityReason?
-) {
+) : Identifiable {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    var id: String? = null
+    override var id: String? = null
 
     @Column
     var creationTime: Instant? = null
@@ -69,7 +70,9 @@ class AvailabilityChange(
         return result
     }
 
-    override fun toString(): String {
-        return "AvailabilityChange(shortLink=$shortLink, unavailabilityReason=$unavailabilityReason, id=$id, creationTime=$creationTime)"
-    }
+    override fun toString(): String = "AvailabilityChange(" +
+            "shortLink=${shortLink.id}, " +
+            "unavailabilityReason=$unavailabilityReason, " +
+            "id=$id, " +
+            "creationTime=$creationTime)"
 }

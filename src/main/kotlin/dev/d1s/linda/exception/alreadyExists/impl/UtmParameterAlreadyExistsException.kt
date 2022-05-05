@@ -18,8 +18,9 @@ package dev.d1s.linda.exception.alreadyExists.impl
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
+import dev.d1s.linda.constant.error.ERROR_UTM_PARAMETER_ALREADY_EXISTS
 import org.springframework.http.HttpStatus
 
 object UtmParameterAlreadyExistsException : HttpStatusException(
-    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, "UTM parameter already exists.")
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, ERROR_UTM_PARAMETER_ALREADY_EXISTS)
 )

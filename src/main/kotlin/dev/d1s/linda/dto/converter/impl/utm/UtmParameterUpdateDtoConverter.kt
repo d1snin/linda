@@ -42,7 +42,7 @@ class UtmParameterUpdateDtoConverter : DtoConverter<UtmParameterUpdateDto, UtmPa
         dto.defaultForShortLinks.mapToMutableSet {
             shortLinkService.find(byId(it))
         },
-        dto.defaultForShortLinks.mapToMutableSet {
+        dto.allowedForShortLinks.mapToMutableSet {
             shortLinkService.find(byId(it))
         }
     ).apply {

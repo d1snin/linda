@@ -18,8 +18,12 @@ package dev.d1s.linda.exception
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
+import dev.d1s.linda.constant.error.AVAILABILITY_CHECK_IN_PROGRESS_ERROR
 import org.springframework.http.HttpStatus
 
 object AvailabilityCheckInProgressException : HttpStatusException(
-    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, "Availability check is already in progress.")
+    ErrorResponseData(
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        AVAILABILITY_CHECK_IN_PROGRESS_ERROR
+    )
 )

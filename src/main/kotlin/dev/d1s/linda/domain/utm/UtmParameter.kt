@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.domain.utm
 
+import dev.d1s.linda.domain.Identifiable
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
 import org.hibernate.annotations.CreationTimestamp
@@ -40,12 +41,12 @@ class UtmParameter(
 
     @ManyToMany(mappedBy = "allowedUtmParameters")
     var allowedForShortLinks: MutableSet<ShortLink>
-) {
+) : Identifiable {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    var id: String? = null
+    override var id: String? = null
 
     @Column
     @CreationTimestamp
@@ -74,5 +75,6 @@ class UtmParameter(
         return result
     }
 
-    override fun toString(): String = "${id ?: "unsaved"} (${type.rawParameter}=$parameterValue)"
+    override fun toString(): String = "${id ?: "unsaved"} " +
+            "(${type.rawParameter}=$parameterValue)"
 }

@@ -28,7 +28,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -45,10 +44,7 @@ interface UtmParameterController {
         summary = "Find all UTM parameters.",
         description = "Answers with the entire list of available UTM parameter objects. Always returns 200."
     )
-    fun findAll(
-        @RequestParam(required = false) page: Int?,
-        @RequestParam(required = false) size: Int?
-    ): ResponseEntity<Page<UtmParameterDto>>
+    fun findAll(): ResponseEntity<Set<UtmParameterDto>>
 
     @GetMapping(UTM_PARAMETERS_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(

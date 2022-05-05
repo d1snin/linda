@@ -18,6 +18,7 @@ package dev.d1s.linda.domain
 
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.util.mapToIdSet
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
@@ -34,12 +35,12 @@ class ShortLink(
 
     @Column(nullable = false)
     var allowUtmParameters: Boolean
-) {
+) : Identifiable {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    var id: String? = null
+    override var id: String? = null
 
     @Column
     @CreationTimestamp
@@ -51,7 +52,9 @@ class ShortLink(
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
     var availabilityChanges: Set<AvailabilityChange> = setOf()
 
-    @ManyToMany
+    @ManyToMany(
+        cascade = [CascadeType.ALL]
+    )
     @JoinTable(
         name = "short_link_default_utm_parameter",
         joinColumns = [JoinColumn(name = "short_link_id")],
@@ -59,7 +62,9 @@ class ShortLink(
     )
     var defaultUtmParameters: MutableSet<UtmParameter> = mutableSetOf()
 
-    @ManyToMany
+    @ManyToMany(
+        cascade = [CascadeType.ALL]
+    )
     @JoinTable(
         name = "short_link_allowed_utm_parameter",
         joinColumns = [JoinColumn(name = "short_link_id")],
@@ -87,7 +92,22 @@ class ShortLink(
         return result
     }
 
-    override fun toString(): String {
-        return "ShortLink(url='$url', alias='$alias', allowUtmParameters=$allowUtmParameters, id=$id, creationTime=$creationTime, redirects=$redirects, availabilityChanges=$availabilityChanges, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters)"
-    }
+    override fun toString(): String = "ShortLink(" +
+            "url='$url', " +
+            "alias='$alias', " +
+            "allowUtmParameters=$allowUtmParameters, " +
+            "id=$id, " +
+            "creationTime=$creationTime, " +
+            "redirects=${
+                redirects.mapToIdSet()
+            }, " +
+            "availabilityChanges=${
+                availabilityChanges.mapToIdSet()
+            }, " +
+            "defaultUtmParameters=${
+                defaultUtmParameters.mapToIdSet()
+            }, " +
+            "allowedUtmParameters=${
+                allowedUtmParameters.mapToIdSet()
+            })"
 }

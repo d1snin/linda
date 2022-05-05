@@ -31,14 +31,12 @@ import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
-import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.ok
@@ -73,10 +71,10 @@ class UtmParameterControllerImpl : UtmParameterController {
         utmParameterDtoConverter.convertToDto(this)
 
     @Secured
-    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<UtmParameterDto>> = ok(
+    override fun findAll(): ResponseEntity<Set<UtmParameterDto>> = ok(
         utmParameterDtoSetConverter.convertToDtoSet(
             utmParameterService.findAll()
-        ).toPage(page, size)
+        )
     )
 
     @Secured

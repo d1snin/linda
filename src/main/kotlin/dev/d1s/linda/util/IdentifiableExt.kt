@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias.impl
+package dev.d1s.linda.util
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import dev.d1s.linda.constant.error.EMPTY_CUSTOM_ALIAS_ERROR
-import org.springframework.http.HttpStatus
+import dev.d1s.linda.domain.Identifiable
+import dev.d1s.teabag.stdlib.collection.mapToSet
 
-object EmptyCustomAliasException : HttpStatusException(
-    ErrorResponseData(HttpStatus.BAD_REQUEST, EMPTY_CUSTOM_ALIAS_ERROR)
-)
+fun Set<Identifiable>.mapToIdSet() = this.mapToSet {
+    it.id
+}

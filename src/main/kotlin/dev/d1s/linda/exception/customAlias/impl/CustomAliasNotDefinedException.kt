@@ -18,11 +18,12 @@ package dev.d1s.linda.exception.customAlias.impl
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
+import dev.d1s.linda.constant.error.CUSTOM_ALIAS_NOT_DEFINED_ERROR
 import org.springframework.http.HttpStatus
 
 object CustomAliasNotDefinedException : HttpStatusException(
     ErrorResponseData(
         HttpStatus.BAD_REQUEST,
-        "Custom alias is not defined. Specify it using the 'customAlias' request parameter."
+        CUSTOM_ALIAS_NOT_DEFINED_ERROR
     )
 )

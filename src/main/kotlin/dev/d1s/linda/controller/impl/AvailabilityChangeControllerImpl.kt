@@ -25,12 +25,10 @@ import dev.d1s.linda.event.data.AvailabilityChangeEventData
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
-import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.ok
 import org.springframework.web.bind.annotation.RestController
@@ -55,8 +53,8 @@ class AvailabilityChangeControllerImpl : AvailabilityChangeController {
     }
 
     @Secured
-    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<AvailabilityChangeDto>> = ok(
-        availabilityChangeService.findAll().toDtoSet().toPage(page, size)
+    override fun findAll(): ResponseEntity<Set<AvailabilityChangeDto>> = ok(
+        availabilityChangeService.findAll().toDtoSet()
     )
 
     @Secured
@@ -68,10 +66,7 @@ class AvailabilityChangeControllerImpl : AvailabilityChangeController {
 
     @Secured
     override fun triggerChecks(): ResponseEntity<Set<AvailabilityChangeDto>> = ok(
-        availabilityChangeService.checkAvailabilityOfAllShortLinks()
-            .filterNotNull()
-            .toSet()
-            .toDtoSet()
+        availabilityChangeService.checkAvailabilityOfAllShortLinks().toDtoSet()
     )
 
     @Secured

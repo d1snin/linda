@@ -27,18 +27,20 @@ import javax.persistence.*
 class Redirect(
     @ManyToOne(cascade = [CascadeType.MERGE])
     var shortLink: ShortLink
-) {
+) : Identifiable {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    var id: String? = null
+    override var id: String? = null
 
     @Column
     @CreationTimestamp
     var creationTime: Instant? = null
 
-    @ManyToMany
+    @ManyToMany(
+        cascade = [CascadeType.ALL]
+    )
     @JoinTable(
         name = "redirect_utm_parameter",
         joinColumns = [JoinColumn(name = "redirect_id")],
@@ -65,6 +67,10 @@ class Redirect(
     }
 
     override fun toString(): String {
-        return "Redirect(shortLink=$shortLink, id=$id, creationTime=$creationTime, utmParameters=$utmParameters)"
+        return "Redirect(" +
+                "shortLink=$shortLink, " +
+                "id=$id, " +
+                "creationTime=$creationTime, " +
+                "utmParameters=$utmParameters)"
     }
 }

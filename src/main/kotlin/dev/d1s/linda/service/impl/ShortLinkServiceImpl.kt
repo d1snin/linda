@@ -27,6 +27,9 @@ import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
+import dev.d1s.linda.util.mapToIdSet
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -49,9 +52,17 @@ class ShortLinkServiceImpl : ShortLinkService {
     @Autowired
     private lateinit var shortLinkService: ShortLinkServiceImpl
 
+    private val log = logger()
+
     @Transactional(readOnly = true)
     override fun findAll(): Set<ShortLink> =
-        shortLinkRepository.findAll().toSet()
+        shortLinkRepository.findAll().toSet().also {
+            log.lazyDebug {
+                "found all short links: ${
+                    it.mapToIdSet()
+                }"
+            }
+        }
 
     @Transactional(readOnly = true)
     override fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink =
@@ -62,6 +73,10 @@ class ShortLinkServiceImpl : ShortLinkService {
             )
         }.orElseThrow {
             ShortLinkNotFoundException(shortLinkFindingStrategy.identifier)
+        }.also {
+            log.lazyDebug {
+                "found short link using $shortLinkFindingStrategy strategy: $it"
+            }
         }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -75,11 +90,12 @@ class ShortLinkServiceImpl : ShortLinkService {
                 } else {
                     setOf()
                 }
-
-                shortLinkService.assignDefaultUtmParameters(this, shortLink.defaultUtmParameters)
-                shortLinkService.assignAllowedUtmParameters(this, shortLink.allowedUtmParameters)
             }
-        )
+        ).also {
+            log.lazyDebug {
+                "created short link: $it"
+            }
+        }
 
     @Transactional
     override fun update(id: String, shortLink: ShortLink): ShortLink {
@@ -95,7 +111,11 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLinkService.assignDefaultUtmParameters(foundShortLink, shortLink.defaultUtmParameters)
         shortLinkService.assignAllowedUtmParameters(foundShortLink, shortLink.allowedUtmParameters)
 
-        return shortLinkRepository.save(foundShortLink)
+        return shortLinkRepository.save(foundShortLink).also {
+            log.lazyDebug {
+                "updated short link: $it"
+            }
+        }
     }
 
     override fun assignDefaultUtmParameters(shortLink: ShortLink, utmParameters: Set<UtmParameter>) {
@@ -115,8 +135,13 @@ class ShortLinkServiceImpl : ShortLinkService {
     }
 
     @Transactional
-    override fun removeById(id: String) =
+    override fun removeById(id: String) {
         shortLinkRepository.deleteById(id)
+
+        log.lazyDebug {
+            "removed short link with id $id"
+        }
+    }
 
     override fun doesAliasExist(alias: String): Boolean = try {
         shortLinkService.find(byAlias(alias))

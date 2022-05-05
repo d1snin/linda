@@ -16,10 +16,11 @@
 
 package dev.d1s.linda.exception.notAllowed.impl
 
+import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETER_OVERRIDE_ERROR
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
-class DefaultUtmParameterOverrideNotAllowedException(utmParameter: UtmParameter) :
+class DefaultUtmParameterOverrideNotAllowedException(utmParameters: Set<UtmParameter>) :
     ActionNotAllowedException(
-        "It's not allowed to override default UTM parameter $utmParameter"
+        DEFAULT_UTM_PARAMETER_OVERRIDE_ERROR.format(utmParameters)
     )
