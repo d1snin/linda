@@ -19,7 +19,6 @@ package dev.d1s.linda.dto.converter.impl.utm
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.dto.utm.UtmParameterDto
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.log4j.logger
 import dev.d1s.teabag.stdlib.checks.checkNotNull
 import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
