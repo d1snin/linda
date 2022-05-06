@@ -16,7 +16,6 @@
 
 package dev.d1s.linda.controller.impl
 
-import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
 import dev.d1s.linda.controller.AvailabilityChangeController
 import dev.d1s.linda.domain.availability.AvailabilityChange
@@ -44,9 +43,6 @@ class AvailabilityChangeControllerImpl : AvailabilityChangeController {
 
     @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
-
-    @Autowired
-    private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     private val availabilityChangeSetDtoConverter by lazy {
         availabilityChangeDtoConverter.converterForSet()

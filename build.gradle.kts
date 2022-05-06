@@ -30,7 +30,6 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib"))
     implementation("dev.d1s.teabags:teabag-spring-web:$teabagsVersion")
-    implementation("dev.d1s.teabags:teabag-spring-data:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-dto:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-stdlib:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-log4j:$teabagsVersion")
