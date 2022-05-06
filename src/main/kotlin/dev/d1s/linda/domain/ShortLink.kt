@@ -26,7 +26,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "short_link")
-class ShortLink(
+data class ShortLink(
     @Column(nullable = false)
     var url: String,
 

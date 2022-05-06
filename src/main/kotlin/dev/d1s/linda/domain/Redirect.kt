@@ -24,7 +24,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "redirect")
-class Redirect(
+data class Redirect(
     @ManyToOne(cascade = [CascadeType.MERGE])
     var shortLink: ShortLink
 ) : Identifiable {

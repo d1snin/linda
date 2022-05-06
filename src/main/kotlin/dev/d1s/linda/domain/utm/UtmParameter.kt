@@ -26,7 +26,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "utm_parameter")
-class UtmParameter(
+data class UtmParameter(
     @Column(nullable = false)
     var type: UtmParameterType,
 

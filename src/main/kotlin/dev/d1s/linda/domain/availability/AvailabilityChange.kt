@@ -24,7 +24,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "availability_change")
-class AvailabilityChange(
+data class AvailabilityChange(
     @ManyToOne(cascade = [CascadeType.MERGE])
     var shortLink: ShortLink,
 
