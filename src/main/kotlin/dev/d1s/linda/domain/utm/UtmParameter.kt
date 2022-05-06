@@ -34,13 +34,7 @@ class UtmParameter(
     var parameterValue: String,
 
     @Column(nullable = false)
-    var allowOverride: Boolean,
-
-    @ManyToMany(mappedBy = "defaultUtmParameters")
-    var defaultForShortLinks: MutableSet<ShortLink>,
-
-    @ManyToMany(mappedBy = "allowedUtmParameters")
-    var allowedForShortLinks: MutableSet<ShortLink>
+    var allowOverride: Boolean
 ) : Identifiable {
     @Id
     @Column
@@ -54,6 +48,12 @@ class UtmParameter(
 
     @ManyToMany(mappedBy = "utmParameters")
     var redirects: MutableSet<Redirect> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "defaultUtmParameters")
+    var defaultForShortLinks: MutableSet<ShortLink> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "allowedUtmParameters")
+    var allowedForShortLinks: MutableSet<ShortLink> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

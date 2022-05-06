@@ -18,9 +18,8 @@ package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
-import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.teabag.web.dto.ErrorDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.headers.Header
@@ -134,7 +133,7 @@ interface UtmParameterController {
         ]
     )
     fun create(
-        @RequestBody @Valid alteration: UtmParameterCreationDto
+        @RequestBody @Valid alteration: UtmParameterAlterationDto
     ): ResponseEntity<UtmParameterDto>
 
     @PutMapping(UTM_PARAMETERS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -182,7 +181,7 @@ interface UtmParameterController {
     )
     fun update(
         @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
-        @RequestBody @Valid utmParameterUpdateDto: UtmParameterUpdateDto
+        @RequestBody @Valid alteration: UtmParameterAlterationDto
     ): ResponseEntity<UtmParameterDto>
 
     @DeleteMapping(UTM_PARAMETERS_REMOVE_BY_ID_MAPPING)

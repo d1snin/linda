@@ -20,7 +20,7 @@ import dev.d1s.linda.domain.utm.UtmParameterType
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
-data class UtmParameterCreationDto(
+data class UtmParameterAlterationDto(
     @field:NotNull(message = "type field must not be null.")
     val type: UtmParameterType,
 
@@ -28,11 +28,5 @@ data class UtmParameterCreationDto(
     val parameterValue: String,
 
     @field:NotNull(message = "allowOverride field must not be null.")
-    val allowOverride: Boolean,
-
-    @field:NotNull(message = "defaultForShortLinks field must not be null.")
-    val defaultForShortLinks: Set<String>,
-
-    @field:NotNull(message = "allowedForShortLinks field must not be null.")
-    val allowedForShortLinks: Set<String>
+    val allowOverride: Boolean
 )

@@ -17,30 +17,17 @@
 package dev.d1s.linda.dto.converter.impl.utm
 
 import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.dto.utm.UtmParameterCreationDto
-import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.strategy.shortLink.byId
+import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.collection.mapToMutableSet
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class UtmParameterCreationDtoConverter : DtoConverter<UtmParameterCreationDto, UtmParameter> {
+class UtmParameterAlterationDtoConverter : DtoConverter<UtmParameterAlterationDto, UtmParameter> {
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
-
-    override fun convertToEntity(dto: UtmParameterCreationDto): UtmParameter =
+    override fun convertToEntity(dto: UtmParameterAlterationDto): UtmParameter =
         UtmParameter(
             dto.type,
             dto.parameterValue,
-            dto.allowOverride,
-            dto.defaultForShortLinks.mapToMutableSet {
-                shortLinkService.find(byId(it))
-            },
-            dto.allowedForShortLinks.mapToMutableSet {
-                shortLinkService.find(byId(it))
-            }
+            dto.allowOverride
         )
 }
