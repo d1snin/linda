@@ -16,12 +16,9 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.exception.alreadyExists.impl.UtmParameterAlreadyExistsException
-import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService
@@ -80,18 +77,12 @@ class UtmParameterServiceImpl : UtmParameterService {
 
     @Transactional
     override fun create(utmParameter: UtmParameter): UtmParameter {
-        utmParameter.validate()
-
         if (utmParameterService.findByTypeAndValue(utmParameter.type, utmParameter.parameterValue).isPresent) {
             throw UtmParameterAlreadyExistsException
         }
 
-        utmParameterService.assignDefaultUtmParameterShortLinks(utmParameter, utmParameter.defaultForShortLinks)
-        utmParameterService.assignAllowedUtmParameterShortLinks(utmParameter, utmParameter.allowedForShortLinks)
-
-        return utmParameterService.assignRedirectsAndSave(
-            utmParameter,
-            utmParameter.redirects
+        return utmParameterRepository.save(
+            utmParameter
         ).also {
             log.lazyDebug {
                 "created utm parameter: $it"
@@ -101,51 +92,18 @@ class UtmParameterServiceImpl : UtmParameterService {
 
     @Transactional
     override fun update(id: String, utmParameter: UtmParameter): UtmParameter {
-        utmParameter.validate()
-
         val foundUtmParameter = utmParameterService.findById(id)
 
         foundUtmParameter.type = utmParameter.type
         foundUtmParameter.parameterValue = utmParameter.parameterValue
-        foundUtmParameter.redirects = utmParameter.redirects
+        foundUtmParameter.allowOverride = utmParameter.allowOverride
 
-        utmParameterService.assignDefaultUtmParameterShortLinks(foundUtmParameter, utmParameter.defaultForShortLinks)
-        utmParameterService.assignAllowedUtmParameterShortLinks(foundUtmParameter, utmParameter.allowedForShortLinks)
-
-        return utmParameterService.assignRedirectsAndSave(
-            foundUtmParameter,
-            foundUtmParameter.redirects
+        return utmParameterRepository.save(
+            foundUtmParameter
         ).also {
             log.lazyDebug {
                 "updated utm parameter: $it"
             }
-        }
-    }
-
-    @Transactional
-    override fun assignRedirectsAndSave(utmParameter: UtmParameter, redirects: Set<Redirect>): UtmParameter {
-        utmParameter.redirects.addAll(redirects)
-
-        redirects.forEach {
-            it.utmParameters.add(utmParameter)
-        }
-
-        return utmParameterRepository.save(utmParameter)
-    }
-
-    override fun assignDefaultUtmParameterShortLinks(utmParameter: UtmParameter, shortLinks: Set<ShortLink>) {
-        utmParameter.defaultForShortLinks = shortLinks.toMutableSet()
-
-        shortLinks.forEach {
-            it.defaultUtmParameters.add(utmParameter)
-        }
-    }
-
-    override fun assignAllowedUtmParameterShortLinks(utmParameter: UtmParameter, shortLinks: Set<ShortLink>) {
-        utmParameter.allowedForShortLinks = shortLinks.toMutableSet()
-
-        shortLinks.forEach {
-            it.allowedUtmParameters.add(utmParameter)
         }
     }
 
@@ -155,14 +113,6 @@ class UtmParameterServiceImpl : UtmParameterService {
 
         log.lazyDebug {
             "removed utm parameter with id $id"
-        }
-    }
-
-    private fun UtmParameter.validate() {
-        defaultForShortLinks.forEach {
-            if (!it.allowUtmParameters) {
-                throw DefaultUtmParametersNotAllowedException(setOf(this))
-            }
         }
     }
 }

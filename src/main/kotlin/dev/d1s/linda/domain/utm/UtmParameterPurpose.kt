@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.service
+package dev.d1s.linda.domain.utm
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.util.*
-
-interface UtmParameterService {
-
-    fun findAll(): Set<UtmParameter>
-
-    fun findById(id: String): UtmParameter
-
-    fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
-
-    fun create(utmParameter: UtmParameter): UtmParameter
-
-    fun update(id: String, utmParameter: UtmParameter): UtmParameter
-
-    fun removeById(id: String)
+enum class UtmParameterPurpose {
+    DEFAULT, ALLOWED
 }

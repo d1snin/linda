@@ -19,7 +19,9 @@ package dev.d1s.linda.dto.converter.impl.shortLink
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.service.AliasGeneratorService
+import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -29,12 +31,21 @@ class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLi
     @Autowired
     private lateinit var aliasGeneratorService: AliasGeneratorService
 
+    @Autowired
+    private lateinit var utmParameterService: UtmParameterService
+
     override fun convertToEntity(dto: ShortLinkCreationDto): ShortLink =
         ShortLink(
             dto.url,
             aliasGeneratorService
                 .getAliasGenerator(dto.aliasGeneratorId)
                 .generateAlias(dto),
-            dto.allowUtmParameters
+            dto.allowUtmParameters,
+            dto.defaultUtmParameters.mapToMutableSet(
+                utmParameterService::findById
+            ),
+            dto.allowedUtmParameters.mapToMutableSet(
+                utmParameterService::findById
+            )
         )
 }

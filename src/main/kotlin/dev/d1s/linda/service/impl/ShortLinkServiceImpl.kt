@@ -18,7 +18,7 @@ package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utm.UtmParameterPurpose
 import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
@@ -80,22 +80,36 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    override fun create(shortLink: ShortLink): ShortLink =
-        shortLinkRepository.save(
-            shortLink.apply {
-                validate()
+    override fun create(shortLink: ShortLink): ShortLink {
+        shortLink.validate()
 
-                availabilityChanges = if (availabilityChecksConfigurationProperties.eagerAvailabilityCheck) {
-                    setOf(availabilityChangeService.checkAvailability(shortLink))
-                } else {
-                    setOf()
-                }
-            }
+        if (
+            availabilityChecksConfigurationProperties.eagerAvailabilityCheck
+        ) {
+            shortLink.availabilityChanges +=
+                availabilityChangeService.checkAvailability(shortLink)
+        }
+
+        shortLinkService.assignUtmParameters(
+            shortLink,
+            shortLink,
+            UtmParameterPurpose.DEFAULT
+        )
+
+        shortLinkService.assignUtmParameters(
+            shortLink,
+            shortLink,
+            UtmParameterPurpose.ALLOWED
+        )
+
+        return shortLinkRepository.save(
+            shortLink
         ).also {
             log.lazyDebug {
                 "created short link: $it"
             }
         }
+    }
 
     @Transactional
     override fun update(id: String, shortLink: ShortLink): ShortLink {
@@ -108,8 +122,17 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
         foundShortLink.redirects = shortLink.redirects
 
-        shortLinkService.assignDefaultUtmParameters(foundShortLink, shortLink.defaultUtmParameters)
-        shortLinkService.assignAllowedUtmParameters(foundShortLink, shortLink.allowedUtmParameters)
+        shortLinkService.assignUtmParameters(
+            foundShortLink,
+            shortLink,
+            UtmParameterPurpose.DEFAULT
+        )
+
+        shortLinkService.assignUtmParameters(
+            foundShortLink,
+            shortLink,
+            UtmParameterPurpose.ALLOWED
+        )
 
         return shortLinkRepository.save(foundShortLink).also {
             log.lazyDebug {
@@ -118,19 +141,41 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
     }
 
-    override fun assignDefaultUtmParameters(shortLink: ShortLink, utmParameters: Set<UtmParameter>) {
-        shortLink.defaultUtmParameters = utmParameters.toMutableSet()
+    override fun assignUtmParameters(
+        shortLink: ShortLink,
+        associatedShortLink: ShortLink,
+        purpose: UtmParameterPurpose
+    ) {
+        val utmParameters = associatedShortLink.chooseUtmParameters(purpose)
+        val originUtmParameters = shortLink.chooseUtmParameters(purpose)
 
-        utmParameters.forEach {
-            it.defaultForShortLinks.add(shortLink)
+        originUtmParameters.forEach {
+            if (!utmParameters.contains(it)) {
+                originUtmParameters.remove(it)
+            }
         }
-    }
 
-    override fun assignAllowedUtmParameters(shortLink: ShortLink, utmParameters: Set<UtmParameter>) {
-        shortLink.allowedUtmParameters = utmParameters.toMutableSet()
+        when (purpose) {
+            UtmParameterPurpose.DEFAULT -> {
+                shortLink.defaultUtmParameters = utmParameters.toMutableSet()
+            }
+
+            UtmParameterPurpose.ALLOWED -> {
+                shortLink.allowedUtmParameters = utmParameters.toMutableSet()
+            }
+        }
 
         utmParameters.forEach {
-            it.allowedForShortLinks.add(shortLink)
+            when (purpose) {
+                UtmParameterPurpose.DEFAULT -> {
+                    it.defaultForShortLinks += shortLink
+                }
+
+                UtmParameterPurpose.ALLOWED -> {
+                    it.allowedForShortLinks += shortLink
+                }
+            }
+
         }
     }
 
@@ -154,5 +199,10 @@ class ShortLinkServiceImpl : ShortLinkService {
         if (!allowUtmParameters && defaultUtmParameters.isNotEmpty()) {
             throw DefaultUtmParametersNotAllowedException(defaultUtmParameters)
         }
+    }
+
+    private fun ShortLink.chooseUtmParameters(purpose: UtmParameterPurpose) = when (purpose) {
+        UtmParameterPurpose.DEFAULT -> this.defaultUtmParameters
+        UtmParameterPurpose.ALLOWED -> this.allowedUtmParameters
     }
 }

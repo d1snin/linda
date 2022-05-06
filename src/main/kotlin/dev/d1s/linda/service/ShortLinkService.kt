@@ -17,7 +17,7 @@
 package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utm.UtmParameterPurpose
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 
 interface ShortLinkService {
@@ -30,9 +30,7 @@ interface ShortLinkService {
 
     fun update(id: String, shortLink: ShortLink): ShortLink
 
-    fun assignDefaultUtmParameters(shortLink: ShortLink, utmParameters: Set<UtmParameter>)
-
-    fun assignAllowedUtmParameters(shortLink: ShortLink, utmParameters: Set<UtmParameter>)
+    fun assignUtmParameters(shortLink: ShortLink, associatedShortLink: ShortLink, purpose: UtmParameterPurpose)
 
     fun removeById(id: String)
 

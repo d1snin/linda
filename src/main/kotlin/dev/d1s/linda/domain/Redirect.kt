@@ -38,9 +38,7 @@ class Redirect(
     @CreationTimestamp
     var creationTime: Instant? = null
 
-    @ManyToMany(
-        cascade = [CascadeType.ALL]
-    )
+    @ManyToMany
     @JoinTable(
         name = "redirect_utm_parameter",
         joinColumns = [JoinColumn(name = "redirect_id")],

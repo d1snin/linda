@@ -87,7 +87,7 @@ class RedirectServiceImpl : RedirectService {
                             it.type
                         }
                     ) {
-                        utmParameters.add(defaultUtmParameter)
+                        utmParameters += defaultUtmParameter
                     }
                 }
             },
@@ -118,10 +118,18 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional
     override fun assignUtmParametersAndSave(redirect: Redirect, utmParameters: Set<UtmParameter>): Redirect {
+        val originUtmParameters = redirect.utmParameters
+
+        originUtmParameters.forEach {
+            if (!utmParameters.contains(it)) {
+                originUtmParameters.remove(it)
+            }
+        }
+
         redirect.utmParameters = utmParameters.toMutableSet()
 
         utmParameters.forEach {
-            it.redirects.add(redirect)
+            it.redirects += redirect
         }
 
         return redirectRepository.save(redirect)

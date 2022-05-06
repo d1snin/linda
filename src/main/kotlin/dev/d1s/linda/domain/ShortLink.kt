@@ -34,7 +34,23 @@ class ShortLink(
     var alias: String,
 
     @Column(nullable = false)
-    var allowUtmParameters: Boolean
+    var allowUtmParameters: Boolean,
+
+    @ManyToMany
+    @JoinTable(
+        name = "short_link_default_utm_parameter",
+        joinColumns = [JoinColumn(name = "short_link_id")],
+        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
+    )
+    var defaultUtmParameters: MutableSet<UtmParameter>,
+
+    @ManyToMany
+    @JoinTable(
+        name = "short_link_allowed_utm_parameter",
+        joinColumns = [JoinColumn(name = "short_link_id")],
+        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
+    )
+    var allowedUtmParameters: MutableSet<UtmParameter>,
 ) : Identifiable {
     @Id
     @Column
@@ -50,27 +66,7 @@ class ShortLink(
     var redirects: Set<Redirect> = setOf()
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    var availabilityChanges: Set<AvailabilityChange> = setOf()
-
-    @ManyToMany(
-        cascade = [CascadeType.ALL]
-    )
-    @JoinTable(
-        name = "short_link_default_utm_parameter",
-        joinColumns = [JoinColumn(name = "short_link_id")],
-        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
-    )
-    var defaultUtmParameters: MutableSet<UtmParameter> = mutableSetOf()
-
-    @ManyToMany(
-        cascade = [CascadeType.ALL]
-    )
-    @JoinTable(
-        name = "short_link_allowed_utm_parameter",
-        joinColumns = [JoinColumn(name = "short_link_id")],
-        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
-    )
-    var allowedUtmParameters: MutableSet<UtmParameter> = mutableSetOf()
+    var availabilityChanges: MutableSet<AvailabilityChange> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

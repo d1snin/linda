@@ -32,5 +32,11 @@ data class ShortLinkCreationDto(
     val aliasGeneratorId: String,
 
     @field:NotNull(message = "allowUtmParameters field must not be null.")
-    val allowUtmParameters: Boolean
+    val allowUtmParameters: Boolean,
+
+    @field:NotNull(message = "defaultUtmParameters field must not be null")
+    val defaultUtmParameters: Set<String>,
+
+    @field:NotNull(message = "allowedUtmParameters field must not be null")
+    val allowedUtmParameters: Set<String>
 )
