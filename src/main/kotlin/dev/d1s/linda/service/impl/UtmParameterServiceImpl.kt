@@ -75,6 +75,11 @@ class UtmParameterServiceImpl : UtmParameterService {
             }
         }
 
+    override fun findByTypeAndValueOrThrow(type: UtmParameterType, value: String): UtmParameter =
+        utmParameterService.findByTypeAndValue(type, value).orElseThrow {
+            UtmParameterNotFoundException(type, value)
+        }
+
     @Transactional
     override fun create(utmParameter: UtmParameter): UtmParameter {
         if (utmParameterService.findByTypeAndValue(utmParameter.type, utmParameter.parameterValue).isPresent) {

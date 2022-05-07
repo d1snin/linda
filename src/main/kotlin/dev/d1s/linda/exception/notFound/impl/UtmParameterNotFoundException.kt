@@ -17,8 +17,12 @@
 package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.constant.error.UTM_PARAMETER_NOT_FOUND_ERROR
+import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.exception.notFound.DomainNotFoundException
 
 class UtmParameterNotFoundException(id: String) : DomainNotFoundException(
     UTM_PARAMETER_NOT_FOUND_ERROR.format(id)
-)
+) {
+    constructor(type: UtmParameterType, parameterValue: String)
+            : this("${type.rawParameter}=$parameterValue")
+}

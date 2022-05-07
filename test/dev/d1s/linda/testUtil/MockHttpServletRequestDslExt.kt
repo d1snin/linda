@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.service
+package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.util.*
+import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockHttpServletRequestDsl
 
-interface UtmParameterService {
+fun MockHttpServletRequestDsl.jsonObjectBody(any: Any) {
+    contentType = MediaType.APPLICATION_JSON
 
-    fun findAll(): Set<UtmParameter>
+    content = ObjectMapperHolder
+        .beanInstance
+        .objectMapper
+        .writeValueAsString(any)
+}
 
-    fun findById(id: String): UtmParameter
-
-    fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
-
-    fun findByTypeAndValueOrThrow(type: UtmParameterType, value: String): UtmParameter
-
-    fun create(utmParameter: UtmParameter): UtmParameter
-
-    fun update(id: String, utmParameter: UtmParameter): UtmParameter
-
-    fun removeById(id: String)
+fun MockHttpServletRequestDsl.setShortLinkFindingStrategy(
+    type: ShortLinkFindingStrategyType
+) {
+    param("strategy", type.name)
 }

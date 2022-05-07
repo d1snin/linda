@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.service
+package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.util.*
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
-interface UtmParameterService {
+@Component
+final class ObjectMapperHolder {
 
-    fun findAll(): Set<UtmParameter>
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
-    fun findById(id: String): UtmParameter
+    init {
+        beanInstance = this
+    }
 
-    fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
-
-    fun findByTypeAndValueOrThrow(type: UtmParameterType, value: String): UtmParameter
-
-    fun create(utmParameter: UtmParameter): UtmParameter
-
-    fun update(id: String, utmParameter: UtmParameter): UtmParameter
-
-    fun removeById(id: String)
+    companion object {
+        lateinit var beanInstance: ObjectMapperHolder
+    }
 }

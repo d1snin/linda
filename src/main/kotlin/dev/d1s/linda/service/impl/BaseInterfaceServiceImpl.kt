@@ -21,7 +21,6 @@ import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.BaseInterfaceService
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
@@ -114,9 +113,7 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             utmMap.forEach { (type, nullableValue) ->
                 nullableValue?.let { value ->
                     add(
-                        utmParameterService.findByTypeAndValue(type, value).orElseThrow {
-                            UtmParameterNotFoundException("${type.rawParameter}=$value")
-                        }
+                        utmParameterService.findByTypeAndValueOrThrow(type, value)
                     )
                 }
             }

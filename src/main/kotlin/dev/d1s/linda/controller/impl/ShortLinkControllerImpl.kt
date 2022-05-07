@@ -117,8 +117,10 @@ class ShortLinkControllerImpl : ShortLinkController {
     }
 
     @Secured
-    override fun update(identifier: String, shortLinkUpdateDto: ShortLinkUpdateDto):
-            ResponseEntity<ShortLinkDto> {
+    override fun update(
+        identifier: String,
+        shortLinkUpdateDto: ShortLinkUpdateDto
+    ): ResponseEntity<ShortLinkDto> {
         val shortLink = shortLinkService.update(
             identifier,
             shortLinkUpdateDtoConverter.convertToEntity(shortLinkUpdateDto)

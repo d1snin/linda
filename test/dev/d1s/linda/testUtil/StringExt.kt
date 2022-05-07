@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.service
+package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.util.*
+import dev.d1s.teabag.stdlib.text.replacePlaceholder
+import dev.d1s.teabag.testing.constant.VALID_STUB
 
-interface UtmParameterService {
+fun String.setId() = this.replacePlaceholder(
+    "identifier" to VALID_STUB
+)
 
-    fun findAll(): Set<UtmParameter>
-
-    fun findById(id: String): UtmParameter
-
-    fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
-
-    fun findByTypeAndValueOrThrow(type: UtmParameterType, value: String): UtmParameter
-
-    fun create(utmParameter: UtmParameter): UtmParameter
-
-    fun update(id: String, utmParameter: UtmParameter): UtmParameter
-
-    fun removeById(id: String)
-}
+fun String.setAlias() = this.replacePlaceholder(
+    "alias" to VALID_STUB
+)
