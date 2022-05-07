@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.configuration.properties
+package dev.d1s.linda.constant.property
 
-import dev.d1s.linda.constant.property.DEFAULT_FALLBACK_TO_HTTPS
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+const val DEFAULT_BAD_STATUS_CODE_RANGE = "-1..-1,400..526"
+const val DEFAULT_EAGER_AVAILABILITY_CHECK = true
 
-@ConstructorBinding
-@ConfigurationProperties("linda.ssl")
-data class SslConfigurationProperties(
-    val fallbackToHttps: Boolean =
-        DEFAULT_FALLBACK_TO_HTTPS
-)
+const val DEFAULT_BASE_INTERFACE_ENABLED = true
+const val DEFAULT_REQUIRE_CONFIRMATION = true
+
+const val DEFAULT_FALLBACK_TO_HTTPS = false
