@@ -8,4 +8,4 @@
 
 Redirecting service with UTM parameters support.
 
-## [*Documentation is available on https://linda.d1s.dev!*](https://linda.d1s.dev/)
+<!-- ## [*Documentation is available on https://linda.d1s.dev!*](https://linda.d1s.dev/) -->
