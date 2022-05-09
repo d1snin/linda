@@ -24,19 +24,19 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "redirect")
-class Redirect(
+data class Redirect(
     @ManyToOne(cascade = [CascadeType.MERGE])
     var shortLink: ShortLink
-) {
+) : Identifiable {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    var id: String? = null
+    override var id: String? = null
 
     @Column
     @CreationTimestamp
-    var creationTime: Instant? = null
+    override var creationTime: Instant? = null
 
     @ManyToMany
     @JoinTable(
@@ -65,6 +65,10 @@ class Redirect(
     }
 
     override fun toString(): String {
-        return "Redirect(shortLink=$shortLink, id=$id, creationTime=$creationTime, utmParameters=$utmParameters)"
+        return "Redirect(" +
+                "shortLink=$shortLink, " +
+                "id=$id, " +
+                "creationTime=$creationTime, " +
+                "utmParameters=$utmParameters)"
     }
 }

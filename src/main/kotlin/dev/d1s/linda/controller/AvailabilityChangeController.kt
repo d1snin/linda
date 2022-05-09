@@ -23,16 +23,17 @@ import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_TRIGGER_CHECKS
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.teabag.web.dto.ErrorDto
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import javax.validation.constraints.NotBlank
 
 @Validated
@@ -47,10 +48,7 @@ interface AvailabilityChangeController {
         summary = "Find all availability change reports.",
         description = "Answers with the entire list of available Availability change objects. Always returns 200."
     )
-    fun findAll(
-        @RequestParam @Parameter(description = "The page number.") page: Int?,
-        @RequestParam @Parameter(description = "The page size.") size: Int?
-    ): ResponseEntity<Page<AvailabilityChangeDto>>
+    fun findAll(): ResponseEntity<Set<AvailabilityChangeDto>>
 
     @GetMapping(AVAILABILITY_CHANGES_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(

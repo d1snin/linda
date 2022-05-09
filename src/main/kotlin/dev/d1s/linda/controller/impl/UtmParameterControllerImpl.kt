@@ -23,22 +23,18 @@ import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.controller.UtmParameterController
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.dto.utm.UtmParameterCreationDto
+import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
 import dev.d1s.linda.dto.utm.UtmParameterDto
-import dev.d1s.linda.dto.utm.UtmParameterUpdateDto
 import dev.d1s.linda.event.data.UtmParameterEventData
-import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
-import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.ok
@@ -54,10 +50,7 @@ class UtmParameterControllerImpl : UtmParameterController {
     private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
 
     @Autowired
-    private lateinit var utmParameterCreationDtoConverter: DtoConverter<UtmParameterCreationDto, UtmParameter>
-
-    @Autowired
-    private lateinit var utmParameterUpdateDtoConverter: DtoConverter<UtmParameterUpdateDto, UtmParameter>
+    private lateinit var utmParameterAlterationDtoConverter: DtoConverter<UtmParameterAlterationDto, UtmParameter>
 
     @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
@@ -73,10 +66,10 @@ class UtmParameterControllerImpl : UtmParameterController {
         utmParameterDtoConverter.convertToDto(this)
 
     @Secured
-    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<UtmParameterDto>> = ok(
+    override fun findAll(): ResponseEntity<Set<UtmParameterDto>> = ok(
         utmParameterDtoSetConverter.convertToDtoSet(
             utmParameterService.findAll()
-        ).toPage(page, size)
+        )
     )
 
     @Secured
@@ -86,15 +79,13 @@ class UtmParameterControllerImpl : UtmParameterController {
 
     @Secured
     override fun findByTypeAndValue(type: UtmParameterType, value: String): ResponseEntity<UtmParameterDto> = ok(
-        utmParameterService.findByTypeAndValue(type, value).orElseThrow {
-            UtmParameterNotFoundException("${type.rawParameter}=$value")
-        }.toDto()
+        utmParameterService.findByTypeAndValueOrThrow(type, value).toDto()
     )
 
     @Secured
-    override fun create(alteration: UtmParameterCreationDto): ResponseEntity<UtmParameterDto> {
+    override fun create(alteration: UtmParameterAlterationDto): ResponseEntity<UtmParameterDto> {
         val utmParameter = utmParameterService.create(
-            this.utmParameterCreationDtoConverter.convertToEntity(alteration)
+            utmParameterAlterationDtoConverter.convertToEntity(alteration)
         ).toDto()
 
         publisher.publish(
@@ -117,11 +108,11 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Secured
     override fun update(
         identifier: String,
-        utmParameterUpdateDto: UtmParameterUpdateDto
+        alteration: UtmParameterAlterationDto
     ): ResponseEntity<UtmParameterDto> {
         val utmParameter = utmParameterService.update(
             identifier,
-            utmParameterUpdateDtoConverter.convertToEntity(utmParameterUpdateDto)
+            utmParameterAlterationDtoConverter.convertToEntity(alteration)
         ).toDto()
 
         publisher.publish(

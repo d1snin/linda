@@ -28,8 +28,11 @@ import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
+import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -76,19 +79,37 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         restTemplate.requestFactory
     }
 
+    private val log = logger()
+
     @Transactional(readOnly = true)
     override fun findAll(): Set<AvailabilityChange> =
-        availabilityChangeRepository.findAll().toSet()
+        availabilityChangeRepository.findAll().toSet().also {
+            log.lazyDebug {
+                "found all availability changes: ${
+                    it.mapToIdSet()
+                }"
+            }
+        }
 
     @Transactional(readOnly = true)
     override fun findById(id: String): AvailabilityChange =
         availabilityChangeRepository.findById(id).orElseThrow {
             AvailabilityChangeNotFoundException(id)
+        }.also {
+            log.lazyDebug {
+                "found availability change by id: $it"
+            }
         }
 
     @Transactional(readOnly = true)
     override fun findLast(shortLinkId: String): AvailabilityChange? =
-        availabilityChangeRepository.findLast(shortLinkId).orElse(null)
+        availabilityChangeRepository.findLast(shortLinkId)
+            .orElse(null)
+            .also {
+                log.lazyDebug {
+                    "found the last availability change: $it"
+                }
+            }
 
     @Transactional
     override fun create(availability: AvailabilityChange): AvailabilityChange {
@@ -102,12 +123,20 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             AvailabilityChangeEventData(dto)
         )
 
+        log.lazyDebug {
+            "created availability change: $saved"
+        }
+
         return saved
     }
 
     @Transactional
     override fun removeById(id: String) {
         availabilityChangeRepository.deleteById(id)
+
+        log.lazyDebug {
+            "removed availability change with id $id"
+        }
     }
 
     override fun checkAvailability(shortLink: ShortLink): AvailabilityChange {
@@ -143,7 +172,11 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         return AvailabilityChange(
             shortLink,
             unavailabilityReason
-        )
+        ).also {
+            log.lazyDebug {
+                "checked the availability of $shortLink: $it"
+            }
+        }
     }
 
     override fun checkAndSaveAvailability(shortLink: ShortLink): AvailabilityChange? {
@@ -158,21 +191,35 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     }
 
     // using runBlocking {} because I don't want coroutines to be used anywhere else, yet.
-    override fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange?> = runBlocking {
+    override fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange> = runBlocking {
+        log.lazyDebug {
+            "checking the availability of all short links"
+        }
+
         if (checksRunning.get()) {
             throw AvailabilityCheckInProgressException
         }
 
-        var changes: Set<AvailabilityChange?> by Delegates.notNull()
+        var changes: Set<AvailabilityChange> by Delegates.notNull()
+
         checksRunning.set(true)
 
         changes = shortLinkService.findAll().map {
             async {
                 availabilityChangeService.checkAndSaveAvailability(it)
             }
-        }.awaitAll().toSet()
+        }.awaitAll()
+            .filterNotNull()
+            .toSet()
 
         checksRunning.set(false)
+
+        log.lazyDebug {
+            "checked the availability of all short links: ${
+                changes.mapToIdSet().filterNotNull()
+            }"
+        }
+
         changes
     }
 }

@@ -16,9 +16,10 @@
 
 package dev.d1s.linda.exception.notAllowed.impl
 
+import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
 class DefaultUtmParametersNotAllowedException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
-    "Default UTM parameters $utmParameters are not allowed if the allowUtmParameters property is set to true."
+    DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR.format(utmParameters)
 )

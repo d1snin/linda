@@ -18,6 +18,7 @@ package dev.d1s.linda.domain
 
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.util.mapToIdSet
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
@@ -25,7 +26,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "short_link")
-class ShortLink(
+data class ShortLink(
     @Column(nullable = false)
     var url: String,
 
@@ -33,23 +34,7 @@ class ShortLink(
     var alias: String,
 
     @Column(nullable = false)
-    var allowUtmParameters: Boolean
-) {
-    @Id
-    @Column
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    var id: String? = null
-
-    @Column
-    @CreationTimestamp
-    var creationTime: Instant? = null
-
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    var redirects: Set<Redirect> = setOf()
-
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
-    var availabilityChanges: Set<AvailabilityChange> = setOf()
+    var allowUtmParameters: Boolean,
 
     @ManyToMany
     @JoinTable(
@@ -57,7 +42,7 @@ class ShortLink(
         joinColumns = [JoinColumn(name = "short_link_id")],
         inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
     )
-    var defaultUtmParameters: MutableSet<UtmParameter> = mutableSetOf()
+    var defaultUtmParameters: MutableSet<UtmParameter>,
 
     @ManyToMany
     @JoinTable(
@@ -65,7 +50,23 @@ class ShortLink(
         joinColumns = [JoinColumn(name = "short_link_id")],
         inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
     )
-    var allowedUtmParameters: MutableSet<UtmParameter> = mutableSetOf()
+    var allowedUtmParameters: MutableSet<UtmParameter>,
+) : Identifiable {
+    @Id
+    @Column
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    override var id: String? = null
+
+    @Column
+    @CreationTimestamp
+    override var creationTime: Instant? = null
+
+    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
+    var redirects: Set<Redirect> = setOf()
+
+    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
+    var availabilityChanges: MutableSet<AvailabilityChange> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -87,7 +88,22 @@ class ShortLink(
         return result
     }
 
-    override fun toString(): String {
-        return "ShortLink(url='$url', alias='$alias', allowUtmParameters=$allowUtmParameters, id=$id, creationTime=$creationTime, redirects=$redirects, availabilityChanges=$availabilityChanges, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters)"
-    }
+    override fun toString(): String = "ShortLink(" +
+            "url='$url', " +
+            "alias='$alias', " +
+            "allowUtmParameters=$allowUtmParameters, " +
+            "id=$id, " +
+            "creationTime=$creationTime, " +
+            "redirects=${
+                redirects.mapToIdSet()
+            }, " +
+            "availabilityChanges=${
+                availabilityChanges.mapToIdSet()
+            }, " +
+            "defaultUtmParameters=${
+                defaultUtmParameters.mapToIdSet()
+            }, " +
+            "allowedUtmParameters=${
+                allowedUtmParameters.mapToIdSet()
+            })"
 }

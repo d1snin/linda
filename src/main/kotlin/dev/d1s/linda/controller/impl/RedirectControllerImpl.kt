@@ -28,14 +28,12 @@ import dev.d1s.linda.event.data.RedirectEventData
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
-import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.ok
@@ -67,8 +65,8 @@ class RedirectControllerImpl : RedirectController {
     private fun Set<Redirect>.toDtoSet() = redirectSetDtoConverter.convertToDtoSet(this)
 
     @Secured
-    override fun findAll(page: Int?, size: Int?): ResponseEntity<Page<RedirectDto>> = ok(
-        redirectService.findAll().toDtoSet().toPage(page, size)
+    override fun findAll(): ResponseEntity<Set<RedirectDto>> = ok(
+        redirectService.findAll().toDtoSet()
     )
 
     @Secured

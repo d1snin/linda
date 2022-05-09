@@ -16,9 +16,10 @@
 
 package dev.d1s.linda.exception.notAllowed.impl
 
+import dev.d1s.linda.constant.error.ILLEGAL_UTM_PARAMETERS_ERROR
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
 class IllegalUtmParametersException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
-    "Provided UTM parameters $utmParameters are not allowed for this short link."
+    ILLEGAL_UTM_PARAMETERS_ERROR.format(utmParameters)
 )

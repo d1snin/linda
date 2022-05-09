@@ -18,8 +18,9 @@ package dev.d1s.linda.exception.customAlias.impl
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
+import dev.d1s.linda.constant.error.EMPTY_CUSTOM_ALIAS_ERROR
 import org.springframework.http.HttpStatus
 
 object EmptyCustomAliasException : HttpStatusException(
-    ErrorResponseData(HttpStatus.BAD_REQUEST, "Alias must not be empty.")
+    ErrorResponseData(HttpStatus.BAD_REQUEST, EMPTY_CUSTOM_ALIAS_ERROR)
 )

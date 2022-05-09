@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.domain.utm
 
+import dev.d1s.linda.domain.Identifiable
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
 import org.hibernate.annotations.CreationTimestamp
@@ -25,7 +26,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "utm_parameter")
-class UtmParameter(
+data class UtmParameter(
     @Column(nullable = false)
     var type: UtmParameterType,
 
@@ -33,26 +34,26 @@ class UtmParameter(
     var parameterValue: String,
 
     @Column(nullable = false)
-    var allowOverride: Boolean,
-
-    @ManyToMany(mappedBy = "defaultUtmParameters")
-    var defaultForShortLinks: MutableSet<ShortLink>,
-
-    @ManyToMany(mappedBy = "allowedUtmParameters")
-    var allowedForShortLinks: MutableSet<ShortLink>
-) {
+    var allowOverride: Boolean
+) : Identifiable {
     @Id
     @Column
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    var id: String? = null
+    override var id: String? = null
 
     @Column
     @CreationTimestamp
-    var creationTime: Instant? = null
+    override var creationTime: Instant? = null
 
     @ManyToMany(mappedBy = "utmParameters")
     var redirects: MutableSet<Redirect> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "defaultUtmParameters")
+    var defaultForShortLinks: MutableSet<ShortLink> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "allowedUtmParameters")
+    var allowedForShortLinks: MutableSet<ShortLink> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -74,5 +75,6 @@ class UtmParameter(
         return result
     }
 
-    override fun toString(): String = "${id ?: "unsaved"} (${type.rawParameter}=$parameterValue)"
+    override fun toString(): String = "${id ?: "unsaved"} " +
+            "(${type.rawParameter}=$parameterValue)"
 }

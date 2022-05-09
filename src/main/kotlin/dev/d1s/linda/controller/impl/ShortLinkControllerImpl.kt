@@ -31,14 +31,12 @@ import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
-import dev.d1s.teabag.data.toPage
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.created
 import org.springframework.http.ResponseEntity.ok
@@ -73,11 +71,11 @@ class ShortLinkControllerImpl : ShortLinkController {
         shortLinkDtoConverter.convertToDto(this)
 
     @Secured
-    override fun findAll(page: Int?, size: Int?):
-            ResponseEntity<Page<ShortLinkDto>> = ok(
+    override fun findAll():
+            ResponseEntity<Set<ShortLinkDto>> = ok(
         shortLinkDtoSetConverter.convertToDtoSet(
             shortLinkService.findAll()
-        ).toPage(page, size)
+        )
     )
 
     @Secured
@@ -119,8 +117,10 @@ class ShortLinkControllerImpl : ShortLinkController {
     }
 
     @Secured
-    override fun update(identifier: String, shortLinkUpdateDto: ShortLinkUpdateDto):
-            ResponseEntity<ShortLinkDto> {
+    override fun update(
+        identifier: String,
+        shortLinkUpdateDto: ShortLinkUpdateDto
+    ): ResponseEntity<ShortLinkDto> {
         val shortLink = shortLinkService.update(
             identifier,
             shortLinkUpdateDtoConverter.convertToEntity(shortLinkUpdateDto)

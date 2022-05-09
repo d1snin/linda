@@ -21,13 +21,11 @@ import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.teabag.web.dto.ErrorDto
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.headers.Header
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.data.domain.Page
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -47,10 +45,7 @@ interface RedirectController {
         summary = "Find all Redirects.",
         description = "Answers with the entire list of available Redirect objects. Always returns 200."
     )
-    fun findAll(
-        @RequestParam @Parameter(description = "The page number.") page: Int?,
-        @RequestParam @Parameter(description = "The page size.") size: Int?
-    ): ResponseEntity<Page<RedirectDto>>
+    fun findAll(): ResponseEntity<Set<RedirectDto>>
 
     @GetMapping(REDIRECTS_FIND_BY_ID_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(

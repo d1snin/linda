@@ -35,5 +35,5 @@ interface AvailabilityChangeService {
 
     fun checkAndSaveAvailability(shortLink: ShortLink): AvailabilityChange?
 
-    fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange?>
+    fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange>
 }

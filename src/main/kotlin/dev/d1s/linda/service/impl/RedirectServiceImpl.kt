@@ -24,6 +24,9 @@ import dev.d1s.linda.exception.notAllowed.impl.UtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
+import dev.d1s.linda.util.mapToIdSet
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -39,14 +42,26 @@ class RedirectServiceImpl : RedirectService {
     @Autowired
     private lateinit var redirectService: RedirectServiceImpl
 
+    private val log = logger()
+
     @Transactional(readOnly = true)
     override fun findAll(): Set<Redirect> =
-        redirectRepository.findAll().toSet()
+        redirectRepository.findAll().toSet().also {
+            log.lazyDebug {
+                "found all redirects: ${
+                    it.mapToIdSet()
+                }"
+            }
+        }
 
     @Transactional(readOnly = true)
     override fun findById(id: String): Redirect =
         redirectRepository.findById(id).orElseThrow {
             RedirectNotFoundException(id)
+        }.also {
+            log.lazyDebug {
+                "found redirect by id: $it"
+            }
         }
 
     @Transactional
@@ -59,8 +74,11 @@ class RedirectServiceImpl : RedirectService {
 
                 defaultUtmParameters.forEach { defaultUtmParameter ->
                     utmParameters.forEach { utmParameter ->
-                        if (utmParameter.type == defaultUtmParameter.type && !defaultUtmParameter.allowOverride) {
-                            throw DefaultUtmParameterOverrideNotAllowedException(defaultUtmParameter)
+                        if (utmParameter.type == defaultUtmParameter.type
+                            && !defaultUtmParameter.allowOverride
+                            && utmParameter !in defaultUtmParameters
+                        ) {
+                            throw DefaultUtmParameterOverrideNotAllowedException(defaultUtmParameters)
                         }
                     }
 
@@ -69,12 +87,16 @@ class RedirectServiceImpl : RedirectService {
                             it.type
                         }
                     ) {
-                        utmParameters.add(defaultUtmParameter)
+                        utmParameters += defaultUtmParameter
                     }
                 }
             },
             redirect.utmParameters
-        )
+        ).also {
+            log.lazyDebug {
+                "created availability change: $it"
+            }
+        }
 
     @Transactional
     override fun update(id: String, redirect: Redirect): Redirect {
@@ -84,23 +106,43 @@ class RedirectServiceImpl : RedirectService {
 
         foundRedirect.shortLink = redirect.shortLink
 
-        return redirectService.assignUtmParametersAndSave(foundRedirect, redirect.utmParameters)
+        return redirectService.assignUtmParametersAndSave(
+            foundRedirect,
+            redirect.utmParameters
+        ).also {
+            log.lazyDebug {
+                "updated redirect: $it"
+            }
+        }
     }
 
     @Transactional
     override fun assignUtmParametersAndSave(redirect: Redirect, utmParameters: Set<UtmParameter>): Redirect {
+        val originUtmParameters = redirect.utmParameters
+
+        originUtmParameters.forEach {
+            if (!utmParameters.contains(it)) {
+                originUtmParameters.remove(it)
+            }
+        }
+
         redirect.utmParameters = utmParameters.toMutableSet()
 
         utmParameters.forEach {
-            it.redirects.add(redirect)
+            it.redirects += redirect
         }
 
         return redirectRepository.save(redirect)
     }
 
     @Transactional
-    override fun removeById(id: String) =
+    override fun removeById(id: String) {
         redirectRepository.deleteById(id)
+
+        log.lazyDebug {
+            "removed redirect with id $id"
+        }
+    }
 
     private fun Redirect.validate() {
         if (utmParameters.isNotEmpty()) {

@@ -21,18 +21,18 @@ val springdocVersion: String by project
 val starterAdviceVersion: String by project
 val starterSimpleSecurityVersion: String by project
 val liquibaseVersion: String by project
-val striktVersion: String by project
-val springMockkVersion: String by project
 val longPollingStarterVersion: String by project
 val coroutinesVersion: String by project
+val striktVersion: String by project
+val springMockkVersion: String by project
 
 dependencies {
     implementation(kotlin("reflect"))
     implementation(kotlin("stdlib"))
     implementation("dev.d1s.teabags:teabag-spring-web:$teabagsVersion")
-    implementation("dev.d1s.teabags:teabag-spring-data:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-dto:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-stdlib:$teabagsVersion")
+    implementation("dev.d1s.teabags:teabag-log4j:$teabagsVersion")
     implementation("dev.d1s:spring-boot-starter-advice:$starterAdviceVersion")
     implementation("dev.d1s:spring-boot-starter-simple-security:$starterSimpleSecurityVersion")
     implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
@@ -47,11 +47,11 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.strikt:strikt-jvm:$striktVersion")
     testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
     testImplementation("dev.d1s.teabags:teabag-testing-spring-web:$teabagsVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
+    testImplementation("io.strikt:strikt-jvm:$striktVersion")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

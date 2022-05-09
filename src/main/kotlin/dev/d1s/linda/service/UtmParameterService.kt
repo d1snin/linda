@@ -16,8 +16,6 @@
 
 package dev.d1s.linda.service
 
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
 import java.util.*
@@ -30,15 +28,11 @@ interface UtmParameterService {
 
     fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
 
+    fun findByTypeAndValueOrThrow(type: UtmParameterType, value: String): UtmParameter
+
     fun create(utmParameter: UtmParameter): UtmParameter
 
     fun update(id: String, utmParameter: UtmParameter): UtmParameter
-
-    fun assignRedirectsAndSave(utmParameter: UtmParameter, redirects: Set<Redirect>): UtmParameter
-
-    fun assignDefaultUtmParameterShortLinks(utmParameter: UtmParameter, shortLinks: Set<ShortLink>)
-
-    fun assignAllowedUtmParameterShortLinks(utmParameter: UtmParameter, shortLinks: Set<ShortLink>)
 
     fun removeById(id: String)
 }

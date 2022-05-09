@@ -6,7 +6,7 @@ management:
 
 logging:
   level:
-    org.springframework: debug
+    root: debug
 
 spring:
   jpa:

@@ -30,7 +30,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.data.domain.Page
 import org.springframework.data.repository.query.Param
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -48,10 +47,7 @@ interface ShortLinkController {
         summary = "Find all Short links.",
         description = "Answers with the entire list of available Short link objects. Always returns 200."
     )
-    fun findAll(
-        @RequestParam(required = false) @Parameter(description = "The page number.") page: Int?,
-        @RequestParam(required = false) @Parameter(description = "The page size.") size: Int?
-    ): ResponseEntity<Page<ShortLinkDto>>
+    fun findAll(): ResponseEntity<Set<ShortLinkDto>>
 
     @GetMapping(SHORT_LINKS_FIND_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
@@ -114,7 +110,8 @@ interface ShortLinkController {
                 ]
             ),
             ApiResponse(
-                description = "Request body is invalid.",
+                description = "Request body is invalid or the 'customAlias' request parameter is empty " +
+                        "(if 'custom' alias generator used).",
                 responseCode = "400",
                 content = [
                     Content(

@@ -19,6 +19,8 @@ package dev.d1s.linda.service.impl
 import dev.d1s.linda.exception.notFound.impl.AliasGeneratorNotFoundException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.AliasGeneratorService
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -28,7 +30,13 @@ class AliasGeneratorServiceImpl : AliasGeneratorService {
     @Autowired
     private lateinit var aliasGenerators: Set<AliasGenerator>
 
-    override fun getAliasGenerator(identifier: String): AliasGenerator = aliasGenerators.firstOrNull {
+    private val log = logger()
+
+    override fun getAliasGenerator(identifier: String): AliasGenerator = (aliasGenerators.firstOrNull {
         it.identifier == identifier
-    } ?: throw AliasGeneratorNotFoundException(identifier)
+    } ?: throw AliasGeneratorNotFoundException(identifier)).also {
+        log.lazyDebug {
+            "retrieved alias generator: $identifier"
+        }
+    }
 }

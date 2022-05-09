@@ -16,6 +16,8 @@
 
 package dev.d1s.linda.configuration.properties
 
+import dev.d1s.linda.constant.property.DEFAULT_BAD_STATUS_CODE_RANGE
+import dev.d1s.linda.constant.property.DEFAULT_EAGER_AVAILABILITY_CHECK
 import dev.d1s.teabag.stdlib.collection.mapToSet
 import dev.d1s.teabag.stdlib.ranges.parseIntRange
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -29,8 +31,11 @@ data class AvailabilityChecksConfigurationProperties(
     // from HttpURLConnection.getResponseCode() javadocs:
     // Returns -1 if no code can be discerned from the response
     // (i.e., the response is not valid HTTP).
-    private val badStatusCodeRanges: String = "-1..-1,400..526",
-    val eagerAvailabilityCheck: Boolean = true
+    private val badStatusCodeRanges: String =
+        DEFAULT_BAD_STATUS_CODE_RANGE,
+
+    val eagerAvailabilityCheck: Boolean =
+        DEFAULT_EAGER_AVAILABILITY_CHECK
 ) {
     lateinit var badStatusCodeIntRanges: Set<IntRange>
 

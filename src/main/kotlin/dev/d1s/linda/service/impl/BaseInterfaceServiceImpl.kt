@@ -21,20 +21,23 @@ import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.service.BaseInterfaceService
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byAlias
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.servlet.view.RedirectView
 
 @Service
+@ConditionalOnProperty("linda.base-interface.enabled", matchIfMissing = true)
 class BaseInterfaceServiceImpl : BaseInterfaceService {
 
     @Autowired
@@ -51,6 +54,8 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
 
     @Autowired
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
+
+    private val log = logger()
 
     override fun createRedirectView(
         alias: String,
@@ -69,7 +74,17 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             UtmParameterType.CONTENT to utmContent
         )
 
-        if (!confirmed && properties.requireConfirmation) {
+        log.lazyDebug {
+            "redirecting from $alias with utm parameters: $utmMap"
+        }
+
+        val requireConfirmation = properties.requireConfirmation
+
+        if (!confirmed && requireConfirmation) {
+            log.lazyDebug {
+                "redirect is unconfirmed"
+            }
+
             return RedirectView(
                 buildFromCurrentRequest {
                     configureSsl(sslConfigurationProperties.fallbackToHttps)
@@ -84,6 +99,10 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
                         }
                     )
                     toUriString()
+                }.also {
+                    log.lazyDebug {
+                        "responding with redirect to the confirmation endpoint: $it"
+                    }
                 }
             )
         }
@@ -94,9 +113,7 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             utmMap.forEach { (type, nullableValue) ->
                 nullableValue?.let { value ->
                     add(
-                        utmParameterService.findByTypeAndValue(type, value).orElseThrow {
-                            UtmParameterNotFoundException("${type.rawParameter}=$value")
-                        }
+                        utmParameterService.findByTypeAndValueOrThrow(type, value)
                     )
                 }
             }

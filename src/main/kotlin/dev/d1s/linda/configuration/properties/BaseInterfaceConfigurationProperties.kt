@@ -16,12 +16,17 @@
 
 package dev.d1s.linda.configuration.properties
 
+import dev.d1s.linda.constant.property.DEFAULT_BASE_INTERFACE_ENABLED
+import dev.d1s.linda.constant.property.DEFAULT_REQUIRE_CONFIRMATION
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
 @ConfigurationProperties("linda.base-interface")
 data class BaseInterfaceConfigurationProperties(
-    val enabled: Boolean = true,
-    val requireConfirmation: Boolean = true
+    val enabled: Boolean =
+        DEFAULT_BASE_INTERFACE_ENABLED,
+
+    val requireConfirmation: Boolean =
+        DEFAULT_REQUIRE_CONFIRMATION
 )

@@ -16,11 +16,13 @@
 
 package dev.d1s.linda.configuration.properties
 
+import dev.d1s.linda.constant.property.DEFAULT_FALLBACK_TO_HTTPS
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConstructorBinding
 @ConfigurationProperties("linda.ssl")
 data class SslConfigurationProperties(
-    val fallbackToHttps: Boolean = false
+    val fallbackToHttps: Boolean =
+        DEFAULT_FALLBACK_TO_HTTPS
 )
