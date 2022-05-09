@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.constant.lp
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class RedirectLongPollingConstantsTest {
 
-    var id: String?
+    @Test
+    fun `should return valid redirect related values`() {
+        expectThat(REDIRECT_CREATED_GROUP) isEqualTo
+                "redirect-created"
 
-    var creationTime: Instant?
+        expectThat(REDIRECT_UPDATED_GROUP) isEqualTo
+                "redirect-updated"
+
+        expectThat(REDIRECT_REMOVED_GROUP) isEqualTo
+                "redirect-removed"
+    }
 }

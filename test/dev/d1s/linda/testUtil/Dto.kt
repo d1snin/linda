@@ -55,7 +55,7 @@ val redirectDtoSet = setOf(redirectDto)
 val shortLinkCreationDto = ShortLinkCreationDto(
     TEST_URL,
     VALID_STUB,
-    true,
+    false,
     setOf(),
     setOf()
 )
@@ -64,7 +64,7 @@ val shortLinkDto = ShortLinkDto(
     VALID_STUB,
     TEST_URL,
     VALID_STUB,
-    true,
+    false,
     Instant.EPOCH,
     setOf(),
     setOf(),
@@ -77,7 +77,7 @@ val shortLinkDtoSet = setOf(shortLinkDto)
 val shortLinkUpdateDto = ShortLinkUpdateDto(
     TEST_URL,
     VALID_STUB,
-    true,
+    false,
     setOf(),
     setOf(),
     setOf(),

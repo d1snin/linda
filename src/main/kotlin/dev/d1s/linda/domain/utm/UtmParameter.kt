@@ -44,7 +44,7 @@ data class UtmParameter(
 
     @Column
     @CreationTimestamp
-    var creationTime: Instant? = null
+    override var creationTime: Instant? = null
 
     @ManyToMany(mappedBy = "utmParameters")
     var redirects: MutableSet<Redirect> = mutableSetOf()

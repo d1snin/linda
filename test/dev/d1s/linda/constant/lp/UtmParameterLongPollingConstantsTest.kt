@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.constant.lp
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class UtmParameterLongPollingConstantsTest {
 
-    var id: String?
+    @Test
+    fun `should return valid utm parameter related values`() {
+        expectThat(UTM_PARAMETER_CREATED_GROUP) isEqualTo
+                "utm-parameter-created"
 
-    var creationTime: Instant?
+        expectThat(UTM_PARAMETER_UPDATED_GROUP) isEqualTo
+                "utm-parameter-updated"
+
+        expectThat(UTM_PARAMETER_REMOVED_GROUP) isEqualTo
+                "utm-parameter-removed"
+    }
 }

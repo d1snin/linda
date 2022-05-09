@@ -60,7 +60,7 @@ data class ShortLink(
 
     @Column
     @CreationTimestamp
-    var creationTime: Instant? = null
+    override var creationTime: Instant? = null
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
     var redirects: Set<Redirect> = setOf()

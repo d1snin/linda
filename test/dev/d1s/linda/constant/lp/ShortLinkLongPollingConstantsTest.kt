@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.constant.lp
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class ShortLinkLongPollingConstantsTest {
 
-    var id: String?
+    @Test
+    fun `should return valid short link related values`() {
+        expectThat(SHORT_LINK_CREATED_GROUP) isEqualTo
+                "short-link-created"
 
-    var creationTime: Instant?
+        expectThat(SHORT_LINK_UPDATED_GROUP) isEqualTo
+                "short-link-updated"
+
+        expectThat(SHORT_LINK_REMOVED_GROUP) isEqualTo
+                "short-link-removed"
+    }
 }

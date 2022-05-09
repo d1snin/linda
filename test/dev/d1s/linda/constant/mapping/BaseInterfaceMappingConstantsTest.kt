@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.constant.mapping
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class BaseInterfaceMappingConstantsTest {
 
-    var id: String?
+    @Test
+    fun `should return valid base interface related mappings`() {
+        expectThat(BASE_INTERFACE_MAPPING) isEqualTo
+                "/{alias}"
 
-    var creationTime: Instant?
+        expectThat(BASE_INTERFACE_CONFIRMATION_SEGMENT) isEqualTo
+                "/confirmed"
+
+        expectThat(BASE_INTERFACE_CONFIRMATION_MAPPING) isEqualTo
+                "/{alias}/confirmed"
+    }
 }

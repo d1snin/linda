@@ -36,7 +36,7 @@ data class Redirect(
 
     @Column
     @CreationTimestamp
-    var creationTime: Instant? = null
+    override var creationTime: Instant? = null
 
     @ManyToMany
     @JoinTable(

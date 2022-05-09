@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.constant.parameter
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class ParameterNameConstantsTest {
 
-    var id: String?
-
-    var creationTime: Instant?
+    @Test
+    fun `should return valid parameter names`() {
+        expectThat(CUSTOM_ALIAS_PARAMETER) isEqualTo
+                "customAlias"
+    }
 }

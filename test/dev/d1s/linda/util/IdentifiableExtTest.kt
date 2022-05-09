@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.util
 
-import java.time.Instant
+import dev.d1s.linda.testUtil.identifiableSet
+import dev.d1s.teabag.testing.constant.VALID_STUB
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class IdentifiableExtTest {
 
-    var id: String?
-
-    var creationTime: Instant?
+    @Test
+    fun `should map Identifiable set to set of identifiers`() {
+        expectThat(
+            identifiableSet.mapToIdSet()
+        ) isEqualTo setOf(VALID_STUB)
+    }
 }

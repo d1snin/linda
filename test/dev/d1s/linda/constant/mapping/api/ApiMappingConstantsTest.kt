@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.constant.mapping.api
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class ApiMappingConstantsTest {
 
-    var id: String?
+    @Test
+    fun `should return valid root mappings`() {
+        expectThat(API_BASE) isEqualTo "api"
 
-    var creationTime: Instant?
+        expectThat(API_BASE_MAPPING) isEqualTo "/api"
+    }
 }

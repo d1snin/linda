@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.constant.lp
 
-import java.time.Instant
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-interface Identifiable {
+class AvailabilityChangeLongPollingConstantsTest {
 
-    var id: String?
+    @Test
+    fun `should return valid availability change related values`() {
+        expectThat(AVAILABILITY_CHANGE_CREATED_GROUP) isEqualTo
+                "availability-change-created"
 
-    var creationTime: Instant?
+        expectThat(AVAILABILITY_CHANGE_REMOVED_GROUP) isEqualTo
+                "availability-change-removed"
+    }
 }

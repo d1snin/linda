@@ -101,7 +101,7 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
                     toUriString()
                 }.also {
                     log.lazyDebug {
-                        "responding with the redirect to the confirmation endpoint: $it"
+                        "responding with redirect to the confirmation endpoint: $it"
                     }
                 }
             )

@@ -59,18 +59,21 @@ class FriendlyAliasGenerator : AliasGenerator {
     @PostConstruct
     private fun initAliases() {
         aliases = objectMapper.readValue(
-            resourceLoader.getResource("classpath:wordlist.json").file,
+            resourceLoader.getResource(WORDLIST_LOCATION).file,
             FriendlyAliases::class.java
         )
     }
 
-    private fun String.appendAnimal() = "$this-${aliases.animals.random()}"
+    private fun String.appendAnimal() = "$this$DELIMITER${aliases.animals.random()}"
 
-    private fun String.appendAdjective() = "$this-${
-        aliases.adjectives.first { adjective ->
-            this.split("-").any {
-                it == adjective
-            }
-        }
+    private fun String.appendAdjective() = "$this$DELIMITER${
+        aliases.adjectives.firstOrNull { adjective ->
+            !this.split(DELIMITER).contains(adjective)
+        } ?: aliases.adjectives.random()
     }"
+
+    private companion object {
+        private const val DELIMITER = "-"
+        private const val WORDLIST_LOCATION = "classpath:wordlist.json"
+    }
 }

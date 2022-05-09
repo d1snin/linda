@@ -38,7 +38,7 @@ data class AvailabilityChange(
     override var id: String? = null
 
     @Column
-    var creationTime: Instant? = null
+    override var creationTime: Instant? = null
 
     // I have no ANY idea why the hell creationTime is null after saving, so I just use @PrePersist
     @PrePersist
