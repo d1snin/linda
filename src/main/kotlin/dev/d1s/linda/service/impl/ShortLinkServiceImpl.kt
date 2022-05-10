@@ -32,9 +32,13 @@ import dev.d1s.teabag.log4j.logger
 import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 
 @Service
 class ShortLinkServiceImpl : ShortLinkService {
@@ -48,27 +52,34 @@ class ShortLinkServiceImpl : ShortLinkService {
     @Autowired
     private lateinit var availabilityChecksConfigurationProperties: AvailabilityChecksConfigurationProperties
 
+    @Autowired
+    private lateinit var scheduler: ThreadPoolTaskScheduler
+
     @Lazy
     @Autowired
     private lateinit var shortLinkService: ShortLinkServiceImpl
 
     private val log = logger()
 
+    private val scheduledDeletions =
+        mutableMapOf<String, ScheduledFuture<*>>()
+
     @Transactional(readOnly = true)
     override fun findAll(): Set<ShortLink> =
-        shortLinkRepository.findAll().toSet().also {
-            log.lazyDebug {
-                "found all short links: ${
-                    it.mapToIdSet()
-                }"
+        shortLinkRepository.findAll().toSet()
+            .also {
+                log.lazyDebug {
+                    "found all short links: ${
+                        it.mapToIdSet()
+                    }"
+                }
             }
-        }
 
     @Transactional(readOnly = true)
     override fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink =
         when (shortLinkFindingStrategy) {
             is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(shortLinkFindingStrategy.identifier)
-            is ShortLinkFindingStrategy.ByAlias -> shortLinkRepository.findShortLinkByAliasEquals(
+            is ShortLinkFindingStrategy.ByAlias -> shortLinkRepository.findByAlias(
                 shortLinkFindingStrategy.identifier
             )
         }.orElseThrow {
@@ -79,7 +90,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             }
         }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Transactional
     override fun create(shortLink: ShortLink): ShortLink {
         shortLink.validate()
 
@@ -102,13 +113,19 @@ class ShortLinkServiceImpl : ShortLinkService {
             UtmParameterPurpose.ALLOWED
         )
 
-        return shortLinkRepository.save(
+        val savedShortLink = shortLinkRepository.save(
             shortLink
-        ).also {
-            log.lazyDebug {
-                "created short link: $it"
-            }
+        )
+
+        shortLinkService.scheduleForDeletion(
+            savedShortLink
+        )
+
+        log.lazyDebug {
+            "created short link: $savedShortLink"
         }
+
+        return savedShortLink
     }
 
     @Transactional
@@ -116,6 +133,8 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLink.validate()
 
         val foundShortLink = shortLinkService.find(byId(id))
+
+        val willSchedule = foundShortLink.deleteAfter != shortLink.deleteAfter
 
         foundShortLink.url = shortLink.url
         foundShortLink.alias = shortLink.alias
@@ -135,11 +154,17 @@ class ShortLinkServiceImpl : ShortLinkService {
             UtmParameterPurpose.ALLOWED
         )
 
-        return shortLinkRepository.save(foundShortLink).also {
-            log.lazyDebug {
-                "updated short link: $it"
-            }
+        val savedShortLink = shortLinkRepository.save(foundShortLink)
+
+        log.lazyDebug {
+            "updated short link: $savedShortLink"
         }
+
+        if (willSchedule) {
+            shortLinkService.scheduleForDeletion(savedShortLink)
+        }
+
+        return savedShortLink
     }
 
     override fun assignUtmParameters(
@@ -176,7 +201,6 @@ class ShortLinkServiceImpl : ShortLinkService {
                     it.allowedForShortLinks += shortLink
                 }
             }
-
         }
     }
 
@@ -189,11 +213,71 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
     }
 
+    @Transactional
+    override fun removeAll(shortLinks: Iterable<ShortLink>) {
+        shortLinkRepository.deleteAllInBatch(shortLinks)
+
+        log.lazyDebug {
+            "removed short links in batch: $shortLinks"
+        }
+    }
+
     override fun doesAliasExist(alias: String): Boolean = try {
         shortLinkService.find(byAlias(alias))
         true
     } catch (_: ShortLinkNotFoundException) {
         false
+    }
+
+    override fun isExpired(shortLink: ShortLink): Boolean =
+        (shortLink.deleteAfter?.let { deleteAfter ->
+            (shortLink.creationTime!! + deleteAfter) < Instant.now()
+        } ?: false).also {
+            log.lazyDebug {
+                "isExpired: $it; shortLink: $shortLink"
+            }
+        }
+
+    override fun scheduleForDeletion(shortLink: ShortLink) {
+        val id = shortLink.id!!
+
+        log.lazyDebug {
+            "scheduling $id for deletion"
+        }
+
+        shortLink.deleteAfter?.let { deleteAfter ->
+            scheduledDeletions.put(
+                id, scheduler.schedule({
+                    shortLinkService.removeById(id)
+                }, shortLink.creationTime!! + deleteAfter)
+            )?.let {
+                if (!it.isDone) {
+                    it.cancel(true)
+                }
+            }
+
+            log.lazyDebug {
+                "scheduled $id for deletion."
+            }
+        } ?: run {
+            log.lazyDebug {
+                "deleteAfter is null, won't schedule for deletion."
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    override fun scheduleAllEphemeralShortLinksForDeletion() {
+        log.lazyDebug {
+            "scheduling all ephemeral short links for deletion"
+        }
+
+        shortLinkRepository.findByDeleteAfterIsNull()
+            .forEach(shortLinkService::scheduleForDeletion)
+
+        log.lazyDebug {
+            "scheduled all ephemeral short links for deletion."
+        }
     }
 
     private fun ShortLink.validate() {
@@ -205,5 +289,14 @@ class ShortLinkServiceImpl : ShortLinkService {
     private fun ShortLink.chooseUtmParameters(purpose: UtmParameterPurpose) = when (purpose) {
         UtmParameterPurpose.DEFAULT -> this.defaultUtmParameters
         UtmParameterPurpose.ALLOWED -> this.allowedUtmParameters
+    }
+
+    @Scheduled(fixedDelay = 10, timeUnit = TimeUnit.SECONDS)
+    protected fun cleanScheduledDeletions() {
+        scheduledDeletions.forEach { (id, scheduledFuture) ->
+            if (scheduledFuture.isDone) {
+                scheduledDeletions.remove(id)
+            }
+        }
     }
 }

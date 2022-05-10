@@ -104,7 +104,7 @@ class ShortLinkServiceImplTest {
         ) isEqualTo shortLink
 
         verify {
-            shortLinkRepository.findShortLinkByAliasEquals(VALID_STUB)
+            shortLinkRepository.findByAlias(VALID_STUB)
         }
     }
 
@@ -115,7 +115,7 @@ class ShortLinkServiceImplTest {
         }
 
         verify {
-            shortLinkRepository.findShortLinkByAliasEquals(INVALID_STUB)
+            shortLinkRepository.findByAlias(INVALID_STUB)
         }
     }
 

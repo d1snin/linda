@@ -19,7 +19,6 @@ package dev.d1s.linda.domain
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.util.mapToIdSet
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Duration
 import java.time.Instant
@@ -63,7 +62,6 @@ data class ShortLink(
     override var id: String? = null
 
     @Column
-    @CreationTimestamp
     override var creationTime: Instant? = null
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
@@ -71,6 +69,11 @@ data class ShortLink(
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
     var availabilityChanges: MutableSet<AvailabilityChange> = mutableSetOf()
+
+    @PrePersist
+    fun setCreationTime() {
+        creationTime = Instant.now()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

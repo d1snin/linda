@@ -309,11 +309,11 @@ fun ShortLinkRepository.prepare() {
     } returns Optional.empty()
 
     every {
-        findShortLinkByAliasEquals(VALID_STUB)
+        findByAlias(VALID_STUB)
     } returns Optional.of(shortLink)
 
     every {
-        findShortLinkByAliasEquals(INVALID_STUB)
+        findByAlias(INVALID_STUB)
     } returns Optional.empty()
 
     val slot = slot<ShortLink>()

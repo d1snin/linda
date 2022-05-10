@@ -34,5 +34,13 @@ interface ShortLinkService {
 
     fun removeById(id: String)
 
+    fun removeAll(shortLinks: Iterable<ShortLink>)
+
     fun doesAliasExist(alias: String): Boolean
+
+    fun isExpired(shortLink: ShortLink): Boolean
+
+    fun scheduleForDeletion(shortLink: ShortLink)
+
+    fun scheduleAllEphemeralShortLinksForDeletion()
 }
