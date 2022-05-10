@@ -16,13 +16,12 @@
 
 package dev.d1s.linda.controller
 
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_FIND_BY_ID_MAPPING
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_REMOVE_BY_ID_MAPPING
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_TRIGGER_CHECKS
+import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.teabag.web.dto.ErrorDto
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -81,10 +80,61 @@ interface AvailabilityChangeController {
 
     @PostMapping(AVAILABILITY_CHANGES_TRIGGER_CHECKS, produces = [MediaType.APPLICATION_JSON_VALUE])
     @Operation(
-        summary = "Manually trigger Availability checks.",
-        description = "Manually start the process of checking the availability of all Short links."
+        summary = "Manually trigger Availability checks for all Short links.",
+        description = "Manually start the process of checking the availability of all Short links.",
+        responses = [
+            ApiResponse(
+                description = "Checked the availability.",
+                responseCode = "200",
+                content = [
+                    Content(
+                        array = ArraySchema(
+                            schema = Schema(implementation = AvailabilityChangeDto::class)
+                        )
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Availability checks are already in progress.",
+                responseCode = "422",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            )
+        ]
     )
     fun triggerChecks(): ResponseEntity<Set<AvailabilityChangeDto>>
+
+    @PostMapping(AVAILABILITY_CHANGES_TRIGGER_CHECK_FOR_SHORT_LINK, produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Operation(
+        summary = "Manually trigger Availability check for exact Short link.",
+        description = "Manually start the process of checking the availability of exact short link.",
+        responses = [
+            ApiResponse(
+                description = "Checked the availability.",
+                responseCode = "200",
+                content = [
+                    Content(
+                        schema = Schema(implementation = UnsavedAvailabilityChangeDto::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                description = "Requested Short link was not found.",
+                responseCode = "404",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ErrorDto::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun triggerCheckForShortLink(
+        @PathVariable @NotBlank(message = "identifier must not be blank") identifier: String
+    ): ResponseEntity<UnsavedAvailabilityChangeDto>
 
     @DeleteMapping(AVAILABILITY_CHANGES_REMOVE_BY_ID_MAPPING)
     @Operation(

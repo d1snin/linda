@@ -36,6 +36,9 @@ class AvailabilityChangeMappingConstantsTest {
         expectThat(AVAILABILITY_CHANGES_TRIGGER_CHECKS) isEqualTo
                 "/api/availabilityChanges"
 
+        expectThat(AVAILABILITY_CHANGES_TRIGGER_CHECK_FOR_SHORT_LINK) isEqualTo
+                "/api/availabilityChanges/shortLinks/{identifier}"
+
         expectThat(AVAILABILITY_CHANGES_REMOVE_BY_ID_MAPPING) isEqualTo
                 "/api/availabilityChanges/{identifier}"
     }

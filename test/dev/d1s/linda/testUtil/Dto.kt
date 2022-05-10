@@ -18,6 +18,7 @@ package dev.d1s.linda.testUtil
 
 import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
@@ -34,6 +35,12 @@ val availabilityChangeDto = AvailabilityChangeDto(
     true,
     null,
     Instant.EPOCH
+)
+
+val unsavedAvailabilityChangeDto = UnsavedAvailabilityChangeDto(
+    VALID_STUB,
+    true,
+    null
 )
 
 val availabilityChangeDtoSet = setOf(availabilityChangeDto)

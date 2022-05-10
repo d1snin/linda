@@ -18,15 +18,15 @@ package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_FIND_ALL_MAPPING
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_FIND_BY_ID_MAPPING
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_REMOVE_BY_ID_MAPPING
-import dev.d1s.linda.constant.mapping.api.AVAILABILITY_CHANGES_TRIGGER_CHECKS
+import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.AvailabilityChangeControllerImpl
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.event.data.AvailabilityChangeEventData
 import dev.d1s.linda.service.AvailabilityChangeService
+import dev.d1s.linda.service.ShortLinkService
+import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.linda.testUtil.*
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
@@ -65,6 +65,12 @@ class AvailabilityChangeControllerImplTest {
     @MockkBean
     private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
 
+    @MockkBean
+    private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
+
+    @MockkBean
+    private lateinit var shortLinkService: ShortLinkService
+
     @MockkBean(relaxed = true)
     private lateinit var publisher: AsyncLongPollingEventPublisher
 
@@ -72,6 +78,8 @@ class AvailabilityChangeControllerImplTest {
     fun setup() {
         availabilityChangeService.prepare()
         availabilityChangeDtoConverter.prepare()
+        unsavedAvailabilityChangeDtoConverter.prepare()
+        shortLinkService.prepare()
     }
 
     @Test
@@ -136,6 +144,26 @@ class AvailabilityChangeControllerImplTest {
                 // Verification failed: call 2 of 2: DtoSetConverterFacade(#36).convertToDtoSet(eq([AvailabilityChange(shortLink=v, unavailabilityReason=null, id=null, creationTime=null)]))) was not called
                 // converter.convertToDtoSet(availabilityChanges)
             }
+        }
+    }
+
+    @Test
+    fun `should trigger availability check for exact short link`() {
+        mockMvc.post(
+            AVAILABILITY_CHANGES_TRIGGER_CHECK_FOR_SHORT_LINK.setId()
+
+        ).andExpect {
+            ok()
+
+            jsonObject(
+                unsavedAvailabilityChangeDto
+            )
+        }
+
+        verifyAll {
+            shortLinkService.find(byId(VALID_STUB))
+            availabilityChangeService.checkAvailability(shortLink)
+            unsavedAvailabilityChangeDtoConverter.convertToDto(availabilityChange)
         }
     }
 

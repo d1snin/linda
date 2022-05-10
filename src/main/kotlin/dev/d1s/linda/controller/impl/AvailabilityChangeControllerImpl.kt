@@ -20,8 +20,11 @@ import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
 import dev.d1s.linda.controller.AvailabilityChangeController
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.event.data.AvailabilityChangeEventData
 import dev.d1s.linda.service.AvailabilityChangeService
+import dev.d1s.linda.service.ShortLinkService
+import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.dto.DtoConverter
@@ -42,7 +45,13 @@ class AvailabilityChangeControllerImpl : AvailabilityChangeController {
     private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
 
     @Autowired
+    private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
+
+    @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @Autowired
+    private lateinit var shortLinkService: ShortLinkService
 
     private val availabilityChangeSetDtoConverter by lazy {
         availabilityChangeDtoConverter.converterForSet()
@@ -63,6 +72,15 @@ class AvailabilityChangeControllerImpl : AvailabilityChangeController {
     @Secured
     override fun triggerChecks(): ResponseEntity<Set<AvailabilityChangeDto>> = ok(
         availabilityChangeService.checkAvailabilityOfAllShortLinks().toDtoSet()
+    )
+
+    @Secured
+    override fun triggerCheckForShortLink(identifier: String): ResponseEntity<UnsavedAvailabilityChangeDto> = ok(
+        unsavedAvailabilityChangeDtoConverter.convertToDto(
+            availabilityChangeService.checkAvailability(
+                shortLinkService.find(byId(identifier))
+            )
+        )
     )
 
     @Secured
