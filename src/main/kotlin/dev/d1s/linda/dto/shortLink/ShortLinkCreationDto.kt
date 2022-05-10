@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.dto.shortLink
 
+import java.time.Duration
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
@@ -33,6 +34,8 @@ data class ShortLinkCreationDto(
 
     @field:NotNull(message = "allowUtmParameters field must not be null.")
     val allowUtmParameters: Boolean,
+
+    val deleteAfter: Duration?,
 
     @field:NotNull(message = "defaultUtmParameters field must not be null")
     val defaultUtmParameters: Set<String>,

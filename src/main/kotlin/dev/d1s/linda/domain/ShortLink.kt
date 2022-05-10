@@ -21,6 +21,7 @@ import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.util.mapToIdSet
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
+import java.time.Duration
 import java.time.Instant
 import javax.persistence.*
 
@@ -35,6 +36,9 @@ data class ShortLink(
 
     @Column(nullable = false)
     var allowUtmParameters: Boolean,
+
+    @Column
+    var deleteAfter: Duration?,
 
     @ManyToMany
     @JoinTable(

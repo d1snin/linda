@@ -32,18 +32,19 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
             entity.url,
             entity.alias,
             entity.allowUtmParameters,
+            entity.deleteAfter,
+            entity.defaultUtmParameters.mapToSet {
+                it.id.checkNotNull("default utm parameter's id")
+            },
+            entity.allowedUtmParameters.mapToSet {
+                it.id.checkNotNull("allowed utm parameter's id")
+            },
             entity.creationTime.checkNotNull("creation time"),
             entity.redirects.mapToSet {
                 it.id.checkNotNull("redirect id")
             },
             entity.availabilityChanges.mapToSet {
                 it.id.checkNotNull("availability change's id")
-            },
-            entity.defaultUtmParameters.mapToSet {
-                it.id.checkNotNull("default utm parameter's id")
-            },
-            entity.allowedUtmParameters.mapToSet {
-                it.id.checkNotNull("allowed utm parameter's id")
             }
         )
 }

@@ -120,6 +120,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.url = shortLink.url
         foundShortLink.alias = shortLink.alias
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
+        foundShortLink.deleteAfter = shortLink.deleteAfter
         foundShortLink.redirects = shortLink.redirects
 
         shortLinkService.assignUtmParameters(

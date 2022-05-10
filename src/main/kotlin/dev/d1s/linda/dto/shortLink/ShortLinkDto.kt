@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.dto.shortLink
 
+import java.time.Duration
 import java.time.Instant
 
 data class ShortLinkDto(
@@ -23,9 +24,10 @@ data class ShortLinkDto(
     val url: String,
     val alias: String,
     val allowUtmParameters: Boolean,
+    val deleteAfter: Duration?,
+    val defaultUtmParameters: Set<String>,
+    val allowedUtmParameters: Set<String>,
     val creationTime: Instant,
     val redirects: Set<String>,
     val availabilityChanges: Set<String>,
-    val defaultUtmParameters: Set<String>,
-    val allowedUtmParameters: Set<String>
 )

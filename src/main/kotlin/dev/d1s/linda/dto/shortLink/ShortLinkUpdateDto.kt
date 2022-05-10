@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.dto.shortLink
 
+import java.time.Duration
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
@@ -33,15 +34,17 @@ data class ShortLinkUpdateDto(
     @field:NotNull(message = "allowUtmParameters field must not be null.")
     val allowUtmParameters: Boolean,
 
-    @field:NotNull(message = "redirects field must not be null.")
-    val redirects: Set<String>,
-
-    @field:NotNull(message = "availabilityChanges field must not be null.")
-    val availabilityChanges: Set<String>,
+    val deleteAfter: Duration?,
 
     @field:NotNull(message = "defaultUtmParameters field must not be null")
     val defaultUtmParameters: Set<String>,
 
     @field:NotNull(message = "allowedUtmParameters field must not be null")
-    val allowedUtmParameters: Set<String>
+    val allowedUtmParameters: Set<String>,
+
+    @field:NotNull(message = "redirects field must not be null.")
+    val redirects: Set<String>,
+
+    @field:NotNull(message = "availabilityChanges field must not be null.")
+    val availabilityChanges: Set<String>
 )

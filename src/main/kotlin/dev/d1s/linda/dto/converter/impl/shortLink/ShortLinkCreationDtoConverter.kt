@@ -41,6 +41,7 @@ class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLi
                 .getAliasGenerator(dto.aliasGeneratorId)
                 .generateAlias(dto),
             dto.allowUtmParameters,
+            dto.deleteAfter,
             dto.defaultUtmParameters.mapToMutableSet(
                 utmParameterService::findById
             ),

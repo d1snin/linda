@@ -42,6 +42,7 @@ class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> 
         dto.url,
         dto.alias,
         dto.allowUtmParameters,
+        dto.deleteAfter,
         dto.defaultUtmParameters.mapToMutableSet(
             utmParameterService::findById
         ),
