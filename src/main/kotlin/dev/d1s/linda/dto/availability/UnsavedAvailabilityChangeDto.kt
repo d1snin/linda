@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.mapping.api
+package dev.d1s.linda.dto.availability
 
-const val API_BASE = "api"
-const val API_BASE_MAPPING = "/$API_BASE"
+import dev.d1s.linda.domain.availability.UnavailabilityReason
 
-const val IDENTIFIER_SEGMENT = "/{identifier}"
+data class UnsavedAvailabilityChangeDto(
+    val shortLink: String,
+    val available: Boolean,
+    val unavailabilityReason: UnavailabilityReason?
+)

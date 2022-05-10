@@ -27,5 +27,7 @@ class ApiMappingConstantsTest {
         expectThat(API_BASE) isEqualTo "api"
 
         expectThat(API_BASE_MAPPING) isEqualTo "/api"
+
+        expectThat(IDENTIFIER_SEGMENT) isEqualTo "/{identifier}"
     }
 }

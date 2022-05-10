@@ -25,6 +25,7 @@ import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.utm.UtmParameter
 import dev.d1s.linda.domain.utm.UtmParameterType
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
@@ -421,6 +422,13 @@ fun DtoSetConverterFacade<AvailabilityChangeDto, AvailabilityChange>.prepare() {
     every {
         convertToDtoSet(availabilityChanges)
     } returns availabilityChangeDtoSet
+}
+
+@JvmName("prepareDtoConverterUnsavedAvailabilityChangeDtoAvailabilityChange")
+fun DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>.prepare() {
+    every {
+        convertToDto(availabilityChange)
+    } returns unsavedAvailabilityChangeDto
 }
 
 @JvmName("prepareDtoConverterRedirectDtoRedirect")
