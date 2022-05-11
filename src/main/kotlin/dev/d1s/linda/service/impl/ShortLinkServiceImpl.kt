@@ -271,7 +271,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             "scheduling all ephemeral short links for deletion"
         }
 
-        shortLinkRepository.findByDeleteAfterIsNull()
+        shortLinkRepository.findByDeleteAfterIsNotNull()
             .forEach(shortLinkService::scheduleForDeletion)
 
         log.debug {

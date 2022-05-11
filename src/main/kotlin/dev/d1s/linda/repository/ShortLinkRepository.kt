@@ -26,5 +26,5 @@ interface ShortLinkRepository : JpaRepository<ShortLink, String> {
 
     fun findByAlias(alias: String): Optional<ShortLink>
 
-    fun findByDeleteAfterIsNull(): Set<ShortLink>
+    fun findByDeleteAfterIsNotNull(): Set<ShortLink>
 }

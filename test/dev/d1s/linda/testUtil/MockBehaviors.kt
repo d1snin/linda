@@ -171,9 +171,25 @@ fun ShortLinkService.prepare() {
         removeById(VALID_STUB)
     }
 
+    justRun {
+        removeAll(shortLinks)
+    }
+
     every {
         doesAliasExist(any())
     } returns false
+
+    every {
+        isExpired(shortLink)
+    } returns false
+
+    justRun {
+        scheduleForDeletion(shortLink)
+    }
+
+    justRun {
+        scheduleAllEphemeralShortLinksForDeletion()
+    }
 }
 
 fun UtmParameterService.prepare() {
@@ -316,6 +332,10 @@ fun ShortLinkRepository.prepare() {
         findByAlias(INVALID_STUB)
     } returns Optional.empty()
 
+    every {
+        findByDeleteAfterIsNotNull()
+    } returns shortLinks
+
     val slot = slot<ShortLink>()
 
     every {
@@ -328,6 +348,10 @@ fun ShortLinkRepository.prepare() {
 
     justRun {
         deleteById(VALID_STUB)
+    }
+
+    justRun {
+        deleteAllInBatch(shortLinks)
     }
 }
 

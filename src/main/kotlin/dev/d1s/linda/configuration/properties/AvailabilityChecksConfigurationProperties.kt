@@ -35,7 +35,7 @@ data class AvailabilityChecksConfigurationProperties(
         DEFAULT_BAD_STATUS_CODE_RANGE,
 
     val eagerAvailabilityCheck: Boolean =
-        DEFAULT_EAGER_AVAILABILITY_CHECK,
+        DEFAULT_EAGER_AVAILABILITY_CHECK
 ) {
     lateinit var badStatusCodeIntRanges: Set<IntRange>
 

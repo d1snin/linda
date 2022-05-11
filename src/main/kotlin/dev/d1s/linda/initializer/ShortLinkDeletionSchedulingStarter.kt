@@ -17,17 +17,24 @@
 package dev.d1s.linda.initializer
 
 import dev.d1s.linda.service.ShortLinkService
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-private class ShortLinkDeletionSchedulingStarter : InitializingBean {
+class ShortLinkDeletionSchedulingStarter : InitializingBean {
 
     @Autowired
     private lateinit var shortLinkService: ShortLinkService
 
+    private val log = logging()
+
     override fun afterPropertiesSet() {
+        log.debug {
+            "scheduling all ephemeral short links for deletion on application launch right now"
+        }
+
         runCatching {
             shortLinkService.scheduleAllEphemeralShortLinksForDeletion()
         }

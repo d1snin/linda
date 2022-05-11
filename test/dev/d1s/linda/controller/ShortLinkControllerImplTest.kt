@@ -99,7 +99,7 @@ class ShortLinkControllerImplTest {
             }
 
             verifyAll {
-                shortLinkService.findAll(false)
+                shortLinkService.findAll()
                 converter.convertToDtoSet(shortLinks)
             }
         }
