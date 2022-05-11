@@ -28,8 +28,7 @@ import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.linda.util.mapToIdSet
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.scheduling.annotation.Scheduled
@@ -59,7 +58,7 @@ class ShortLinkServiceImpl : ShortLinkService {
     @Autowired
     private lateinit var shortLinkService: ShortLinkServiceImpl
 
-    private val log = logger()
+    private val log = logging()
 
     private val scheduledDeletions =
         mutableMapOf<String, ScheduledFuture<*>>()
@@ -68,7 +67,7 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun findAll(): Set<ShortLink> =
         shortLinkRepository.findAll().toSet()
             .also {
-                log.lazyDebug {
+                log.debug {
                     "found all short links: ${
                         it.mapToIdSet()
                     }"
@@ -85,7 +84,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         }.orElseThrow {
             ShortLinkNotFoundException(shortLinkFindingStrategy.identifier)
         }.also {
-            log.lazyDebug {
+            log.debug {
                 "found short link using $shortLinkFindingStrategy strategy: $it"
             }
         }
@@ -121,7 +120,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             savedShortLink
         )
 
-        log.lazyDebug {
+        log.debug {
             "created short link: $savedShortLink"
         }
 
@@ -156,7 +155,7 @@ class ShortLinkServiceImpl : ShortLinkService {
 
         val savedShortLink = shortLinkRepository.save(foundShortLink)
 
-        log.lazyDebug {
+        log.debug {
             "updated short link: $savedShortLink"
         }
 
@@ -208,7 +207,7 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun removeById(id: String) {
         shortLinkRepository.deleteById(id)
 
-        log.lazyDebug {
+        log.debug {
             "removed short link with id $id"
         }
     }
@@ -217,7 +216,7 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun removeAll(shortLinks: Iterable<ShortLink>) {
         shortLinkRepository.deleteAllInBatch(shortLinks)
 
-        log.lazyDebug {
+        log.debug {
             "removed short links in batch: $shortLinks"
         }
     }
@@ -233,7 +232,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         (shortLink.deleteAfter?.let { deleteAfter ->
             (shortLink.creationTime!! + deleteAfter) < Instant.now()
         } ?: false).also {
-            log.lazyDebug {
+            log.debug {
                 "isExpired: $it; shortLink: $shortLink"
             }
         }
@@ -241,7 +240,7 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun scheduleForDeletion(shortLink: ShortLink) {
         val id = shortLink.id!!
 
-        log.lazyDebug {
+        log.debug {
             "scheduling $id for deletion"
         }
 
@@ -256,11 +255,11 @@ class ShortLinkServiceImpl : ShortLinkService {
                 }
             }
 
-            log.lazyDebug {
+            log.debug {
                 "scheduled $id for deletion."
             }
         } ?: run {
-            log.lazyDebug {
+            log.debug {
                 "deleteAfter is null, won't schedule for deletion."
             }
         }
@@ -268,14 +267,14 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @Transactional(readOnly = true)
     override fun scheduleAllEphemeralShortLinksForDeletion() {
-        log.lazyDebug {
+        log.debug {
             "scheduling all ephemeral short links for deletion"
         }
 
         shortLinkRepository.findByDeleteAfterIsNull()
             .forEach(shortLinkService::scheduleForDeletion)
 
-        log.lazyDebug {
+        log.debug {
             "scheduled all ephemeral short links for deletion."
         }
     }

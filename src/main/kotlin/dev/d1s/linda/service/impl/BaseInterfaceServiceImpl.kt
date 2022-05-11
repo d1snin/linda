@@ -26,10 +26,9 @@ import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byAlias
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
@@ -55,7 +54,7 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
     @Autowired
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
-    private val log = logger()
+    private val log = logging()
 
     override fun createRedirectView(
         alias: String,
@@ -74,14 +73,14 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             UtmParameterType.CONTENT to utmContent
         )
 
-        log.lazyDebug {
+        log.debug {
             "redirecting from $alias with utm parameters: $utmMap"
         }
 
         val requireConfirmation = properties.requireConfirmation
 
         if (!confirmed && requireConfirmation) {
-            log.lazyDebug {
+            log.debug {
                 "redirect is unconfirmed"
             }
 
@@ -100,7 +99,7 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
                     )
                     toUriString()
                 }.also {
-                    log.lazyDebug {
+                    log.debug {
                         "responding with redirect to the confirmation endpoint: $it"
                     }
                 }

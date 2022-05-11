@@ -31,11 +31,10 @@ import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.http.HttpMethod
@@ -79,12 +78,12 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         restTemplate.requestFactory
     }
 
-    private val log = logger()
+    private val log = logging()
 
     @Transactional(readOnly = true)
     override fun findAll(): Set<AvailabilityChange> =
         availabilityChangeRepository.findAll().toSet().also {
-            log.lazyDebug {
+            log.debug {
                 "found all availability changes: ${
                     it.mapToIdSet()
                 }"
@@ -96,7 +95,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         availabilityChangeRepository.findById(id).orElseThrow {
             AvailabilityChangeNotFoundException(id)
         }.also {
-            log.lazyDebug {
+            log.debug {
                 "found availability change by id: $it"
             }
         }
@@ -106,7 +105,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         availabilityChangeRepository.findLast(shortLinkId)
             .orElse(null)
             .also {
-                log.lazyDebug {
+                log.debug {
                     "found the last availability change: $it"
                 }
             }
@@ -123,7 +122,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             AvailabilityChangeEventData(dto)
         )
 
-        log.lazyDebug {
+        log.debug {
             "created availability change: $saved"
         }
 
@@ -134,7 +133,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     override fun removeById(id: String) {
         availabilityChangeRepository.deleteById(id)
 
-        log.lazyDebug {
+        log.debug {
             "removed availability change with id $id"
         }
     }
@@ -173,7 +172,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             shortLink,
             unavailabilityReason
         ).also {
-            log.lazyDebug {
+            log.debug {
                 "checked the availability of $shortLink: $it"
             }
         }
@@ -192,7 +191,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
     // using runBlocking {} because I don't want coroutines to be used anywhere else, yet.
     override fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange> = runBlocking {
-        log.lazyDebug {
+        log.debug {
             "checking the availability of all short links"
         }
 
@@ -214,7 +213,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
         checksRunning.set(false)
 
-        log.lazyDebug {
+        log.debug {
             "checked the availability of all short links: ${
                 changes.mapToIdSet().filterNotNull()
             }"

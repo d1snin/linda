@@ -17,6 +17,7 @@ repositories {
 }
 
 val teabagsVersion: String by project
+val kmLogVersion: String by project
 val springdocVersion: String by project
 val starterAdviceVersion: String by project
 val starterSimpleSecurityVersion: String by project
@@ -32,7 +33,7 @@ dependencies {
     implementation("dev.d1s.teabags:teabag-spring-web:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-dto:$teabagsVersion")
     implementation("dev.d1s.teabags:teabag-stdlib:$teabagsVersion")
-    implementation("dev.d1s.teabags:teabag-log4j:$teabagsVersion")
+    implementation("org.lighthousegames:logging-jvm:$kmLogVersion")
     implementation("dev.d1s:spring-boot-starter-advice:$starterAdviceVersion")
     implementation("dev.d1s:spring-boot-starter-simple-security:$starterSimpleSecurityVersion")
     implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
