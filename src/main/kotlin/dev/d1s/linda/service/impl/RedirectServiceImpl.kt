@@ -25,8 +25,7 @@ import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.util.mapToIdSet
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -42,12 +41,12 @@ class RedirectServiceImpl : RedirectService {
     @Autowired
     private lateinit var redirectService: RedirectServiceImpl
 
-    private val log = logger()
+    private val log = logging()
 
     @Transactional(readOnly = true)
     override fun findAll(): Set<Redirect> =
         redirectRepository.findAll().toSet().also {
-            log.lazyDebug {
+            log.debug {
                 "found all redirects: ${
                     it.mapToIdSet()
                 }"
@@ -59,7 +58,7 @@ class RedirectServiceImpl : RedirectService {
         redirectRepository.findById(id).orElseThrow {
             RedirectNotFoundException(id)
         }.also {
-            log.lazyDebug {
+            log.debug {
                 "found redirect by id: $it"
             }
         }
@@ -93,7 +92,7 @@ class RedirectServiceImpl : RedirectService {
             },
             redirect.utmParameters
         ).also {
-            log.lazyDebug {
+            log.debug {
                 "created availability change: $it"
             }
         }
@@ -110,7 +109,7 @@ class RedirectServiceImpl : RedirectService {
             foundRedirect,
             redirect.utmParameters
         ).also {
-            log.lazyDebug {
+            log.debug {
                 "updated redirect: $it"
             }
         }
@@ -139,7 +138,7 @@ class RedirectServiceImpl : RedirectService {
     override fun removeById(id: String) {
         redirectRepository.deleteById(id)
 
-        log.lazyDebug {
+        log.debug {
             "removed redirect with id $id"
         }
     }

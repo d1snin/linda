@@ -24,8 +24,7 @@ import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.util.mapToIdSet
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
@@ -45,12 +44,12 @@ class UtmParameterServiceImpl : UtmParameterService {
     @Autowired
     private lateinit var utmParameterService: UtmParameterServiceImpl
 
-    private val log = logger()
+    private val log = logging()
 
     @Transactional(readOnly = true)
     override fun findAll(): Set<UtmParameter> =
         utmParameterRepository.findAll().toSet().also {
-            log.lazyDebug {
+            log.debug {
                 "found all utm parameters: ${
                     it.mapToIdSet()
                 }"
@@ -62,7 +61,7 @@ class UtmParameterServiceImpl : UtmParameterService {
         utmParameterRepository.findById(id).orElseThrow {
             UtmParameterNotFoundException(id)
         }.also {
-            log.lazyDebug {
+            log.debug {
                 "found utm parameter by id $id"
             }
         }
@@ -70,7 +69,7 @@ class UtmParameterServiceImpl : UtmParameterService {
     @Transactional(readOnly = true)
     override fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter> =
         utmParameterRepository.findUtmParameterByTypeAndValue(type, value).also {
-            log.lazyDebug {
+            log.debug {
                 "utm parameter by type and value ($type, $value): $it"
             }
         }
@@ -89,7 +88,7 @@ class UtmParameterServiceImpl : UtmParameterService {
         return utmParameterRepository.save(
             utmParameter
         ).also {
-            log.lazyDebug {
+            log.debug {
                 "created utm parameter: $it"
             }
         }
@@ -106,7 +105,7 @@ class UtmParameterServiceImpl : UtmParameterService {
         return utmParameterRepository.save(
             foundUtmParameter
         ).also {
-            log.lazyDebug {
+            log.debug {
                 "updated utm parameter: $it"
             }
         }
@@ -116,7 +115,7 @@ class UtmParameterServiceImpl : UtmParameterService {
     override fun removeById(id: String) {
         utmParameterRepository.deleteById(id)
 
-        log.lazyDebug {
+        log.debug {
             "removed utm parameter with id $id"
         }
     }

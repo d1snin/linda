@@ -17,7 +17,6 @@
 package dev.d1s.linda.domain
 
 import dev.d1s.linda.domain.utm.UtmParameter
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import javax.persistence.*
@@ -35,7 +34,6 @@ data class Redirect(
     override var id: String? = null
 
     @Column
-    @CreationTimestamp
     override var creationTime: Instant? = null
 
     @ManyToMany
@@ -45,6 +43,11 @@ data class Redirect(
         inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
     )
     var utmParameters: MutableSet<UtmParameter> = mutableSetOf()
+
+    @PrePersist
+    fun setCreationTime() {
+        creationTime = Instant.now()
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

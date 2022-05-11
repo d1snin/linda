@@ -40,13 +40,12 @@ data class AvailabilityChange(
     @Column
     override var creationTime: Instant? = null
 
-    // I have no ANY idea why the hell creationTime is null after saving, so I just use @PrePersist
+    val available get() = unavailabilityReason == null
+
     @PrePersist
     fun setCreationTime() {
         creationTime = Instant.now()
     }
-
-    val available get() = unavailabilityReason == null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

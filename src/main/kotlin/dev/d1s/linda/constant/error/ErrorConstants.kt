@@ -16,8 +16,6 @@
 
 package dev.d1s.linda.constant.error
 
-
-
 const val ERROR_ALIAS_ALREADY_EXISTS =
     "The provided alias already exists."
 const val ERROR_UTM_PARAMETER_ALREADY_EXISTS =

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+docker-compose down
+docker volume prune -f
+./gradlew bootBuildImage
+docker-compose -f docker-compose.dev.yml up

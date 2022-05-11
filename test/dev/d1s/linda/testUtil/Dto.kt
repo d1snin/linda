@@ -63,6 +63,7 @@ val shortLinkCreationDto = ShortLinkCreationDto(
     TEST_URL,
     VALID_STUB,
     false,
+    null,
     setOf(),
     setOf()
 )
@@ -72,9 +73,10 @@ val shortLinkDto = ShortLinkDto(
     TEST_URL,
     VALID_STUB,
     false,
+    null,
+    setOf(),
+    setOf(),
     Instant.EPOCH,
-    setOf(),
-    setOf(),
     setOf(),
     setOf()
 )
@@ -85,6 +87,7 @@ val shortLinkUpdateDto = ShortLinkUpdateDto(
     TEST_URL,
     VALID_STUB,
     false,
+    null,
     setOf(),
     setOf(),
     setOf(),
