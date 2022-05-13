@@ -35,11 +35,18 @@ class RedirectAlterationDtoConverter : DtoConverter<RedirectAlterationDto, Redir
     @Autowired
     private lateinit var utmParameterService: UtmParameterService
 
-    override fun convertToEntity(dto: RedirectAlterationDto): Redirect = Redirect(
-        shortLinkService.find(byId(dto.shortLink))
-    ).apply {
-        utmParameters = dto.utmParameters.mapToMutableSet {
-            utmParameterService.findById(it)
+    override fun convertToEntity(dto: RedirectAlterationDto): Redirect {
+        val (shortLink, _) = shortLinkService.find(byId(dto.shortLink))
+
+        return Redirect(
+            shortLink
+        ).apply {
+            utmParameters = dto.utmParameters.mapToMutableSet {
+                val (utmParameter, _) =
+                    utmParameterService.findById(it)
+
+                utmParameter
+            }
         }
     }
 }

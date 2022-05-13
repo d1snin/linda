@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.utm
+package dev.d1s.linda.event.data.redirect
 
-enum class UtmParameterPurpose {
-    DEFAULT, ALLOWED
-}
+import dev.d1s.linda.dto.redirect.RedirectDto
+
+data class CommonRedirectEventData(
+    val redirect: RedirectDto
+)

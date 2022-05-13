@@ -14,24 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.constant.utm
+package dev.d1s.linda.event.data.shortLink
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
 
-class UtmParameterNamesConstantsTest {
-
-    @Test
-    fun `should return valid utm parameter names`() {
-        expectThat(UTM_SOURCE) isEqualTo "utm_source"
-
-        expectThat(UTM_MEDIUM) isEqualTo "utm_medium"
-
-        expectThat(UTM_CAMPAIGN) isEqualTo "utm_campaign"
-
-        expectThat(UTM_TERM) isEqualTo "utm_term"
-
-        expectThat(UTM_CONTENT) isEqualTo "utm_content"
-    }
-}
+data class ShortLinkUpdatedEventData(
+    val oldShortLink: ShortLinkDto,
+    val newShortLink: ShortLinkDto
+)

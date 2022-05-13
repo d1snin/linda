@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.event.data
+package dev.d1s.linda.event.data.availabilityChange
 
-import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 
-data class UtmParameterEventData(
-    val utmParameter: UtmParameterDto?
+data class CommonAvailabilityChangeEventData(
+    val availabilityChange: AvailabilityChangeDto
 )

@@ -17,13 +17,18 @@
 package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
-import com.ninjasquad.springmockk.SpykBean
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_CREATED_GROUP
+import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.AVAILABILITY_CHECK_PERFORMED_GROUP
+import dev.d1s.linda.constant.lp.GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.availability.UnavailabilityReason
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
-import dev.d1s.linda.event.data.AvailabilityChangeEventData
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
+import dev.d1s.linda.event.data.availabilityChange.AvailabilityCheckPerformedEventData
+import dev.d1s.linda.event.data.availabilityChange.CommonAvailabilityChangeEventData
+import dev.d1s.linda.event.data.availabilityChange.GlobalAvailabilityCheckPerformedEventData
 import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.impl.AvailabilityChangeServiceImpl
@@ -39,6 +44,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.ContextConfiguration
@@ -54,14 +60,11 @@ import java.util.*
 @ContextConfiguration(classes = [AvailabilityChangeServiceImpl::class])
 class AvailabilityChangeServiceImplTest {
 
-    @SpykBean
+    @Autowired
     private lateinit var availabilityChangeServiceImpl: AvailabilityChangeServiceImpl
 
     @MockkBean
     private lateinit var availabilityChangeRepository: AvailabilityChangeRepository
-
-    @MockkBean
-    private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
 
     @MockkBean(relaxed = true)
     private lateinit var publisher: AsyncLongPollingEventPublisher
@@ -75,6 +78,12 @@ class AvailabilityChangeServiceImplTest {
     @MockkBean
     private lateinit var shortLinkService: ShortLinkService
 
+    @MockkBean
+    private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
+
+    @MockkBean
+    private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
+
     private val unsavedAvailabilityChange =
         availabilityChange
             .copy()
@@ -87,16 +96,17 @@ class AvailabilityChangeServiceImplTest {
         restTemplate.prepare()
         properties.prepare()
         shortLinkService.prepare()
+        unsavedAvailabilityChangeDtoConverter.prepare()
         clientHttpRequestFactoryMock.prepare()
     }
 
     @Test
     fun `should find all availability changes`() {
         expectThat(
-            availabilityChangeServiceImpl.findAll()
-        ) isEqualTo availabilityChanges
+            availabilityChangeServiceImpl.findAll(true)
+        ) isEqualTo (availabilityChanges to availabilityChangeDtoSet)
 
-        verify {
+        verifyAll {
             availabilityChangeRepository.findAll()
         }
     }
@@ -104,11 +114,12 @@ class AvailabilityChangeServiceImplTest {
     @Test
     fun `should find availability change by id`() {
         expectThat(
-            availabilityChangeServiceImpl.findById(VALID_STUB)
-        ) isEqualTo availabilityChange
+            availabilityChangeServiceImpl.findById(VALID_STUB, true)
+        ) isEqualTo (availabilityChange to availabilityChangeDto)
 
-        verify {
+        verifyAll {
             availabilityChangeRepository.findById(VALID_STUB)
+            availabilityChangeDtoConverter.convertToDto(availabilityChange)
         }
     }
 
@@ -119,7 +130,7 @@ class AvailabilityChangeServiceImplTest {
         }
 
         verify {
-            availabilityChangeServiceImpl.findById(INVALID_STUB)
+            availabilityChangeRepository.findById(INVALID_STUB)
         }
     }
 
@@ -135,7 +146,7 @@ class AvailabilityChangeServiceImplTest {
     }
 
     @Test
-    fun `should return null when trying to find last availability change in empty repository`() {
+    fun `should return null when trying to find the last availability change in empty repository`() {
         expectThat(
             availabilityChangeServiceImpl.findLast(INVALID_STUB)
         ).isNull()
@@ -149,7 +160,7 @@ class AvailabilityChangeServiceImplTest {
     fun `should create availability change`() {
         expectThat(
             availabilityChangeServiceImpl.create(availabilityChange)
-        ) isEqualTo availabilityChange
+        ) isEqualTo (availabilityChange to availabilityChangeDto)
 
         verifyAll {
             availabilityChangeRepository.save(availabilityChange)
@@ -157,7 +168,7 @@ class AvailabilityChangeServiceImplTest {
             publisher.publish(
                 AVAILABILITY_CHANGE_CREATED_GROUP,
                 VALID_STUB,
-                AvailabilityChangeEventData(availabilityChangeDto)
+                CommonAvailabilityChangeEventData(availabilityChangeDto)
             )
         }
     }
@@ -168,8 +179,19 @@ class AvailabilityChangeServiceImplTest {
             availabilityChangeServiceImpl.removeById(VALID_STUB)
         }
 
-        verify {
-            availabilityChangeRepository.deleteById(VALID_STUB)
+        verifyAll {
+            // verification fails without this. No idea.
+            availabilityChangeRepository.findById(VALID_STUB)
+
+            availabilityChangeRepository.delete(availabilityChange)
+
+            publisher.publish(
+                AVAILABILITY_CHANGE_REMOVED_GROUP,
+                VALID_STUB,
+                CommonAvailabilityChangeEventData(
+                    availabilityChangeDto
+                )
+            )
         }
     }
 
@@ -179,7 +201,7 @@ class AvailabilityChangeServiceImplTest {
             availabilityChangeServiceImpl.checkAvailability(
                 shortLink
             )
-        ) isEqualTo unsavedAvailabilityChange
+        ) isEqualTo (unsavedAvailabilityChange to unsavedAvailabilityChangeDto)
 
         this.verifyAvailabilityCheckCalls(true)
     }
@@ -197,10 +219,9 @@ class AvailabilityChangeServiceImplTest {
             availabilityChangeServiceImpl.checkAvailability(
                 shortLink
             )
-        ) isEqualTo availabilityChange
-            .copy(
-                unavailabilityReason = UnavailabilityReason.CONNECTION_ERROR
-            ).setNullAutoGeneratedValues()
+        ) isEqualTo (availabilityChange.copy(
+            unavailabilityReason = UnavailabilityReason.CONNECTION_ERROR
+        ).setNullAutoGeneratedValues() to unsavedAvailabilityChangeDto)
 
         this.verifyAvailabilityCheckCalls(false)
     }
@@ -218,10 +239,9 @@ class AvailabilityChangeServiceImplTest {
             availabilityChangeServiceImpl.checkAvailability(
                 shortLink
             )
-        ) isEqualTo availabilityChange
-            .copy(
-                unavailabilityReason = UnavailabilityReason.MALFORMED_URL
-            ).setNullAutoGeneratedValues()
+        ) isEqualTo (availabilityChange.copy(
+            unavailabilityReason = UnavailabilityReason.MALFORMED_URL
+        ).setNullAutoGeneratedValues() to unsavedAvailabilityChangeDto)
 
         this.verifyAvailabilityCheckCalls(false)
     }
@@ -233,28 +253,35 @@ class AvailabilityChangeServiceImplTest {
         expectThat(
             availabilityChangeServiceImpl.checkAndSaveAvailability(shortLink)
         ) isEqualTo unsavedAvailabilityChange
-
-        // this is a mockk moment.
-        // Verification failed: some calls were not matched: [AvailabilityChangeServiceImpl(availabilityChangeServiceImpl#7).checkAndSaveAvailability(ShortLink(url='https://d1s.dev/', alias='v', allowUtmParameters=true, id=v, creationTime=1970-01-01T00:00:00Z, redirects=[], availabilityChanges=[], defaultUtmParameters=[], allowedUtmParameters=[]))]
-        // verifyAll {
-        // availabilityChangeServiceImpl.findLast(VALID_STUB)
-        // availabilityChangeServiceImpl.checkAvailability(shortLink)
-        // availabilityChangeServiceImpl.create(
-        //     expectedAvailabilityChange
-        // )
-        // }
     }
 
     @Test
     fun `should check availability of all short links`() {
-        this.prepareForAvailabilityCheck()
+        val unsavedAvailabilityChangeSet = setOf(unsavedAvailabilityChange)
 
-        expectThat(
-            availabilityChangeServiceImpl.checkAvailabilityOfAllShortLinks()
-        ) isEqualTo setOf(unsavedAvailabilityChange)
+        withStaticConverterFacadeMock(availabilityChangeDtoConverter) { converter ->
+            converter.prepare()
 
-        verifyAll {
-            shortLinkService.findAll()
+            this.prepareForAvailabilityCheck()
+
+            expectThat(
+                availabilityChangeServiceImpl.checkAvailabilityOfAllShortLinks()
+            ) isEqualTo (unsavedAvailabilityChangeSet to availabilityChangeDtoSet)
+
+            verifyAll {
+                shortLinkService.findAll()
+                converter.convertToDtoSet(
+                    unsavedAvailabilityChangeSet
+                )
+            }
+
+            publisher.publish(
+                GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP,
+                null,
+                GlobalAvailabilityCheckPerformedEventData(
+                    availabilityChangeDtoSet
+                )
+            )
         }
     }
 
@@ -268,6 +295,18 @@ class AvailabilityChangeServiceImplTest {
             if (verifyPropertiesCall) {
                 properties.badStatusCodeIntRanges
             }
+
+            unsavedAvailabilityChangeDtoConverter.convertToDto(
+                any()
+            )
+
+            publisher.publish(
+                AVAILABILITY_CHECK_PERFORMED_GROUP,
+                shortLink.id,
+                AvailabilityCheckPerformedEventData(
+                    unsavedAvailabilityChangeDto
+                )
+            )
         }
     }
 

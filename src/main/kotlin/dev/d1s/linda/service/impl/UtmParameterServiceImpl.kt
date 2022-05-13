@@ -16,14 +16,27 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
+import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
+import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData
 import dev.d1s.linda.exception.alreadyExists.impl.UtmParameterAlreadyExistsException
 import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.util.mapToIdSet
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
+import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.util.convertToDtoIf
+import dev.d1s.teabag.dto.util.convertToDtoSetIf
+import dev.d1s.teabag.dto.util.converterForSet
 import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -40,83 +53,151 @@ class UtmParameterServiceImpl : UtmParameterService {
     @Autowired
     private lateinit var redirectService: RedirectService
 
+    @Autowired
+    private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
+
+    @Autowired
+    private lateinit var publisher: AsyncLongPollingEventPublisher
+
     @Lazy
     @Autowired
     private lateinit var utmParameterService: UtmParameterServiceImpl
 
+    private val utmParameterDtoSetConverter by lazy {
+        utmParameterDtoConverter.converterForSet()
+    }
+
     private val log = logging()
 
     @Transactional(readOnly = true)
-    override fun findAll(): Set<UtmParameter> =
-        utmParameterRepository.findAll().toSet().also {
-            log.debug {
-                "found all utm parameters: ${
-                    it.mapToIdSet()
-                }"
-            }
+    override fun findAll(requireDto: Boolean): EntityWithDtoSet<UtmParameter, UtmParameterDto> {
+        val utmParameters = utmParameterRepository.findAll().toSet()
+
+        log.debug {
+            "found all utm parameters: ${
+                utmParameters.mapToIdSet()
+            }"
         }
 
+        return utmParameters to utmParameterDtoSetConverter
+            .convertToDtoSetIf(utmParameters, requireDto)
+    }
+
     @Transactional(readOnly = true)
-    override fun findById(id: String): UtmParameter =
-        utmParameterRepository.findById(id).orElseThrow {
+    override fun findById(id: String, requireDto: Boolean): EntityWithDto<UtmParameter, UtmParameterDto> {
+        val utmParameter = utmParameterRepository.findById(id).orElseThrow {
             UtmParameterNotFoundException(id)
-        }.also {
-            log.debug {
-                "found utm parameter by id $id"
-            }
         }
+
+        log.debug {
+            "found utm parameter by id $id: $utmParameter"
+        }
+
+        return utmParameter to utmParameterDtoConverter
+            .convertToDtoIf(utmParameter, requireDto)
+    }
 
     @Transactional(readOnly = true)
-    override fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter> =
-        utmParameterRepository.findUtmParameterByTypeAndValue(type, value).also {
-            log.debug {
-                "utm parameter by type and value ($type, $value): $it"
-            }
+    override fun findByTypeAndValue(
+        type: UtmParameterType,
+        value: String
+    ): Optional<UtmParameter> {
+        val utmParameter = utmParameterRepository.findUtmParameterByTypeAndValue(type, value)
+
+        log.debug {
+            "utm parameter by type and value ($type, $value): $utmParameter"
         }
 
-    override fun findByTypeAndValueOrThrow(type: UtmParameterType, value: String): UtmParameter =
-        utmParameterService.findByTypeAndValue(type, value).orElseThrow {
+        return utmParameter
+    }
+
+    override fun findByTypeAndValueOrThrow(
+        type: UtmParameterType,
+        value: String,
+        requireDto: Boolean
+    ): EntityWithDto<UtmParameter, UtmParameterDto> {
+        val utmParameter = utmParameterService.findByTypeAndValue(type, value).orElseThrow {
             UtmParameterNotFoundException(type, value)
         }
 
+        return utmParameter to utmParameterDtoConverter
+            .convertToDtoIf(utmParameter, requireDto)
+    }
+
     @Transactional
-    override fun create(utmParameter: UtmParameter): UtmParameter {
+    override fun create(utmParameter: UtmParameter): EntityWithDto<UtmParameter, UtmParameterDto> {
         if (utmParameterService.findByTypeAndValue(utmParameter.type, utmParameter.parameterValue).isPresent) {
             throw UtmParameterAlreadyExistsException
         }
 
-        return utmParameterRepository.save(
+        val savedUtmParameter = utmParameterRepository.save(
             utmParameter
-        ).also {
-            log.debug {
-                "created utm parameter: $it"
-            }
+        )
+
+        log.debug {
+            "created utm parameter: $savedUtmParameter"
         }
+
+        val dto = utmParameterDtoConverter.convertToDto(
+            savedUtmParameter
+        )
+
+        publisher.publish(
+            UTM_PARAMETER_CREATED_GROUP,
+            utmParameter.id!!,
+            CommonUtmParameterEventData(dto)
+        )
+
+        return savedUtmParameter to dto
     }
 
     @Transactional
-    override fun update(id: String, utmParameter: UtmParameter): UtmParameter {
-        val foundUtmParameter = utmParameterService.findById(id)
+    override fun update(id: String, utmParameter: UtmParameter): EntityWithDto<UtmParameter, UtmParameterDto> {
+        val (foundUtmParameter, oldUtmParameterDto) = utmParameterService.findById(id, true)
 
         foundUtmParameter.type = utmParameter.type
         foundUtmParameter.parameterValue = utmParameter.parameterValue
         foundUtmParameter.allowOverride = utmParameter.allowOverride
 
-        return utmParameterRepository.save(
+        val savedUtmParameter = utmParameterRepository.save(
             foundUtmParameter
-        ).also {
-            log.debug {
-                "updated utm parameter: $it"
-            }
+        )
+
+        log.debug {
+            "updated utm parameter: $savedUtmParameter"
         }
+
+        val dto = utmParameterDtoConverter.convertToDto(
+            savedUtmParameter
+        )
+
+        publisher.publish(
+            UTM_PARAMETER_UPDATED_GROUP,
+            id,
+            UtmParameterUpdatedEventData(
+                oldUtmParameterDto!!,
+                dto
+            )
+        )
+
+        return savedUtmParameter to dto
     }
 
     @Transactional
     override fun removeById(id: String) {
-        utmParameterRepository.deleteById(id)
+        val (utmParameterForRemoval, dto) =
+            utmParameterService.findById(id, true)
+
+        utmParameterRepository.delete(utmParameterForRemoval)
 
         log.debug {
             "removed utm parameter with id $id"
         }
+
+        publisher.publish(
+            UTM_PARAMETER_REMOVED_GROUP,
+            id,
+            CommonUtmParameterEventData(dto!!)
+        )
     }
 }

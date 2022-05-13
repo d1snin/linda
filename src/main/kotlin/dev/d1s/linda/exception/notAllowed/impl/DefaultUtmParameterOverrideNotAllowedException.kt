@@ -17,7 +17,7 @@
 package dev.d1s.linda.exception.notAllowed.impl
 
 import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETER_OVERRIDE_ERROR
-import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameter
 import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
 
 class DefaultUtmParameterOverrideNotAllowedException(utmParameters: Set<UtmParameter>) :

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.utm
+package dev.d1s.linda.domain.utmParameter
 
 import dev.d1s.linda.domain.Identifiable
 import dev.d1s.linda.domain.Redirect

@@ -16,8 +16,16 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
+import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.event.data.redirect.CommonRedirectEventData
+import dev.d1s.linda.event.data.redirect.RedirectUpdatedEventData
 import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParameterOverrideNotAllowedException
 import dev.d1s.linda.exception.notAllowed.impl.IllegalUtmParametersException
 import dev.d1s.linda.exception.notAllowed.impl.UtmParametersNotAllowedException
@@ -25,6 +33,11 @@ import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.util.mapToIdSet
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
+import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.util.convertToDtoIf
+import dev.d1s.teabag.dto.util.convertToDtoSetIf
+import dev.d1s.teabag.dto.util.converterForSet
 import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -37,35 +50,53 @@ class RedirectServiceImpl : RedirectService {
     @Autowired
     private lateinit var redirectRepository: RedirectRepository
 
+    @Autowired
+    private lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @Autowired
+    private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
+
     @Lazy
     @Autowired
     private lateinit var redirectService: RedirectServiceImpl
 
+    private val redirectSetDtoConverter by lazy {
+        redirectDtoConverter.converterForSet()
+    }
+
     private val log = logging()
 
     @Transactional(readOnly = true)
-    override fun findAll(): Set<Redirect> =
-        redirectRepository.findAll().toSet().also {
-            log.debug {
-                "found all redirects: ${
-                    it.mapToIdSet()
-                }"
-            }
+    override fun findAll(requireDto: Boolean): EntityWithDtoSet<Redirect, RedirectDto> {
+        val redirects = redirectRepository.findAll().toSet()
+
+        log.debug {
+            "found all redirects: ${
+                redirects.mapToIdSet()
+            }"
         }
+
+        return redirects to redirectSetDtoConverter
+            .convertToDtoSetIf(redirects, requireDto)
+    }
 
     @Transactional(readOnly = true)
-    override fun findById(id: String): Redirect =
-        redirectRepository.findById(id).orElseThrow {
+    override fun findById(id: String, requireDto: Boolean): EntityWithDto<Redirect, RedirectDto> {
+        val redirect = redirectRepository.findById(id).orElseThrow {
             RedirectNotFoundException(id)
-        }.also {
-            log.debug {
-                "found redirect by id: $it"
-            }
         }
 
+        log.debug {
+            "found redirect by id: $redirect"
+        }
+
+        return redirect to redirectDtoConverter
+            .convertToDtoIf(redirect, requireDto)
+    }
+
     @Transactional
-    override fun create(redirect: Redirect): Redirect =
-        redirectService.assignUtmParametersAndSave(
+    override fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
+        val createdRedirect = redirectService.assignUtmParametersAndSave(
             redirect.apply {
                 validate()
 
@@ -91,28 +122,45 @@ class RedirectServiceImpl : RedirectService {
                 }
             },
             redirect.utmParameters
-        ).also {
-            log.debug {
-                "created availability change: $it"
-            }
-        }
+        )
+
+        val dto = redirectDtoConverter.convertToDto(redirect)
+
+        publisher.publish(
+            REDIRECT_CREATED_GROUP,
+            dto.shortLink,
+            CommonRedirectEventData(dto)
+        )
+
+        return createdRedirect to dto
+    }
 
     @Transactional
-    override fun update(id: String, redirect: Redirect): Redirect {
+    override fun update(id: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
         redirect.validate()
 
-        val foundRedirect = redirectService.findById(id)
+        val (foundRedirect, oldRedirectDto) = redirectService.findById(id, true)
 
         foundRedirect.shortLink = redirect.shortLink
 
-        return redirectService.assignUtmParametersAndSave(
+        val savedRedirect = redirectService.assignUtmParametersAndSave(
             foundRedirect,
             redirect.utmParameters
-        ).also {
-            log.debug {
-                "updated redirect: $it"
-            }
+        )
+
+        log.debug {
+            "updated redirect: $savedRedirect"
         }
+
+        val dto = redirectDtoConverter.convertToDto(savedRedirect)
+
+        publisher.publish(
+            REDIRECT_UPDATED_GROUP,
+            id,
+            RedirectUpdatedEventData(oldRedirectDto!!, dto)
+        )
+
+        return savedRedirect to dto
     }
 
     @Transactional
@@ -136,7 +184,15 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional
     override fun removeById(id: String) {
-        redirectRepository.deleteById(id)
+        val (redirectToRemove, redirectDto) = redirectService.findById(id, true)
+
+        redirectRepository.delete(redirectToRemove)
+
+        publisher.publish(
+            REDIRECT_REMOVED_GROUP,
+            id,
+            CommonRedirectEventData(redirectDto!!)
+        )
 
         log.debug {
             "removed redirect with id $id"

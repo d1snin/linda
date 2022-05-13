@@ -18,22 +18,17 @@ package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
-import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
-import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
-import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
-import dev.d1s.linda.dto.utm.UtmParameterDto
-import dev.d1s.linda.event.data.UtmParameterEventData
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.testUtil.*
-import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.text.replacePlaceholder
 import dev.d1s.teabag.testing.constant.VALID_STUB
+import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -63,13 +58,7 @@ class UtmParameterControllerImplTest {
     private lateinit var utmParameterService: UtmParameterService
 
     @MockkBean
-    private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
-
-    @MockkBean
     private lateinit var utmParameterAlterationDtoConverter: DtoConverter<UtmParameterAlterationDto, UtmParameter>
-
-    @MockkBean(relaxed = true)
-    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Suppress("unused")
     @MockkBean(relaxed = true)
@@ -78,25 +67,19 @@ class UtmParameterControllerImplTest {
     @BeforeEach
     fun setup() {
         utmParameterService.prepare()
-        utmParameterDtoConverter.prepare()
         utmParameterAlterationDtoConverter.prepare()
     }
 
     @Test
     fun `should find all utm parameters`() {
-        withStaticConverterFacadeMock(utmParameterDtoConverter) { converter ->
-            converter.prepare()
+        mockMvc.get(UTM_PARAMETERS_FIND_ALL_MAPPING).andExpect {
+            ok()
 
-            mockMvc.get(UTM_PARAMETERS_FIND_ALL_MAPPING).andExpect {
-                ok()
+            jsonObject(utmParameterDtoSet)
+        }
 
-                jsonObject(utmParameterDtoSet)
-            }
-
-            verifyAll {
-                utmParameterService.findAll()
-                converter.convertToDtoSet(utmParameters)
-            }
+        verify {
+            utmParameterService.findAll(true)
         }
     }
 
@@ -111,9 +94,8 @@ class UtmParameterControllerImplTest {
             jsonObject(utmParameterDto)
         }
 
-        verifyAll {
-            utmParameterService.findById(VALID_STUB)
-            utmParameterDtoConverter.convertToDto(utmParameter)
+        verify {
+            utmParameterService.findById(VALID_STUB, true)
         }
     }
 
@@ -132,9 +114,12 @@ class UtmParameterControllerImplTest {
             jsonObject(utmParameterDto)
         }
 
-        verifyAll {
-            utmParameterService.findByTypeAndValueOrThrow(UtmParameterType.CONTENT, VALID_STUB)
-            utmParameterDtoConverter.convertToDto(utmParameter)
+        verify {
+            utmParameterService.findByTypeAndValueOrThrow(
+                UtmParameterType.CONTENT,
+                VALID_STUB,
+                true
+            )
         }
     }
 
@@ -157,16 +142,6 @@ class UtmParameterControllerImplTest {
             )
 
             utmParameterService.create(utmParameter)
-
-            utmParameterDtoConverter.convertToDto(utmParameter)
-
-            publisher.publish(
-                UTM_PARAMETER_CREATED_GROUP,
-                VALID_STUB,
-                UtmParameterEventData(
-                    utmParameterDto
-                )
-            )
         }
     }
 
@@ -189,16 +164,6 @@ class UtmParameterControllerImplTest {
             )
 
             utmParameterService.update(VALID_STUB, utmParameter)
-
-            utmParameterDtoConverter.convertToDto(utmParameter)
-
-            publisher.publish(
-                UTM_PARAMETER_UPDATED_GROUP,
-                VALID_STUB,
-                UtmParameterEventData(
-                    utmParameterDto
-                )
-            )
         }
     }
 
@@ -213,14 +178,8 @@ class UtmParameterControllerImplTest {
             }
         }
 
-        verifyAll {
+        verify {
             utmParameterService.removeById(VALID_STUB)
-
-            publisher.publish(
-                UTM_PARAMETER_REMOVED_GROUP,
-                VALID_STUB,
-                UtmParameterEventData(null)
-            )
         }
     }
 }

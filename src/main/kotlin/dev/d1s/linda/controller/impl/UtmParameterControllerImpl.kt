@@ -17,20 +17,14 @@
 package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
-import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
-import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
-import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.controller.UtmParameterController
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
-import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
-import dev.d1s.linda.dto.utm.UtmParameterDto
-import dev.d1s.linda.event.data.UtmParameterEventData
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.service.UtmParameterService
-import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
@@ -47,59 +41,49 @@ class UtmParameterControllerImpl : UtmParameterController {
     private lateinit var utmParameterService: UtmParameterService
 
     @Autowired
-    private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
-
-    @Autowired
     private lateinit var utmParameterAlterationDtoConverter: DtoConverter<UtmParameterAlterationDto, UtmParameter>
-
-    @Autowired
-    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Autowired
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
-    private val utmParameterDtoSetConverter by lazy {
-        utmParameterDtoConverter.converterForSet()
+    @Secured
+    override fun findAll(): ResponseEntity<Set<UtmParameterDto>> {
+        val (_, utmParameters) =
+            utmParameterService.findAll(true)
+
+        return ok(utmParameters)
     }
 
-    private fun UtmParameter.toDto() =
-        utmParameterDtoConverter.convertToDto(this)
+    @Secured
+    override fun findById(identifier: String): ResponseEntity<UtmParameterDto> {
+        val (_, utmParameter) =
+            utmParameterService.findById(identifier, true)
+
+        return ok(utmParameter)
+    }
 
     @Secured
-    override fun findAll(): ResponseEntity<Set<UtmParameterDto>> = ok(
-        utmParameterDtoSetConverter.convertToDtoSet(
-            utmParameterService.findAll()
-        )
-    )
+    override fun findByTypeAndValue(type: UtmParameterType, value: String): ResponseEntity<UtmParameterDto> {
+        val (_, utmParameter) =
+            utmParameterService.findByTypeAndValueOrThrow(
+                type,
+                value,
+                true
+            )
 
-    @Secured
-    override fun findById(identifier: String): ResponseEntity<UtmParameterDto> = ok(
-        utmParameterService.findById(identifier).toDto()
-    )
-
-    @Secured
-    override fun findByTypeAndValue(type: UtmParameterType, value: String): ResponseEntity<UtmParameterDto> = ok(
-        utmParameterService.findByTypeAndValueOrThrow(type, value).toDto()
-    )
+        return ok(utmParameter)
+    }
 
     @Secured
     override fun create(alteration: UtmParameterAlterationDto): ResponseEntity<UtmParameterDto> {
-        val utmParameter = utmParameterService.create(
+        val (_, utmParameter) = utmParameterService.create(
             utmParameterAlterationDtoConverter.convertToEntity(alteration)
-        ).toDto()
-
-        publisher.publish(
-            UTM_PARAMETER_CREATED_GROUP,
-            utmParameter.id,
-            UtmParameterEventData(
-                utmParameter
-            )
         )
 
         return created(
             buildFromCurrentRequest {
                 configureSsl(sslConfigurationProperties.fallbackToHttps)
-                path("/${utmParameter.id}")
+                path("/${utmParameter!!.id}")
                 build().toUri()
             }
         ).body(utmParameter)
@@ -110,17 +94,9 @@ class UtmParameterControllerImpl : UtmParameterController {
         identifier: String,
         alteration: UtmParameterAlterationDto
     ): ResponseEntity<UtmParameterDto> {
-        val utmParameter = utmParameterService.update(
+        val (_, utmParameter) = utmParameterService.update(
             identifier,
             utmParameterAlterationDtoConverter.convertToEntity(alteration)
-        ).toDto()
-
-        publisher.publish(
-            UTM_PARAMETER_UPDATED_GROUP,
-            utmParameter.id,
-            UtmParameterEventData(
-                utmParameter
-            )
         )
 
         return ok(utmParameter)
@@ -129,12 +105,6 @@ class UtmParameterControllerImpl : UtmParameterController {
     @Secured
     override fun removeById(identifier: String): ResponseEntity<*> {
         utmParameterService.removeById(identifier)
-
-        publisher.publish(
-            UTM_PARAMETER_REMOVED_GROUP,
-            identifier,
-            UtmParameterEventData(null)
-        )
 
         return noContent
     }

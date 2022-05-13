@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.notAllowed.impl
+package dev.d1s.linda.constant.utmParameter
 
-import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
+import org.junit.jupiter.api.Test
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
-class DefaultUtmParametersNotAllowedException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
-    DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR.format(utmParameters)
-)
+class UtmParameterNamesConstantsTest {
+
+    @Test
+    fun `should return valid utm parameter names`() {
+        expectThat(UTM_SOURCE) isEqualTo "utm_source"
+
+        expectThat(UTM_MEDIUM) isEqualTo "utm_medium"
+
+        expectThat(UTM_CAMPAIGN) isEqualTo "utm_campaign"
+
+        expectThat(UTM_TERM) isEqualTo "utm_term"
+
+        expectThat(UTM_CONTENT) isEqualTo "utm_content"
+    }
+}

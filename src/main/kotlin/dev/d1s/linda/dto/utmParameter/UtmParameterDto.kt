@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.utm
+package dev.d1s.linda.dto.utmParameter
 
-import dev.d1s.linda.domain.utm.UtmParameterType
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import java.time.Instant
 
-data class UtmParameterAlterationDto(
-    @field:NotNull(message = "type field must not be null.")
+data class UtmParameterDto(
+    val id: String,
     val type: UtmParameterType,
-
-    @field:NotBlank(message = "parameterValue field must not be blank.")
     val parameterValue: String,
-
-    @field:NotNull(message = "allowOverride field must not be null.")
-    val allowOverride: Boolean
+    val allowOverride: Boolean,
+    val defaultForShortLinks: Set<String>,
+    val allowedForShortLinks: Set<String>,
+    val creationTime: Instant,
+    val redirects: Set<String>
 )

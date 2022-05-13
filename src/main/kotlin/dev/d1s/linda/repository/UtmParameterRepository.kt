@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.repository
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -25,8 +25,9 @@ import java.util.*
 
 interface UtmParameterRepository : JpaRepository<UtmParameter, String> {
 
-    @Query("select utmParameter from UtmParameter as utmParameter " +
-            "where utmParameter.type = :type and utmParameter.parameterValue = :value"
+    @Query(
+        "select utmParameter from UtmParameter as utmParameter " +
+                "where utmParameter.type = :type and utmParameter.parameterValue = :value"
     )
     fun findUtmParameterByTypeAndValue(
         @Param("type") type: UtmParameterType,

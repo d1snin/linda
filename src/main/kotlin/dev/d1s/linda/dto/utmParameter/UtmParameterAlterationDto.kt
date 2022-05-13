@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.notAllowed.impl
+package dev.d1s.linda.dto.utmParameter
 
-import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
-class DefaultUtmParametersNotAllowedException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
-    DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR.format(utmParameters)
+data class UtmParameterAlterationDto(
+    @field:NotNull(message = "type field must not be null.")
+    val type: UtmParameterType,
+
+    @field:NotBlank(message = "parameterValue field must not be blank.")
+    val parameterValue: String,
+
+    @field:NotNull(message = "allowOverride field must not be null.")
+    val allowOverride: Boolean
 )

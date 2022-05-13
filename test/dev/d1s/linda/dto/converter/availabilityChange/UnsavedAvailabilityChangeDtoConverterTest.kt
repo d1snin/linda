@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.converter.utm
+package dev.d1s.linda.dto.converter.availabilityChange
 
-import dev.d1s.linda.dto.converter.impl.utm.UtmParameterDtoConverter
-import dev.d1s.linda.testUtil.utmParameter
-import dev.d1s.linda.testUtil.utmParameterDto
+import dev.d1s.linda.dto.converter.impl.availabilityChange.UnsavedAvailabilityChangeDtoConverter
+import dev.d1s.linda.testUtil.availabilityChange
+import dev.d1s.linda.testUtil.unsavedAvailabilityChangeDto
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,16 +27,16 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [UtmParameterDtoConverter::class])
-class UtmParameterDtoConverterTest {
+@ContextConfiguration(classes = [UnsavedAvailabilityChangeDtoConverter::class])
+class UnsavedAvailabilityChangeDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: UtmParameterDtoConverter
+    private lateinit var converter: UnsavedAvailabilityChangeDtoConverter
 
     @Test
-    fun `should convert utm parameter to dto`() {
+    fun `should convert availability change to unsaved availability change dto`() {
         expectThat(
-            converter.convertToDto(utmParameter)
-        ) isEqualTo utmParameterDto
+            converter.convertToDto(availabilityChange)
+        ) isEqualTo unsavedAvailabilityChangeDto
     }
 }

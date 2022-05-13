@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.event.data
+package dev.d1s.linda.event.data.availabilityChange
 
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 
-data class AvailabilityChangeEventData(
-    val availabilityChange: AvailabilityChangeDto?
+data class GlobalAvailabilityCheckPerformedEventData(
+    val availabilityChanges: Set<AvailabilityChangeDto>
 )

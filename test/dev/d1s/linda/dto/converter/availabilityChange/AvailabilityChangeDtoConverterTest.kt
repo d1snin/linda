@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.converter.availability
+package dev.d1s.linda.dto.converter.availabilityChange
 
-import dev.d1s.linda.dto.converter.impl.availability.UnsavedAvailabilityChangeDtoConverter
+import dev.d1s.linda.dto.converter.impl.availabilityChange.AvailabilityChangeDtoConverter
 import dev.d1s.linda.testUtil.availabilityChange
-import dev.d1s.linda.testUtil.unsavedAvailabilityChangeDto
+import dev.d1s.linda.testUtil.availabilityChangeDto
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,16 +27,16 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [UnsavedAvailabilityChangeDtoConverter::class])
-class UnsavedAvailabilityChangeDtoConverterTest {
+@ContextConfiguration(classes = [AvailabilityChangeDtoConverter::class])
+class AvailabilityChangeDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: UnsavedAvailabilityChangeDtoConverter
+    private lateinit var converter: AvailabilityChangeDtoConverter
 
     @Test
-    fun `should convert availability change to unsaved availability change dto`() {
+    fun `should convert availability change to dto`() {
         expectThat(
             converter.convertToDto(availabilityChange)
-        ) isEqualTo unsavedAvailabilityChangeDto
+        ) isEqualTo availabilityChangeDto
     }
 }

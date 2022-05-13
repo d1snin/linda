@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.event.data
+package dev.d1s.linda.event.data.availabilityChange
 
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 
-data class ShortLinkEventData(
-    val shortLink: ShortLinkDto?
+data class AvailabilityCheckPerformedEventData(
+    val unsavedAvailabilityChange: UnsavedAvailabilityChangeDto
 )

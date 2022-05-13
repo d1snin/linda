@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.converter.impl.utm
+package dev.d1s.linda.dto.converter.impl.utmParameter
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
 import dev.d1s.teabag.stdlib.collection.mapToSet

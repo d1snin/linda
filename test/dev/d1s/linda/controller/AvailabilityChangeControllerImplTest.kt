@@ -17,21 +17,16 @@
 package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.AvailabilityChangeControllerImpl
 import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
-import dev.d1s.linda.event.data.AvailabilityChangeEventData
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.linda.testUtil.*
-import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.verifyAll
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -63,42 +58,30 @@ class AvailabilityChangeControllerImplTest {
     private lateinit var availabilityChangeService: AvailabilityChangeService
 
     @MockkBean
-    private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
-
-    @MockkBean
     private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
 
     @MockkBean
     private lateinit var shortLinkService: ShortLinkService
 
-    @MockkBean(relaxed = true)
-    private lateinit var publisher: AsyncLongPollingEventPublisher
-
     @BeforeEach
     fun setup() {
         availabilityChangeService.prepare()
-        availabilityChangeDtoConverter.prepare()
         unsavedAvailabilityChangeDtoConverter.prepare()
         shortLinkService.prepare()
     }
 
     @Test
     fun `should find all availability changes`() {
-        withStaticConverterFacadeMock(availabilityChangeDtoConverter) { converter ->
-            converter.prepare()
+        mockMvc.get(AVAILABILITY_CHANGES_FIND_ALL_MAPPING).andExpect {
+            ok()
 
-            mockMvc.get(AVAILABILITY_CHANGES_FIND_ALL_MAPPING).andExpect {
-                ok()
+            jsonObject(
+                availabilityChangeDtoSet
+            )
+        }
 
-                jsonObject(
-                    availabilityChangeDtoSet
-                )
-            }
-
-            verifyAll {
-                availabilityChangeService.findAll()
-                converter.convertToDtoSet(availabilityChanges)
-            }
+        verify {
+            availabilityChangeService.findAll(true)
         }
     }
 
@@ -114,36 +97,25 @@ class AvailabilityChangeControllerImplTest {
             )
         }
 
-        verifyAll {
-            availabilityChangeService.findById(VALID_STUB)
-            availabilityChangeDtoConverter.convertToDto(availabilityChange)
+        verify {
+            availabilityChangeService.findById(VALID_STUB, true)
         }
     }
 
     @Test
     fun `should trigger availability checks for all short links`() {
-        withStaticConverterFacadeMock(availabilityChangeDtoConverter) { converter ->
-            converter.prepare()
+        mockMvc.post(
+            AVAILABILITY_CHANGES_TRIGGER_CHECKS
+        ).andExpect {
+            ok()
 
-            mockMvc.post(
-                AVAILABILITY_CHANGES_TRIGGER_CHECKS
-            ).andExpect {
-                ok()
+            jsonObject(
+                availabilityChangeDtoSet
+            )
+        }
 
-                jsonObject(
-                    availabilityChangeDtoSet
-                )
-            }
-
-            verifyAll {
-                availabilityChangeService.checkAvailabilityOfAllShortLinks()
-                // I have no idea HOW does the verification
-                // pass in `should find all availability changes` test, the behavior is absolutely the same.
-                // availabilityChanges object is not being changed in the controller.
-                // I consider this as the mockk stupidity.
-                // Verification failed: call 2 of 2: DtoSetConverterFacade(#36).convertToDtoSet(eq([AvailabilityChange(shortLink=v, unavailabilityReason=null, id=null, creationTime=null)]))) was not called
-                // converter.convertToDtoSet(availabilityChanges)
-            }
+        verify {
+            availabilityChangeService.checkAvailabilityOfAllShortLinks()
         }
     }
 
@@ -160,10 +132,8 @@ class AvailabilityChangeControllerImplTest {
             )
         }
 
-        verifyAll {
-            shortLinkService.find(byId(VALID_STUB))
-            availabilityChangeService.checkAvailability(shortLink)
-            unsavedAvailabilityChangeDtoConverter.convertToDto(availabilityChange)
+        verify {
+            availabilityChangeService.checkAvailability(VALID_STUB)
         }
     }
 
@@ -177,14 +147,8 @@ class AvailabilityChangeControllerImplTest {
             }
         }
 
-        verifyAll {
+        verify {
             availabilityChangeService.removeById(VALID_STUB)
-
-            publisher.publish(
-                AVAILABILITY_CHANGE_REMOVED_GROUP,
-                VALID_STUB,
-                AvailabilityChangeEventData(null)
-            )
         }
     }
 }

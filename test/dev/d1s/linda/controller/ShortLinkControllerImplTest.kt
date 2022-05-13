@@ -18,23 +18,18 @@ package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
-import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
-import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
-import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.ShortLinkControllerImpl
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
-import dev.d1s.linda.event.data.ShortLinkEventData
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType
 import dev.d1s.linda.testUtil.*
-import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
+import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,16 +59,10 @@ class ShortLinkControllerImplTest {
     private lateinit var shortLinkService: ShortLinkService
 
     @MockkBean
-    private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
-
-    @MockkBean
     private lateinit var shortLinkCreationDtoConverter: DtoConverter<ShortLinkCreationDto, ShortLink>
 
     @MockkBean
     private lateinit var shortLinkUpdateDtoConverter: DtoConverter<ShortLinkUpdateDto, ShortLink>
-
-    @MockkBean(relaxed = true)
-    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Suppress("unused")
     @MockkBean(relaxed = true)
@@ -82,26 +71,20 @@ class ShortLinkControllerImplTest {
     @BeforeEach
     fun setup() {
         shortLinkService.prepare()
-        shortLinkDtoConverter.prepare()
         shortLinkCreationDtoConverter.prepare()
         shortLinkUpdateDtoConverter.prepare()
     }
 
     @Test
     fun `should find all short links`() {
-        withStaticConverterFacadeMock(shortLinkDtoConverter) { converter ->
-            converter.prepare()
+        mockMvc.get(SHORT_LINKS_FIND_ALL_MAPPING).andExpect {
+            ok()
 
-            mockMvc.get(SHORT_LINKS_FIND_ALL_MAPPING).andExpect {
-                ok()
+            jsonObject(shortLinkDtoSet)
+        }
 
-                jsonObject(shortLinkDtoSet)
-            }
-
-            verifyAll {
-                shortLinkService.findAll()
-                converter.convertToDtoSet(shortLinks)
-            }
+        verify {
+            shortLinkService.findAll(true)
         }
     }
 
@@ -134,16 +117,6 @@ class ShortLinkControllerImplTest {
             )
 
             shortLinkService.create(shortLink)
-
-            shortLinkDtoConverter.convertToDto(shortLink)
-
-            publisher.publish(
-                SHORT_LINK_CREATED_GROUP,
-                VALID_STUB,
-                ShortLinkEventData(
-                    shortLinkDto
-                )
-            )
         }
     }
 
@@ -169,16 +142,6 @@ class ShortLinkControllerImplTest {
                 VALID_STUB,
                 shortLink
             )
-
-            shortLinkDtoConverter.convertToDto(shortLink)
-
-            publisher.publish(
-                SHORT_LINK_UPDATED_GROUP,
-                VALID_STUB,
-                ShortLinkEventData(
-                    shortLinkDto
-                )
-            )
         }
     }
 
@@ -186,20 +149,15 @@ class ShortLinkControllerImplTest {
     fun `should remove short link`() {
         mockMvc.delete(
             SHORT_LINKS_REMOVE_MAPPING.setId()
+
         ).andExpect {
             status {
                 isNoContent()
             }
         }
 
-        verifyAll {
+        verify {
             shortLinkService.removeById(VALID_STUB)
-
-            publisher.publish(
-                SHORT_LINK_REMOVED_GROUP,
-                VALID_STUB,
-                ShortLinkEventData(null)
-            )
         }
     }
 
@@ -215,9 +173,11 @@ class ShortLinkControllerImplTest {
             jsonObject(shortLinkDto)
         }
 
-        verifyAll {
-            shortLinkService.find(byType(strategy, VALID_STUB))
-            shortLinkDtoConverter.convertToDto(shortLink)
+        verify {
+            shortLinkService.find(
+                byType(strategy, VALID_STUB),
+                true
+            )
         }
     }
 }

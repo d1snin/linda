@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.utm
+package dev.d1s.linda.constant.utmParameter
 
-import dev.d1s.linda.domain.utm.UtmParameterType
-import java.time.Instant
-
-data class UtmParameterDto(
-    val id: String,
-    val type: UtmParameterType,
-    val parameterValue: String,
-    val allowOverride: Boolean,
-    val defaultForShortLinks: Set<String>,
-    val allowedForShortLinks: Set<String>,
-    val creationTime: Instant,
-    val redirects: Set<String>
-)
+const val UTM_SOURCE = "utm_source"
+const val UTM_MEDIUM = "utm_medium"
+const val UTM_CAMPAIGN = "utm_campaign"
+const val UTM_TERM = "utm_term"
+const val UTM_CONTENT = "utm_content"

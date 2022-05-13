@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.utm
+package dev.d1s.linda.dto.converter.impl.utmParameter
 
-import dev.d1s.linda.constant.utm.*
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
+import dev.d1s.teabag.dto.DtoConverter
+import org.springframework.stereotype.Component
 
-enum class UtmParameterType(val rawParameter: String) {
-    SOURCE(UTM_SOURCE),
-    MEDIUM(UTM_MEDIUM),
-    CAMPAIGN(UTM_CAMPAIGN),
-    TERM(UTM_TERM),
-    CONTENT(UTM_CONTENT)
+@Component
+class UtmParameterAlterationDtoConverter : DtoConverter<UtmParameterAlterationDto, UtmParameter> {
+
+    override fun convertToEntity(dto: UtmParameterAlterationDto): UtmParameter =
+        UtmParameter(
+            dto.type,
+            dto.parameterValue,
+            dto.allowOverride
+        )
 }

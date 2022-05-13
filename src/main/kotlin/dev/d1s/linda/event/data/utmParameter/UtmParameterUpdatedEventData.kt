@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.notAllowed.impl
+package dev.d1s.linda.event.data.utmParameter
 
-import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 
-class DefaultUtmParametersNotAllowedException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
-    DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR.format(utmParameters)
+data class UtmParameterUpdatedEventData(
+    val oldUtmParameter: UtmParameterDto,
+    val newUtmParameter: UtmParameterDto
 )

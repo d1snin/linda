@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.converter.impl.availability
+package dev.d1s.linda.dto.converter.impl.availabilityChange
 
 import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
+import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
 import org.springframework.stereotype.Component
 
 @Component
-class UnsavedAvailabilityChangeDtoConverter : DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange> {
+class AvailabilityChangeDtoConverter : DtoConverter<AvailabilityChangeDto, AvailabilityChange> {
 
-    override fun convertToDto(entity: AvailabilityChange): UnsavedAvailabilityChangeDto = UnsavedAvailabilityChangeDto(
+    override fun convertToDto(entity: AvailabilityChange): AvailabilityChangeDto = AvailabilityChangeDto(
+        entity.id.checkNotNull("id"),
         entity.shortLink.id.checkNotNull("short link's id"),
         entity.available,
-        entity.unavailabilityReason
+        entity.unavailabilityReason,
+        entity.creationTime.checkNotNull("creation time")
     )
 }
