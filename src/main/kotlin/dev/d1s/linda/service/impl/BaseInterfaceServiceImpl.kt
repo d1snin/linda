@@ -97,7 +97,8 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
                             }
                         }
                     )
-                    toUriString()
+                    build(false) // already encoded
+                        .toUriString()
                 }.also {
                     log.debug {
                         "responding with redirect to the confirmation endpoint: $it"
