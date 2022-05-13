@@ -17,19 +17,13 @@
 package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
-import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
-import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
-import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
 import dev.d1s.linda.controller.RedirectController
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
-import dev.d1s.linda.event.data.RedirectEventData
 import dev.d1s.linda.service.RedirectService
-import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import dev.d1s.teabag.web.noContent
@@ -46,54 +40,37 @@ class RedirectControllerImpl : RedirectController {
     private lateinit var redirectService: RedirectService
 
     @Autowired
-    private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
-
-    @Autowired
     private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
-
-    @Autowired
-    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Autowired
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
-    private val redirectSetDtoConverter by lazy {
-        redirectDtoConverter.converterForSet()
+    @Secured
+    override fun findAll(): ResponseEntity<Set<RedirectDto>> {
+        val (_, redirects) = redirectService.findAll(true)
+
+        return ok(redirects)
     }
 
-    private fun Redirect.toDto() = redirectDtoConverter.convertToDto(this)
-    private fun Set<Redirect>.toDtoSet() = redirectSetDtoConverter.convertToDtoSet(this)
-
     @Secured
-    override fun findAll(): ResponseEntity<Set<RedirectDto>> = ok(
-        redirectService.findAll().toDtoSet()
-    )
+    override fun findById(identifier: String): ResponseEntity<RedirectDto> {
+        val (_, redirect) = redirectService.findById(identifier, true)
 
-    @Secured
-    override fun findById(identifier: String): ResponseEntity<RedirectDto> = ok(
-        redirectService.findById(identifier).toDto()
-    )
+        return ok(redirect)
+    }
 
     @Secured
     override fun create(alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> {
-        val redirect = redirectService.create(
+        val (_, redirect) = redirectService.create(
             redirectAlterationDtoConverter.convertToEntity(
                 alteration
-            )
-        ).toDto()
-
-        publisher.publish(
-            REDIRECT_CREATED_GROUP,
-            redirect.id,
-            RedirectEventData(
-                redirect
             )
         )
 
         return created(
             buildFromCurrentRequest {
                 configureSsl(sslConfigurationProperties.fallbackToHttps)
-                path("/${redirect.id}")
+                path("/${redirect!!.id}")
                 build().toUri()
             }
         ).body(redirect)
@@ -101,18 +78,10 @@ class RedirectControllerImpl : RedirectController {
 
     @Secured
     override fun update(identifier: String, alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> {
-        val redirect = redirectService.update(
+        val (_, redirect) = redirectService.update(
             identifier,
             redirectAlterationDtoConverter.convertToEntity(
                 alteration
-            )
-        ).toDto()
-
-        publisher.publish(
-            REDIRECT_UPDATED_GROUP,
-            redirect.id,
-            RedirectEventData(
-                redirect
             )
         )
 
@@ -122,12 +91,6 @@ class RedirectControllerImpl : RedirectController {
     @Secured
     override fun removeById(identifier: String): ResponseEntity<*> {
         redirectService.removeById(identifier)
-
-        publisher.publish(
-            REDIRECT_REMOVED_GROUP,
-            identifier,
-            RedirectEventData(null)
-        )
 
         return noContent
     }

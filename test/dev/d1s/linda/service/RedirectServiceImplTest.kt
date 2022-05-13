@@ -17,6 +17,13 @@
 package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
+import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
+import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.event.data.redirect.CommonRedirectEventData
+import dev.d1s.linda.event.data.redirect.RedirectUpdatedEventData
 import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParameterOverrideNotAllowedException
 import dev.d1s.linda.exception.notAllowed.impl.IllegalUtmParametersException
 import dev.d1s.linda.exception.notAllowed.impl.UtmParametersNotAllowedException
@@ -24,10 +31,13 @@ import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.impl.RedirectServiceImpl
 import dev.d1s.linda.testUtil.*
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
+import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.verify
+import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -50,6 +60,12 @@ class RedirectServiceImplTest {
     @MockkBean
     private lateinit var redirectRepository: RedirectRepository
 
+    @MockkBean(relaxed = true)
+    private lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @MockkBean
+    private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
+
     private val changedUtmParameters = utmParameters
         .mapToMutableSet {
             it.copy().apply {
@@ -60,27 +76,34 @@ class RedirectServiceImplTest {
     @BeforeEach
     fun setup() {
         redirectRepository.prepare()
+        redirectDtoConverter.prepare()
     }
 
     @Test
     fun `should find all redirects`() {
-        expectThat(
-            redirectServiceImpl.findAll()
-        ) isEqualTo redirects
+        withStaticConverterFacadeMock(redirectDtoConverter) { converter ->
+            converter.prepare()
 
-        verify {
-            redirectRepository.findAll()
+            expectThat(
+                redirectServiceImpl.findAll(true)
+            ) isEqualTo (redirects to redirectDtoSet)
+
+            verifyAll {
+                redirectRepository.findAll()
+                converter.convertToDtoSet(redirects)
+            }
         }
     }
 
     @Test
     fun `should find redirect by id`() {
         expectThat(
-            redirectServiceImpl.findById(VALID_STUB)
-        ) isEqualTo redirect
+            redirectServiceImpl.findById(VALID_STUB, true)
+        ) isEqualTo (redirect to redirectDto)
 
-        verify {
+        verifyAll {
             redirectRepository.findById(VALID_STUB)
+            redirectDtoConverter.convertToDto(redirect)
         }
     }
 
@@ -99,7 +122,19 @@ class RedirectServiceImplTest {
     fun `should create redirect`() {
         expectThat(
             redirectServiceImpl.create(redirect)
-        ) isEqualTo redirect
+        ) isEqualTo (redirect to redirectDto)
+
+        verifyAll {
+            redirectDtoConverter.convertToDto(
+                redirect
+            )
+
+            publisher.publish(
+                REDIRECT_CREATED_GROUP,
+                VALID_STUB,
+                CommonRedirectEventData(redirectDto)
+            )
+        }
     }
 
     @Test
@@ -161,7 +196,7 @@ class RedirectServiceImplTest {
             alias = INVALID_STUB
         }
 
-        val updatedRedirect = redirectServiceImpl.update(
+        val (updatedRedirect, dto) = redirectServiceImpl.update(
             VALID_STUB,
             redirect.copy().apply {
                 shortLink = anotherShortLink
@@ -169,11 +204,28 @@ class RedirectServiceImplTest {
         )
 
         expectThat(
+            dto
+        ) isEqualTo redirectDto
+
+        expectThat(
             updatedRedirect.shortLink
         ) isEqualTo anotherShortLink
 
-        verify {
+        verifyAll {
+            // verification fails without this. I have no idea how, why, where and when.
+            redirectRepository.findById(VALID_STUB)
+
             redirectRepository.save(updatedRedirect)
+
+            redirectDtoConverter.convertToDto(
+                updatedRedirect
+            )
+
+            publisher.publish(
+                REDIRECT_UPDATED_GROUP,
+                VALID_STUB,
+                RedirectUpdatedEventData(redirectDto, dto!!)
+            )
         }
     }
 
@@ -206,7 +258,12 @@ class RedirectServiceImplTest {
         }
 
         verify {
-            redirectRepository.deleteById(VALID_STUB)
+            redirectRepository.delete(redirect)
+            publisher.publish(
+                REDIRECT_REMOVED_GROUP,
+                VALID_STUB,
+                CommonRedirectEventData(redirectDto)
+            )
         }
     }
 }

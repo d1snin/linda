@@ -29,5 +29,11 @@ class AvailabilityChangeLongPollingConstantsTest {
 
         expectThat(AVAILABILITY_CHANGE_REMOVED_GROUP) isEqualTo
                 "availability-change-removed"
+
+        expectThat(AVAILABILITY_CHECK_PERFORMED_GROUP) isEqualTo
+                "availability-check-performed"
+
+        expectThat(GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP) isEqualTo
+                "global-availability-check-performed"
     }
 }

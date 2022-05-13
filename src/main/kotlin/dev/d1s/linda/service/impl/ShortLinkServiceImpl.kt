@@ -17,8 +17,16 @@
 package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
+import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.utm.UtmParameterPurpose
+import dev.d1s.linda.domain.utmParameter.UtmParameterPurpose
+import dev.d1s.linda.dto.EntityWithDto
+import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
+import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData
 import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
@@ -28,6 +36,11 @@ import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.linda.util.mapToIdSet
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
+import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.util.convertToDtoIf
+import dev.d1s.teabag.dto.util.convertToDtoSetIf
+import dev.d1s.teabag.dto.util.converterForSet
 import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -54,9 +67,19 @@ class ShortLinkServiceImpl : ShortLinkService {
     @Autowired
     private lateinit var scheduler: ThreadPoolTaskScheduler
 
+    @Autowired
+    private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
+
+    @Autowired
+    private lateinit var publisher: AsyncLongPollingEventPublisher
+
     @Lazy
     @Autowired
     private lateinit var shortLinkService: ShortLinkServiceImpl
+
+    private val shortLinkDtoSetConverter by lazy {
+        shortLinkDtoConverter.converterForSet()
+    }
 
     private val log = logging()
 
@@ -64,41 +87,44 @@ class ShortLinkServiceImpl : ShortLinkService {
         mutableMapOf<String, ScheduledFuture<*>>()
 
     @Transactional(readOnly = true)
-    override fun findAll(): Set<ShortLink> =
-        shortLinkRepository.findAll().toSet()
-            .also {
-                log.debug {
-                    "found all short links: ${
-                        it.mapToIdSet()
-                    }"
-                }
-            }
+    override fun findAll(requireDto: Boolean): EntityWithDtoSet<ShortLink, ShortLinkDto> {
+        val shortLinks = shortLinkRepository.findAll().toSet()
+
+        log.debug {
+            "found all short links: ${
+                shortLinks.mapToIdSet()
+            }"
+        }
+
+        return shortLinks to shortLinkDtoSetConverter
+            .convertToDtoSetIf(shortLinks, requireDto)
+    }
 
     @Transactional(readOnly = true)
-    override fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink =
-        when (shortLinkFindingStrategy) {
+    override fun find(
+        shortLinkFindingStrategy: ShortLinkFindingStrategy,
+        requireDto: Boolean
+    ): EntityWithDto<ShortLink, ShortLinkDto> {
+        val shortLink = when (shortLinkFindingStrategy) {
             is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(shortLinkFindingStrategy.identifier)
             is ShortLinkFindingStrategy.ByAlias -> shortLinkRepository.findByAlias(
                 shortLinkFindingStrategy.identifier
             )
         }.orElseThrow {
             ShortLinkNotFoundException(shortLinkFindingStrategy.identifier)
-        }.also {
-            log.debug {
-                "found short link using $shortLinkFindingStrategy strategy: $it"
-            }
         }
+
+        log.debug {
+            "found short link using $shortLinkFindingStrategy strategy: $shortLink"
+        }
+
+        return shortLink to shortLinkDtoConverter
+            .convertToDtoIf(shortLink, requireDto)
+    }
 
     @Transactional
-    override fun create(shortLink: ShortLink): ShortLink {
+    override fun create(shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
         shortLink.validate()
-
-        if (
-            availabilityChecksConfigurationProperties.eagerAvailabilityCheck
-        ) {
-            shortLink.availabilityChanges +=
-                availabilityChangeService.checkAvailability(shortLink)
-        }
 
         shortLinkService.assignUtmParameters(
             shortLink,
@@ -116,6 +142,14 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLink
         )
 
+        if (
+            availabilityChecksConfigurationProperties.eagerAvailabilityCheck
+        ) {
+            val (availabilityChange, _) = availabilityChangeService.checkAvailability(savedShortLink)
+
+            shortLink.availabilityChanges += availabilityChange
+        }
+
         shortLinkService.scheduleForDeletion(
             savedShortLink
         )
@@ -124,14 +158,26 @@ class ShortLinkServiceImpl : ShortLinkService {
             "created short link: $savedShortLink"
         }
 
-        return savedShortLink
+        val dto = shortLinkDtoConverter.convertToDto(
+            savedShortLink
+        )
+
+        publisher.publish(
+            SHORT_LINK_CREATED_GROUP,
+            dto.id,
+            CommonShortLinkEventData(dto)
+        )
+
+        return savedShortLink to dto
     }
 
     @Transactional
-    override fun update(id: String, shortLink: ShortLink): ShortLink {
+    override fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
         shortLink.validate()
 
-        val foundShortLink = shortLinkService.find(byId(id))
+        val (foundShortLink, _) = shortLinkService.find(byId(id))
+
+        val oldShortLinkDto = shortLinkDtoConverter.convertToDto(foundShortLink)
 
         val willSchedule = foundShortLink.deleteAfter != shortLink.deleteAfter
 
@@ -163,7 +209,21 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLinkService.scheduleForDeletion(savedShortLink)
         }
 
-        return savedShortLink
+        val dto = shortLinkDtoConverter.convertToDto(
+            savedShortLink
+        )
+
+        publisher.publish(
+            SHORT_LINK_UPDATED_GROUP,
+            id,
+            ShortLinkUpdatedEventData(
+                oldShortLinkDto,
+                dto
+            )
+        )
+
+        return savedShortLink to shortLinkDtoConverter
+            .convertToDto(savedShortLink)
     }
 
     override fun assignUtmParameters(
@@ -205,20 +265,21 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @Transactional
     override fun removeById(id: String) {
-        shortLinkRepository.deleteById(id)
+        val (shortLink, shortLinkDto) = shortLinkService.find(byId(id), true)
+
+        shortLinkRepository.delete(shortLink)
 
         log.debug {
             "removed short link with id $id"
         }
-    }
 
-    @Transactional
-    override fun removeAll(shortLinks: Iterable<ShortLink>) {
-        shortLinkRepository.deleteAllInBatch(shortLinks)
-
-        log.debug {
-            "removed short links in batch: $shortLinks"
-        }
+        publisher.publish(
+            SHORT_LINK_REMOVED_GROUP,
+            id,
+            CommonShortLinkEventData(
+                shortLinkDto
+            )
+        )
     }
 
     override fun doesAliasExist(alias: String): Boolean = try {

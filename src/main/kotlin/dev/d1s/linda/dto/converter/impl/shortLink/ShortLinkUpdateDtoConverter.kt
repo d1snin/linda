@@ -43,19 +43,23 @@ class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> 
         dto.alias,
         dto.allowUtmParameters,
         dto.deleteAfter,
-        dto.defaultUtmParameters.mapToMutableSet(
-            utmParameterService::findById
-        ),
-        dto.allowedUtmParameters.mapToMutableSet(
-            utmParameterService::findById
-        )
+        dto.defaultUtmParameters.mapToMutableSet {
+            val (utmParameter, _) = utmParameterService.findById(it)
+            utmParameter
+        },
+        dto.allowedUtmParameters.mapToMutableSet {
+            val (utmParameter, _) = utmParameterService.findById(it)
+            utmParameter
+        }
     ).apply {
         redirects = dto.redirects.mapToMutableSet {
-            redirectService.findById(it)
+            val (redirect, _) = redirectService.findById(it)
+            redirect
         }
 
-        availabilityChanges = dto.availabilityChanges.mapToMutableSet(
-            availabilityChangeService::findById
-        )
+        availabilityChanges = dto.availabilityChanges.mapToMutableSet {
+            val (availabilityChange, _) = availabilityChangeService.findById(it)
+            availabilityChange
+        }
     }
 }

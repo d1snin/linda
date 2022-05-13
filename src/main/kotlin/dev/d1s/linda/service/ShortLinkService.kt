@@ -17,24 +17,28 @@
 package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.utm.UtmParameterPurpose
+import dev.d1s.linda.domain.utmParameter.UtmParameterPurpose
+import dev.d1s.linda.dto.EntityWithDto
+import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 
 interface ShortLinkService {
 
-    fun findAll(): Set<ShortLink>
+    fun findAll(requireDto: Boolean = false): EntityWithDtoSet<ShortLink, ShortLinkDto>
 
-    fun find(shortLinkFindingStrategy: ShortLinkFindingStrategy): ShortLink
+    fun find(
+        shortLinkFindingStrategy: ShortLinkFindingStrategy,
+        requireDto: Boolean = false
+    ): EntityWithDto<ShortLink, ShortLinkDto>
 
-    fun create(shortLink: ShortLink): ShortLink
+    fun create(shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto>
 
-    fun update(id: String, shortLink: ShortLink): ShortLink
+    fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto>
 
     fun assignUtmParameters(shortLink: ShortLink, associatedShortLink: ShortLink, purpose: UtmParameterPurpose)
 
     fun removeById(id: String)
-
-    fun removeAll(shortLinks: Iterable<ShortLink>)
 
     fun doesAliasExist(alias: String): Boolean
 

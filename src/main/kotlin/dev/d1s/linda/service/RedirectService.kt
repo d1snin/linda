@@ -17,17 +17,20 @@
 package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.dto.EntityWithDto
+import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.linda.dto.redirect.RedirectDto
 
 interface RedirectService {
 
-    fun findAll(): Set<Redirect>
+    fun findAll(requireDto: Boolean = false): EntityWithDtoSet<Redirect, RedirectDto>
 
-    fun findById(id: String): Redirect
+    fun findById(id: String, requireDto: Boolean = false): EntityWithDto<Redirect, RedirectDto>
 
-    fun create(redirect: Redirect): Redirect
+    fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
 
-    fun update(id: String, redirect: Redirect): Redirect
+    fun update(id: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
 
     fun assignUtmParametersAndSave(redirect: Redirect, utmParameters: Set<UtmParameter>): Redirect
 

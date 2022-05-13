@@ -18,19 +18,31 @@ package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_CREATED_GROUP
+import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.AVAILABILITY_CHECK_PERFORMED_GROUP
+import dev.d1s.linda.constant.lp.GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.availability.UnavailabilityReason
+import dev.d1s.linda.dto.EntityWithDto
+import dev.d1s.linda.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
-import dev.d1s.linda.event.data.AvailabilityChangeEventData
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
+import dev.d1s.linda.event.data.availabilityChange.AvailabilityCheckPerformedEventData
+import dev.d1s.linda.event.data.availabilityChange.CommonAvailabilityChangeEventData
+import dev.d1s.linda.event.data.availabilityChange.GlobalAvailabilityCheckPerformedEventData
 import dev.d1s.linda.exception.AvailabilityCheckInProgressException
 import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
+import dev.d1s.linda.strategy.shortLink.byId
+import dev.d1s.teabag.dto.util.convertToDtoIf
+import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.util.converterForSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -54,9 +66,6 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     private lateinit var availabilityChangeRepository: AvailabilityChangeRepository
 
     @Autowired
-    private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
-
-    @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Autowired
@@ -68,9 +77,19 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     @Autowired
     private lateinit var shortLinkService: ShortLinkService
 
+    @Autowired
+    private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
+
+    @Autowired
+    private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
+
     @Lazy
     @Autowired
     private lateinit var availabilityChangeService: AvailabilityChangeServiceImpl
+
+    private val availabilityChangeSetDtoConverter by lazy {
+        availabilityChangeDtoConverter.converterForSet()
+    }
 
     private val checksRunning = AtomicBoolean(false)
 
@@ -81,24 +100,30 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     private val log = logging()
 
     @Transactional(readOnly = true)
-    override fun findAll(): Set<AvailabilityChange> =
-        availabilityChangeRepository.findAll().toSet().also {
-            log.debug {
-                "found all availability changes: ${
-                    it.mapToIdSet()
-                }"
-            }
+    override fun findAll(requireDto: Boolean): EntityWithDtoSet<AvailabilityChange, AvailabilityChangeDto> {
+        val all = availabilityChangeRepository.findAll().toSet()
+
+        log.debug {
+            "found all availability changes: $all"
         }
 
+        return all to availabilityChangeSetDtoConverter
+            .convertToDtoSetIf(all, requireDto)
+    }
+
     @Transactional(readOnly = true)
-    override fun findById(id: String): AvailabilityChange =
-        availabilityChangeRepository.findById(id).orElseThrow {
+    override fun findById(id: String, requireDto: Boolean): EntityWithDto<AvailabilityChange, AvailabilityChangeDto> {
+        val availabilityChange = availabilityChangeRepository.findById(id).orElseThrow {
             AvailabilityChangeNotFoundException(id)
-        }.also {
-            log.debug {
-                "found availability change by id: $it"
-            }
         }
+
+        log.debug {
+            "found availability change by id: $availabilityChange"
+        }
+
+        return availabilityChange to availabilityChangeDtoConverter
+            .convertToDtoIf(availabilityChange, requireDto)
+    }
 
     @Transactional(readOnly = true)
     override fun findLast(shortLinkId: String): AvailabilityChange? =
@@ -111,34 +136,42 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             }
 
     @Transactional
-    override fun create(availability: AvailabilityChange): AvailabilityChange {
+    override fun create(availability: AvailabilityChange): EntityWithDto<AvailabilityChange, AvailabilityChangeDto> {
         val saved = availabilityChangeRepository.save(availability)
         val dto = availabilityChangeDtoConverter.convertToDto(saved)
 
-        // doing this on a service layer because POST requests are not supported for this entity
         publisher.publish(
             AVAILABILITY_CHANGE_CREATED_GROUP,
-            dto.id,
-            AvailabilityChangeEventData(dto)
+            dto.shortLink,
+            CommonAvailabilityChangeEventData(dto)
         )
 
         log.debug {
             "created availability change: $saved"
         }
 
-        return saved
+        return saved to dto
     }
 
     @Transactional
     override fun removeById(id: String) {
-        availabilityChangeRepository.deleteById(id)
+        val (availabilityChangeToRemove, dto) =
+            availabilityChangeService.findById(id, true)
+
+        availabilityChangeRepository.delete(availabilityChangeToRemove)
 
         log.debug {
             "removed availability change with id $id"
         }
+
+        publisher.publish(
+            AVAILABILITY_CHANGE_REMOVED_GROUP,
+            dto!!.id,
+            CommonAvailabilityChangeEventData(dto)
+        )
     }
 
-    override fun checkAvailability(shortLink: ShortLink): AvailabilityChange {
+    override fun checkAvailability(shortLink: ShortLink): EntityWithDto<AvailabilityChange, UnsavedAvailabilityChangeDto> {
         var available = true
         var unavailabilityReason: UnavailabilityReason? = null
         var response: ClientHttpResponse by Delegates.notNull()
@@ -168,57 +201,93 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             }
         }
 
-        return AvailabilityChange(
+        val availabilityChange = AvailabilityChange(
             shortLink,
             unavailabilityReason
-        ).also {
-            log.debug {
-                "checked the availability of $shortLink: $it"
-            }
+        )
+
+        log.debug {
+            "checked the availability of $shortLink: $availabilityChange"
         }
+
+        val dto = unsavedAvailabilityChangeDtoConverter
+            .convertToDto(availabilityChange)
+
+        publisher.publish(
+            AVAILABILITY_CHECK_PERFORMED_GROUP,
+            shortLink.id,
+            AvailabilityCheckPerformedEventData(
+                dto
+            )
+        )
+
+        return availabilityChange to dto
+    }
+
+    override fun checkAvailability(shortLinkId: String): EntityWithDto<AvailabilityChange, UnsavedAvailabilityChangeDto> {
+        val (shortLink, _) = shortLinkService.find(byId(shortLinkId))
+
+        return availabilityChangeService.checkAvailability(
+            shortLink
+        )
     }
 
     override fun checkAndSaveAvailability(shortLink: ShortLink): AvailabilityChange? {
         val lastChange = availabilityChangeService.findLast(shortLink.id!!)
-        val availabilityChange = availabilityChangeService.checkAvailability(shortLink)
+        val (availabilityChange, _) = availabilityChangeService.checkAvailability(shortLink)
 
         return if (lastChange == null || lastChange.available != availabilityChange.available) {
-            availabilityChangeService.create(availabilityChange)
+            val (createdAvailabilityChange, _) = availabilityChangeService.create(availabilityChange)
+            createdAvailabilityChange
         } else {
             null
         }
     }
 
     // using runBlocking {} because I don't want coroutines to be used anywhere else, yet.
-    override fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange> = runBlocking {
-        log.debug {
-            "checking the availability of all short links"
-        }
-
-        if (checksRunning.get()) {
-            throw AvailabilityCheckInProgressException
-        }
-
-        var changes: Set<AvailabilityChange> by Delegates.notNull()
-
-        checksRunning.set(true)
-
-        changes = shortLinkService.findAll().map {
-            async {
-                availabilityChangeService.checkAndSaveAvailability(it)
+    override fun checkAvailabilityOfAllShortLinks(): EntityWithDtoSet<AvailabilityChange, AvailabilityChangeDto> =
+        runBlocking {
+            log.debug {
+                "checking the availability of all short links"
             }
-        }.awaitAll()
-            .filterNotNull()
-            .toSet()
 
-        checksRunning.set(false)
+            if (checksRunning.get()) {
+                throw AvailabilityCheckInProgressException
+            }
 
-        log.debug {
-            "checked the availability of all short links: ${
-                changes.mapToIdSet().filterNotNull()
-            }"
+            var changes: Set<AvailabilityChange> by Delegates.notNull()
+
+            checksRunning.set(true)
+
+            val (shortLinks, _) = shortLinkService.findAll()
+
+            changes = shortLinks.map {
+                async {
+                    availabilityChangeService.checkAndSaveAvailability(it)
+                }
+            }.awaitAll()
+                .filterNotNull()
+                .toSet()
+
+            checksRunning.set(false)
+
+            log.debug {
+                "checked the availability of all short links: ${
+                    changes.mapToIdSet().filterNotNull()
+                }"
+            }
+
+            val changesDtoSet = availabilityChangeSetDtoConverter
+                .convertToDtoSet(changes)
+
+            publisher.publish(
+                GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP,
+                null,
+                GlobalAvailabilityCheckPerformedEventData(
+                    changesDtoSet
+                )
+            )
+
+            changes to changesDtoSet
         }
-
-        changes
-    }
 }

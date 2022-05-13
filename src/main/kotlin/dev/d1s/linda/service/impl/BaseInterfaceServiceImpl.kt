@@ -20,7 +20,7 @@ import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperti
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.service.BaseInterfaceService
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.ShortLinkService
@@ -106,14 +106,14 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             )
         }
 
-        val shortLink = shortLinkService.find(byAlias(alias))
+        val (shortLink, _) = shortLinkService.find(byAlias(alias))
 
         val utmParameters = buildSet {
             utmMap.forEach { (type, nullableValue) ->
                 nullableValue?.let { value ->
-                    add(
-                        utmParameterService.findByTypeAndValueOrThrow(type, value)
-                    )
+                    val (utmParameter, _) = utmParameterService.findByTypeAndValueOrThrow(type, value)
+
+                    add(utmParameter)
                 }
             }
         }

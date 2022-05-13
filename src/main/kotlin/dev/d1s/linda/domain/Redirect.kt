@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.domain
 
-import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameter
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import javax.persistence.*

@@ -31,7 +31,6 @@ import dev.d1s.teabag.web.currentRequest
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.verify
-import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -64,7 +63,7 @@ class CustomAliasGeneratorTest {
                 generator.generateAlias(shortLinkCreationDto)
             ) isEqualTo VALID_STUB
 
-            verifyAll {
+            verify {
                 shortLinkService.doesAliasExist(VALID_STUB)
             }
         }

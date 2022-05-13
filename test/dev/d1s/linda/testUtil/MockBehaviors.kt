@@ -22,8 +22,8 @@ import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
@@ -31,8 +31,8 @@ import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
-import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
-import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.repository.RedirectRepository
@@ -58,12 +58,12 @@ val baseInterfaceConfirmationMappingWithAlias =
 
 fun AvailabilityChangeService.prepare() {
     every {
-        findAll()
-    } returns availabilityChanges
+        findAll(any())
+    } returns (availabilityChanges to availabilityChangeDtoSet)
 
     every {
-        findById(VALID_STUB)
-    } returns availabilityChange
+        findById(VALID_STUB, any())
+    } returns (availabilityChange to availabilityChangeDto)
 
     every {
         findLast(VALID_STUB)
@@ -71,7 +71,7 @@ fun AvailabilityChangeService.prepare() {
 
     every {
         create(availabilityChange)
-    } returns availabilityChange
+    } returns (availabilityChange to availabilityChangeDto)
 
     justRun {
         removeById(VALID_STUB)
@@ -79,7 +79,11 @@ fun AvailabilityChangeService.prepare() {
 
     every {
         checkAvailability(shortLink)
-    } returns availabilityChange
+    } returns (availabilityChange to unsavedAvailabilityChangeDto)
+
+    every {
+        checkAvailability(VALID_STUB)
+    } returns (availabilityChange to unsavedAvailabilityChangeDto)
 
     every {
         checkAndSaveAvailability(shortLink)
@@ -87,7 +91,7 @@ fun AvailabilityChangeService.prepare() {
 
     every {
         checkAvailabilityOfAllShortLinks()
-    } returns availabilityChanges
+    } returns (availabilityChanges to availabilityChangeDtoSet)
 }
 
 fun BaseInterfaceService.prepare() {
@@ -122,20 +126,20 @@ fun BaseInterfaceService.prepare() {
 
 fun RedirectService.prepare() {
     every {
-        findAll()
-    } returns redirects
+        findAll(any())
+    } returns (redirects to redirectDtoSet)
 
     every {
-        findById(VALID_STUB)
-    } returns redirect
+        findById(VALID_STUB, any())
+    } returns (redirect to redirectDto)
 
     every {
         create(redirect)
-    } returns redirect
+    } returns (redirect to redirectDto)
 
     every {
         update(VALID_STUB, redirect)
-    } returns redirect
+    } returns (redirect to redirectDto)
 
     every {
         assignUtmParametersAndSave(redirect, utmParameters)
@@ -148,20 +152,20 @@ fun RedirectService.prepare() {
 
 fun ShortLinkService.prepare() {
     every {
-        findAll()
-    } returns shortLinks
+        findAll(any())
+    } returns (shortLinks to shortLinkDtoSet)
 
     every {
-        find(any())
-    } returns shortLink
+        find(any(), any())
+    } returns (shortLink to shortLinkDto)
 
     every {
         create(shortLink)
-    } returns shortLink
+    } returns (shortLink to shortLinkDto)
 
     every {
         update(VALID_STUB, shortLink)
-    } returns shortLink
+    } returns (shortLink to shortLinkDto)
 
     justRun {
         assignUtmParameters(shortLink, shortLink, any())
@@ -169,10 +173,6 @@ fun ShortLinkService.prepare() {
 
     justRun {
         removeById(VALID_STUB)
-    }
-
-    justRun {
-        removeAll(shortLinks)
     }
 
     every {
@@ -194,12 +194,12 @@ fun ShortLinkService.prepare() {
 
 fun UtmParameterService.prepare() {
     every {
-        findAll()
-    } returns utmParameters
+        findAll(any())
+    } returns (utmParameters to utmParameterDtoSet)
 
     every {
-        findById(VALID_STUB)
-    } returns utmParameter
+        findById(VALID_STUB, any())
+    } returns (utmParameter to utmParameterDto)
 
     every {
         findByTypeAndValue(UtmParameterType.CONTENT, VALID_STUB)
@@ -210,16 +210,16 @@ fun UtmParameterService.prepare() {
     } returns Optional.empty()
 
     every {
-        findByTypeAndValueOrThrow(UtmParameterType.CONTENT, VALID_STUB)
-    } returns utmParameter
+        findByTypeAndValueOrThrow(UtmParameterType.CONTENT, VALID_STUB, any())
+    } returns (utmParameter to utmParameterDto)
 
     every {
         create(utmParameter)
-    } returns utmParameter
+    } returns (utmParameter to utmParameterDto)
 
     every {
         update(VALID_STUB, utmParameter)
-    } returns utmParameter
+    } returns (utmParameter to utmParameterDto)
 
     justRun {
         removeById(VALID_STUB)
@@ -274,7 +274,7 @@ fun AvailabilityChangeRepository.prepare() {
     }
 
     justRun {
-        deleteById(VALID_STUB)
+        delete(availabilityChange)
     }
 }
 
@@ -305,7 +305,7 @@ fun RedirectRepository.prepare() {
     }
 
     justRun {
-        deleteById(VALID_STUB)
+        delete(redirect)
     }
 }
 
@@ -347,11 +347,7 @@ fun ShortLinkRepository.prepare() {
     }
 
     justRun {
-        deleteById(VALID_STUB)
-    }
-
-    justRun {
-        deleteAllInBatch(shortLinks)
+        delete(shortLink)
     }
 }
 
@@ -395,7 +391,7 @@ fun UtmParameterRepository.prepare() {
     }
 
     justRun {
-        deleteById(VALID_STUB)
+        delete(utmParameter)
     }
 }
 
@@ -437,35 +433,35 @@ fun BaseInterfaceConfigurationProperties.prepare() {
 @JvmName("prepareDtoConverterAvailabilityChangeDtoAvailabilityChange")
 fun DtoConverter<AvailabilityChangeDto, AvailabilityChange>.prepare() {
     every {
-        convertToDto(availabilityChange)
+        convertToDto(any())
     } returns availabilityChangeDto
 }
 
 @JvmName("prepareDtoSetConverterFacadeAvailabilityChangeDtoAvailabilityChange")
 fun DtoSetConverterFacade<AvailabilityChangeDto, AvailabilityChange>.prepare() {
     every {
-        convertToDtoSet(availabilityChanges)
+        convertToDtoSet(any())
     } returns availabilityChangeDtoSet
 }
 
 @JvmName("prepareDtoConverterUnsavedAvailabilityChangeDtoAvailabilityChange")
 fun DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>.prepare() {
     every {
-        convertToDto(availabilityChange)
+        convertToDto(any())
     } returns unsavedAvailabilityChangeDto
 }
 
 @JvmName("prepareDtoConverterRedirectDtoRedirect")
 fun DtoConverter<RedirectDto, Redirect>.prepare() {
     every {
-        convertToDto(redirect)
+        convertToDto(any())
     } returns redirectDto
 }
 
 @JvmName("prepareDtoSetConverterFacadeRedirectDtoRedirect")
 fun DtoSetConverterFacade<RedirectDto, Redirect>.prepare() {
     every {
-        convertToDtoSet(redirects)
+        convertToDtoSet(any())
     } returns redirectDtoSet
 }
 
@@ -479,14 +475,14 @@ fun DtoConverter<RedirectAlterationDto, Redirect>.prepare() {
 @JvmName("prepareDtoConverterShortLinkDtoShortLink")
 fun DtoConverter<ShortLinkDto, ShortLink>.prepare() {
     every {
-        convertToDto(shortLink)
+        convertToDto(any())
     } returns shortLinkDto
 }
 
 @JvmName("prepareDtoSetConverterFacadeShortLinkDtoShortLink")
 fun DtoSetConverterFacade<ShortLinkDto, ShortLink>.prepare() {
     every {
-        convertToDtoSet(shortLinks)
+        convertToDtoSet(any())
     } returns shortLinkDtoSet
 }
 
@@ -507,14 +503,14 @@ fun DtoConverter<ShortLinkUpdateDto, ShortLink>.prepare() {
 @JvmName("prepareDtoConverterUtmParameterDtoUtmParameter")
 fun DtoConverter<UtmParameterDto, UtmParameter>.prepare() {
     every {
-        convertToDto(utmParameter)
+        convertToDto(any())
     } returns utmParameterDto
 }
 
 @JvmName("prepareDtoSetConverterFacadeUtmParameterDtoUtmParameter")
 fun DtoSetConverterFacade<UtmParameterDto, UtmParameter>.prepare() {
     every {
-        convertToDtoSet(utmParameters)
+        convertToDtoSet(any())
     } returns utmParameterDtoSet
 }
 

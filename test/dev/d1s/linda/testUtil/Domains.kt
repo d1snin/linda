@@ -21,8 +21,8 @@ import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.alias.FriendlyAliases
 import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import java.time.Instant
 

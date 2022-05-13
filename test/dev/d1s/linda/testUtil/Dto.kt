@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
@@ -24,8 +24,8 @@ import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
-import dev.d1s.linda.dto.utm.UtmParameterAlterationDto
-import dev.d1s.linda.dto.utm.UtmParameterDto
+import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import java.time.Instant
 

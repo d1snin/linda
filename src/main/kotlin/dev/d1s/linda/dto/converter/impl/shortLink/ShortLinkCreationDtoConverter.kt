@@ -42,11 +42,13 @@ class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLi
                 .generateAlias(dto),
             dto.allowUtmParameters,
             dto.deleteAfter,
-            dto.defaultUtmParameters.mapToMutableSet(
-                utmParameterService::findById
-            ),
-            dto.allowedUtmParameters.mapToMutableSet(
-                utmParameterService::findById
-            )
+            dto.defaultUtmParameters.mapToMutableSet {
+                val (utmParameter, _) = utmParameterService.findById(it)
+                utmParameter
+            },
+            dto.allowedUtmParameters.mapToMutableSet {
+                val (utmParameter, _) = utmParameterService.findById(it)
+                utmParameter
+            }
         )
 }

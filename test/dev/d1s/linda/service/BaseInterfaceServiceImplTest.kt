@@ -20,9 +20,9 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
-import dev.d1s.linda.constant.utm.UTM_CONTENT
+import dev.d1s.linda.constant.utmParameter.UTM_CONTENT
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.service.impl.BaseInterfaceServiceImpl
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.testUtil.*
@@ -80,7 +80,7 @@ class BaseInterfaceServiceImplTest {
 
         every {
             redirectService.create(expectedRedirect)
-        } returns redirect
+        } returns (redirect to redirectDto)
     }
 
     @Test

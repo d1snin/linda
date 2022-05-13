@@ -18,3 +18,5 @@ package dev.d1s.linda.constant.lp
 
 const val AVAILABILITY_CHANGE_CREATED_GROUP = "availability-change-created"
 const val AVAILABILITY_CHANGE_REMOVED_GROUP = "availability-change-removed"
+const val AVAILABILITY_CHECK_PERFORMED_GROUP = "availability-check-performed"
+const val GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP = "global-availability-check-performed"

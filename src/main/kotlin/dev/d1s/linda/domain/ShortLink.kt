@@ -17,7 +17,7 @@
 package dev.d1s.linda.domain
 
 import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.domain.utm.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameter
 import dev.d1s.linda.util.mapToIdSet
 import org.hibernate.annotations.GenericGenerator
 import java.time.Duration

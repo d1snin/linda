@@ -18,7 +18,7 @@ package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_MAPPING
-import dev.d1s.linda.constant.utm.UTM_CONTENT
+import dev.d1s.linda.constant.utmParameter.UTM_CONTENT
 import dev.d1s.linda.controller.impl.BaseInterfaceControllerImpl
 import dev.d1s.linda.service.BaseInterfaceService
 import dev.d1s.linda.testUtil.TEST_URL

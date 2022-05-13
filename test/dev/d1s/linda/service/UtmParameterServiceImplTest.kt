@@ -17,18 +17,26 @@
 package dev.d1s.linda.service
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
+import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
+import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
+import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData
 import dev.d1s.linda.exception.alreadyExists.impl.UtmParameterAlreadyExistsException
 import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.impl.UtmParameterServiceImpl
-import dev.d1s.linda.testUtil.prepare
-import dev.d1s.linda.testUtil.utmParameter
-import dev.d1s.linda.testUtil.utmParameters
+import dev.d1s.linda.testUtil.*
+import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
+import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.INVALID_STUB
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.verify
+import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -53,31 +61,45 @@ class UtmParameterServiceImplTest {
     @MockkBean
     private lateinit var redirectService: RedirectService
 
+    @MockkBean
+    private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
+
+    @MockkBean(relaxed = true)
+    private lateinit var publisher: AsyncLongPollingEventPublisher
+
+
     @BeforeEach
     fun setup() {
         utmParameterRepository.prepare()
         redirectService.prepare()
+        utmParameterDtoConverter.prepare()
     }
 
     @Test
     fun `should find all utm parameters`() {
-        expectThat(
-            utmParameterServiceImpl.findAll()
-        ) isEqualTo utmParameters
+        withStaticConverterFacadeMock(utmParameterDtoConverter) { converter ->
+            converter.prepare()
 
-        verify {
-            utmParameterRepository.findAll()
+            expectThat(
+                utmParameterServiceImpl.findAll(true)
+            ) isEqualTo (utmParameters to utmParameterDtoSet)
+
+            verifyAll {
+                utmParameterRepository.findAll()
+                converter.convertToDtoSet(utmParameters)
+            }
         }
     }
 
     @Test
     fun `should find utm parameter by id`() {
         expectThat(
-            utmParameterServiceImpl.findById(VALID_STUB)
-        ) isEqualTo utmParameter
+            utmParameterServiceImpl.findById(VALID_STUB, true)
+        ) isEqualTo (utmParameter to utmParameterDto)
 
-        verify {
+        verifyAll {
             utmParameterRepository.findById(VALID_STUB)
+            utmParameterDtoConverter.convertToDto(utmParameter)
         }
     }
 
@@ -154,10 +176,19 @@ class UtmParameterServiceImplTest {
 
         expectThat(
             utmParameterServiceImpl.create(utmParameter)
-        ) isEqualTo utmParameter
+        ) isEqualTo (utmParameter to utmParameterDto)
 
-        verify {
+        verifyAll {
+            // verification fails without this
+            utmParameterRepository.findUtmParameterByTypeAndValue(UtmParameterType.CONTENT, VALID_STUB)
+
             utmParameterRepository.save(utmParameter)
+            utmParameterDtoConverter.convertToDto(utmParameter)
+            publisher.publish(
+                UTM_PARAMETER_CREATED_GROUP,
+                VALID_STUB,
+                CommonUtmParameterEventData(utmParameterDto)
+            )
         }
     }
 
@@ -174,7 +205,7 @@ class UtmParameterServiceImplTest {
             parameterValue = INVALID_STUB
         }
 
-        val updatedUtmParameter = utmParameterServiceImpl.update(
+        val (updatedUtmParameter, dto) = utmParameterServiceImpl.update(
             VALID_STUB,
             anotherUtmParameter
         )
@@ -183,8 +214,20 @@ class UtmParameterServiceImplTest {
             updatedUtmParameter.parameterValue
         ) isEqualTo INVALID_STUB
 
-        verify {
+        verifyAll {
+            // verification fails without this
+            utmParameterRepository.findById(VALID_STUB)
+
             utmParameterRepository.save(updatedUtmParameter)
+            utmParameterDtoConverter.convertToDto(updatedUtmParameter)
+            publisher.publish(
+                UTM_PARAMETER_UPDATED_GROUP,
+                utmParameter.id,
+                UtmParameterUpdatedEventData(
+                    utmParameterDto,
+                    dto!!
+                )
+            )
         }
     }
 
@@ -194,8 +237,16 @@ class UtmParameterServiceImplTest {
             utmParameterServiceImpl.removeById(VALID_STUB)
         }
 
-        verify {
-            utmParameterRepository.deleteById(VALID_STUB)
+        verifyAll {
+            // verification fails without this
+            utmParameterRepository.findById(VALID_STUB)
+
+            utmParameterRepository.delete(utmParameter)
+            publisher.publish(
+                UTM_PARAMETER_REMOVED_GROUP,
+                VALID_STUB,
+                CommonUtmParameterEventData(utmParameterDto)
+            )
         }
     }
 }

@@ -18,20 +18,15 @@ package dev.d1s.linda.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
-import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
-import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
-import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.RedirectControllerImpl
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
-import dev.d1s.linda.dto.redirect.RedirectDto
-import dev.d1s.linda.event.data.RedirectEventData
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.testUtil.*
-import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
+import io.mockk.verify
 import io.mockk.verifyAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -61,13 +56,7 @@ class RedirectControllerImplTest {
     private lateinit var redirectService: RedirectService
 
     @MockkBean
-    private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
-
-    @MockkBean
     private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
-
-    @MockkBean(relaxed = true)
-    private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Suppress("unused")
     @MockkBean(relaxed = true)
@@ -76,25 +65,19 @@ class RedirectControllerImplTest {
     @BeforeEach
     fun setup() {
         redirectService.prepare()
-        redirectDtoConverter.prepare()
         redirectAlterationDtoConverter.prepare()
     }
 
     @Test
     fun `should find all redirects`() {
-        withStaticConverterFacadeMock(redirectDtoConverter) { converter ->
-            converter.prepare()
+        mockMvc.get(REDIRECTS_FIND_ALL_MAPPING).andExpect {
+            ok()
 
-            mockMvc.get(REDIRECTS_FIND_ALL_MAPPING).andExpect {
-                ok()
+            jsonObject(redirectDtoSet)
+        }
 
-                jsonObject(redirectDtoSet)
-            }
-
-            verifyAll {
-                redirectService.findAll()
-                converter.convertToDtoSet(redirects)
-            }
+        verify {
+            redirectService.findAll(true)
         }
     }
 
@@ -102,15 +85,15 @@ class RedirectControllerImplTest {
     fun `should find redirect by id`() {
         mockMvc.get(
             REDIRECTS_FIND_BY_ID_MAPPING.setId()
+
         ).andExpect {
             ok()
 
             jsonObject(redirectDto)
         }
 
-        verifyAll {
-            redirectService.findById(VALID_STUB)
-            redirectDtoConverter.convertToDto(redirect)
+        verify {
+            redirectService.findById(VALID_STUB, true)
         }
     }
 
@@ -133,16 +116,6 @@ class RedirectControllerImplTest {
             )
 
             redirectService.create(redirect)
-
-            redirectDtoConverter.convertToDto(redirect)
-
-            publisher.publish(
-                REDIRECT_CREATED_GROUP,
-                VALID_STUB,
-                RedirectEventData(
-                    redirectDto
-                )
-            )
         }
     }
 
@@ -168,16 +141,6 @@ class RedirectControllerImplTest {
                 VALID_STUB,
                 redirect
             )
-
-            redirectDtoConverter.convertToDto(redirect)
-
-            publisher.publish(
-                REDIRECT_UPDATED_GROUP,
-                VALID_STUB,
-                RedirectEventData(
-                    redirectDto
-                )
-            )
         }
     }
 
@@ -185,20 +148,15 @@ class RedirectControllerImplTest {
     fun `should remove redirect by id`() {
         mockMvc.delete(
             REDIRECTS_REMOVE_BY_ID_MAPPING.setId()
+
         ).andExpect {
             status {
                 isNoContent()
             }
         }
 
-        verifyAll {
+        verify {
             redirectService.removeById(VALID_STUB)
-
-            publisher.publish(
-                REDIRECT_REMOVED_GROUP,
-                VALID_STUB,
-                RedirectEventData(null)
-            )
         }
     }
 }

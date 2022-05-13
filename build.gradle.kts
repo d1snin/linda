@@ -67,7 +67,7 @@ tasks.withType<Test> {
 
     testLogging {
         events.addAll(
-            listOf(
+            setOf(
                 org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
                 org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
                 org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
@@ -77,5 +77,5 @@ tasks.withType<Test> {
 }
 
 sourceSets.getByName("test") {
-    java.srcDir("test")
+    java.srcDir("./test")
 }

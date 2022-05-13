@@ -18,22 +18,39 @@ package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.availability.AvailabilityChange
+import dev.d1s.linda.dto.EntityWithDto
+import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 
 interface AvailabilityChangeService {
 
-    fun findAll(): Set<AvailabilityChange>
+    fun findAll(
+        requireDto: Boolean = false
+    ): EntityWithDtoSet<AvailabilityChange, AvailabilityChangeDto>
 
-    fun findById(id: String): AvailabilityChange
+    fun findById(
+        id: String,
+        requireDto: Boolean = false
+    ): EntityWithDto<AvailabilityChange, AvailabilityChangeDto>
 
     fun findLast(shortLinkId: String): AvailabilityChange?
 
-    fun create(availability: AvailabilityChange): AvailabilityChange
+    fun create(
+        availability: AvailabilityChange
+    ): EntityWithDto<AvailabilityChange, AvailabilityChangeDto>
 
     fun removeById(id: String)
 
-    fun checkAvailability(shortLink: ShortLink): AvailabilityChange
+    fun checkAvailability(
+        shortLink: ShortLink
+    ): EntityWithDto<AvailabilityChange, UnsavedAvailabilityChangeDto>
+
+    fun checkAvailability(
+        shortLinkId: String
+    ): EntityWithDto<AvailabilityChange, UnsavedAvailabilityChangeDto>
 
     fun checkAndSaveAvailability(shortLink: ShortLink): AvailabilityChange?
 
-    fun checkAvailabilityOfAllShortLinks(): Set<AvailabilityChange>
+    fun checkAvailabilityOfAllShortLinks(): EntityWithDtoSet<AvailabilityChange, AvailabilityChangeDto>
 }

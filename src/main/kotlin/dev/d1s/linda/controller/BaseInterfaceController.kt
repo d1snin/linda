@@ -18,7 +18,7 @@ package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_MAPPING
-import dev.d1s.linda.constant.utm.*
+import dev.d1s.linda.constant.utmParameter.*
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

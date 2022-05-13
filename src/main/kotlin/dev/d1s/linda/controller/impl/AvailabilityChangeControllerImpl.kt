@@ -16,19 +16,12 @@
 
 package dev.d1s.linda.controller.impl
 
-import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
 import dev.d1s.linda.controller.AvailabilityChangeController
-import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
-import dev.d1s.linda.event.data.AvailabilityChangeEventData
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.strategy.shortLink.byId
-import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.security.configuration.annotation.Secured
-import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.dto.util.converterForSet
 import dev.d1s.teabag.web.noContent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -42,60 +35,44 @@ class AvailabilityChangeControllerImpl : AvailabilityChangeController {
     private lateinit var availabilityChangeService: AvailabilityChangeService
 
     @Autowired
-    private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
-
-    @Autowired
-    private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
-
-    @Autowired
-    private lateinit var publisher: AsyncLongPollingEventPublisher
-
-    @Autowired
     private lateinit var shortLinkService: ShortLinkService
 
-    private val availabilityChangeSetDtoConverter by lazy {
-        availabilityChangeDtoConverter.converterForSet()
+    @Secured
+    override fun findAll(): ResponseEntity<Set<AvailabilityChangeDto>> {
+        val (_, availabilityChanges) =
+            availabilityChangeService.findAll(true)
+
+        return ok(availabilityChanges)
     }
 
     @Secured
-    override fun findAll(): ResponseEntity<Set<AvailabilityChangeDto>> = ok(
-        availabilityChangeService.findAll().toDtoSet()
-    )
+    override fun findById(identifier: String): ResponseEntity<AvailabilityChangeDto> {
+        val (_, availabilityChange) =
+            availabilityChangeService.findById(identifier, true)
+
+        return ok(availabilityChange)
+    }
 
     @Secured
-    override fun findById(identifier: String): ResponseEntity<AvailabilityChangeDto> = ok(
-        availabilityChangeDtoConverter.convertToDto(
-            availabilityChangeService.findById(identifier)
-        )
-    )
+    override fun triggerChecks(): ResponseEntity<Set<AvailabilityChangeDto>> {
+        val (_, availabilityChanges) =
+            availabilityChangeService.checkAvailabilityOfAllShortLinks()
+
+        return ok(availabilityChanges)
+    }
 
     @Secured
-    override fun triggerChecks(): ResponseEntity<Set<AvailabilityChangeDto>> = ok(
-        availabilityChangeService.checkAvailabilityOfAllShortLinks().toDtoSet()
-    )
+    override fun triggerCheckForShortLink(identifier: String): ResponseEntity<UnsavedAvailabilityChangeDto> {
+        val (_, unsavedAvailabilityChangeDto) =
+            availabilityChangeService.checkAvailability(identifier)
 
-    @Secured
-    override fun triggerCheckForShortLink(identifier: String): ResponseEntity<UnsavedAvailabilityChangeDto> = ok(
-        unsavedAvailabilityChangeDtoConverter.convertToDto(
-            availabilityChangeService.checkAvailability(
-                shortLinkService.find(byId(identifier))
-            )
-        )
-    )
+        return ok(unsavedAvailabilityChangeDto)
+    }
 
     @Secured
     override fun removeById(identifier: String): ResponseEntity<*> {
         availabilityChangeService.removeById(identifier)
 
-        publisher.publish(
-            AVAILABILITY_CHANGE_REMOVED_GROUP,
-            identifier,
-            AvailabilityChangeEventData(null)
-        )
-
         return noContent
     }
-
-    private fun Set<AvailabilityChange>.toDtoSet() =
-        availabilityChangeSetDtoConverter.convertToDtoSet(this)
 }

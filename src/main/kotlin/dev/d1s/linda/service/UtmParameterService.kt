@@ -16,23 +16,33 @@
 
 package dev.d1s.linda.service
 
-import dev.d1s.linda.domain.utm.UtmParameter
-import dev.d1s.linda.domain.utm.UtmParameterType
+import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.dto.EntityWithDto
+import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import java.util.*
 
 interface UtmParameterService {
 
-    fun findAll(): Set<UtmParameter>
+    fun findAll(requireDto: Boolean = false): EntityWithDtoSet<UtmParameter, UtmParameterDto>
 
-    fun findById(id: String): UtmParameter
+    fun findById(id: String, requireDto: Boolean = false): EntityWithDto<UtmParameter, UtmParameterDto>
 
-    fun findByTypeAndValue(type: UtmParameterType, value: String): Optional<UtmParameter>
+    fun findByTypeAndValue(
+        type: UtmParameterType,
+        value: String
+    ): Optional<UtmParameter>
 
-    fun findByTypeAndValueOrThrow(type: UtmParameterType, value: String): UtmParameter
+    fun findByTypeAndValueOrThrow(
+        type: UtmParameterType,
+        value: String,
+        requireDto: Boolean = false
+    ): EntityWithDto<UtmParameter, UtmParameterDto>
 
-    fun create(utmParameter: UtmParameter): UtmParameter
+    fun create(utmParameter: UtmParameter): EntityWithDto<UtmParameter, UtmParameterDto>
 
-    fun update(id: String, utmParameter: UtmParameter): UtmParameter
+    fun update(id: String, utmParameter: UtmParameter): EntityWithDto<UtmParameter, UtmParameterDto>
 
     fun removeById(id: String)
 }
