@@ -50,6 +50,6 @@ val clientHttpRequestFactoryMock =
 val servletUriComponentsBuilderMock =
     mockk<ServletUriComponentsBuilder>(relaxed = true) {
         every {
-            toUriString()
+            build(false).toUriString()
         } returns VALID_STUB
     }

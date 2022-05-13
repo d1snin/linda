@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,51 +21,36 @@ import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.util.concurrent.ThreadLocalRandom
 
 @Component
-class RandomCharSequenceAliasGenerator : AliasGenerator {
+class ZeroWidthAliasGenerator : AliasGenerator {
 
-    override val identifier = "random-char-sequence"
+    override val identifier = "zero-width"
 
     @Autowired
     private lateinit var shortLinkService: ShortLinkService
 
     override fun generateAlias(creation: ShortLinkCreationDto): String {
-        var length = INITIAL_LENGTH
-        var aliasCandidate = this.getRandomCharSequence(length)
+        var aliasCandidate = ZERO_WIDTH_SPACE
 
         while (shortLinkService.doesAliasExist(aliasCandidate)) {
-            aliasCandidate = this.getRandomCharSequence(++length)
+            aliasCandidate = "${zeroWidthCharacters.random()}$aliasCandidate"
         }
 
         return aliasCandidate
     }
 
-    private fun getRandomCharSequence(length: Int) = buildString {
-        val rnd = ThreadLocalRandom.current()
+    companion object {
+        const val ZERO_WIDTH_SPACE = "\u200b" // each alias must end on this character.
+        private const val ZERO_WIDTH_NON_JOINER = "\u200c"
+        private const val ZERO_WIDTH_JOINER = "\u200d"
+        private const val ZERO_WIDTH_WORD_JOINER = "\u2060"
 
-        for (i in 0 until length) {
-            // a-z
-            val randomChar = 'a' + rnd.nextInt(26)
-
-            val randomInt = rnd.nextInt(10)
-
-            if (rnd.nextBoolean()) {
-                append(randomInt)
-            } else {
-                append(randomChar.let {
-                    if (rnd.nextBoolean()) {
-                        it.uppercaseChar()
-                    } else {
-                        it
-                    }
-                })
-            }
-        }
-    }
-
-    private companion object {
-        private const val INITIAL_LENGTH = 4
+        val zeroWidthCharacters = setOf(
+            ZERO_WIDTH_SPACE,
+            ZERO_WIDTH_NON_JOINER,
+            ZERO_WIDTH_JOINER,
+            ZERO_WIDTH_WORD_JOINER
+        )
     }
 }

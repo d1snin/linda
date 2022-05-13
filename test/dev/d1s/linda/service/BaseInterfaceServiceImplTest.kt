@@ -98,7 +98,7 @@ class BaseInterfaceServiceImplTest {
                         add(UTM_CONTENT, VALID_STUB)
                     }
                 )
-                servletUriComponentsBuilderMock.toUriString()
+                servletUriComponentsBuilderMock.build(false).toUriString()
             }
         }
     }

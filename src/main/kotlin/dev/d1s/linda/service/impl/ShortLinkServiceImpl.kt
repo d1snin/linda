@@ -22,8 +22,6 @@ import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.utmParameter.UtmParameterPurpose
-import dev.d1s.teabag.dto.EntityWithDto
-import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
 import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData
@@ -38,6 +36,8 @@ import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.teabag.dto.util.convertToDtoIf
 import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.teabag.dto.util.converterForSet
@@ -138,7 +138,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             UtmParameterPurpose.ALLOWED
         )
 
-        val savedShortLink = shortLinkRepository.save(
+        var savedShortLink = shortLinkRepository.save(
             shortLink
         )
 
@@ -149,6 +149,10 @@ class ShortLinkServiceImpl : ShortLinkService {
 
             shortLink.availabilityChanges += availabilityChange
         }
+
+        savedShortLink = shortLinkRepository.save(
+            shortLink
+        )
 
         shortLinkService.scheduleForDeletion(
             savedShortLink
