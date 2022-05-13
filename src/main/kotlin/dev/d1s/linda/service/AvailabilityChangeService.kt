@@ -18,8 +18,8 @@ package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.dto.EntityWithDto
-import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 

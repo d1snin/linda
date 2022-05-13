@@ -18,8 +18,8 @@ package dev.d1s.linda.service
 
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.dto.EntityWithDto
-import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.redirect.RedirectDto
 
 interface RedirectService {

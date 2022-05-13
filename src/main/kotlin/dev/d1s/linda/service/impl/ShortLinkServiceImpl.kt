@@ -22,8 +22,8 @@ import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.utmParameter.UtmParameterPurpose
-import dev.d1s.linda.dto.EntityWithDto
-import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
 import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData

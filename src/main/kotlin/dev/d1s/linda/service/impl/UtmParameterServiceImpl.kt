@@ -21,8 +21,8 @@ import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.domain.utmParameter.UtmParameter
 import dev.d1s.linda.domain.utmParameter.UtmParameterType
-import dev.d1s.linda.dto.EntityWithDto
-import dev.d1s.linda.dto.EntityWithDtoSet
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
 import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData
