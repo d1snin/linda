@@ -21,7 +21,6 @@ import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
 import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.testUtil.*
@@ -104,7 +103,7 @@ class UtmParameterControllerImplTest {
         mockMvc.get(
             UTM_PARAMETERS_FIND_BY_TYPE_AND_VALUE_MAPPING
                 .replacePlaceholder(
-                    "type" to UtmParameterType.CONTENT.name,
+                    "type" to testUtmParameterType.name,
                     "value" to VALID_STUB
                 )
 
@@ -116,7 +115,7 @@ class UtmParameterControllerImplTest {
 
         verify {
             utmParameterService.findByTypeAndValueOrThrow(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 VALID_STUB,
                 true
             )

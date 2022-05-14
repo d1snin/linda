@@ -19,12 +19,9 @@ package dev.d1s.linda.controller
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.AvailabilityChangeControllerImpl
-import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.testUtil.*
-import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
@@ -58,15 +55,11 @@ class AvailabilityChangeControllerImplTest {
     private lateinit var availabilityChangeService: AvailabilityChangeService
 
     @MockkBean
-    private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
-
-    @MockkBean
     private lateinit var shortLinkService: ShortLinkService
 
     @BeforeEach
     fun setup() {
         availabilityChangeService.prepare()
-        unsavedAvailabilityChangeDtoConverter.prepare()
         shortLinkService.prepare()
     }
 
