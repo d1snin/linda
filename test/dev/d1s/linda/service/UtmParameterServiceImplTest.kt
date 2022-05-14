@@ -21,7 +21,6 @@ import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
 import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
 import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData
@@ -118,14 +117,14 @@ class UtmParameterServiceImplTest {
     fun `should find utm parameter by type and value`() {
         expectThat(
             utmParameterServiceImpl.findByTypeAndValue(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 VALID_STUB
             )
         ) isEqualTo Optional.of(utmParameter)
 
         verify {
             utmParameterRepository.findUtmParameterByTypeAndValue(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 VALID_STUB
             )
         }
@@ -135,14 +134,14 @@ class UtmParameterServiceImplTest {
     fun `should return empty optional when finding by invalid type and value`() {
         expectThat(
             utmParameterServiceImpl.findByTypeAndValue(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 INVALID_STUB
             )
         ) isEqualTo Optional.empty()
 
         verify {
             utmParameterRepository.findUtmParameterByTypeAndValue(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 INVALID_STUB
             )
         }
@@ -152,14 +151,14 @@ class UtmParameterServiceImplTest {
     fun `should throw UtmParameterNotFoundException when finding by invalid type and value`() {
         assertThrows<UtmParameterNotFoundException> {
             utmParameterServiceImpl.findByTypeAndValueOrThrow(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 INVALID_STUB
             )
         }
 
         verify {
             utmParameterRepository.findUtmParameterByTypeAndValue(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 INVALID_STUB
             )
         }
@@ -169,7 +168,7 @@ class UtmParameterServiceImplTest {
     fun `should create utm parameter`() {
         every {
             utmParameterRepository.findUtmParameterByTypeAndValue(
-                UtmParameterType.CONTENT,
+                testUtmParameterType,
                 VALID_STUB
             )
         } returns Optional.empty()
@@ -180,7 +179,10 @@ class UtmParameterServiceImplTest {
 
         verifyAll {
             // verification fails without this
-            utmParameterRepository.findUtmParameterByTypeAndValue(UtmParameterType.CONTENT, VALID_STUB)
+            utmParameterRepository.findUtmParameterByTypeAndValue(
+                testUtmParameterType,
+                VALID_STUB
+            )
 
             utmParameterRepository.save(utmParameter)
             utmParameterDtoConverter.convertToDto(utmParameter)

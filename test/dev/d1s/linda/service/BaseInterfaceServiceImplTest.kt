@@ -22,7 +22,6 @@ import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.constant.utmParameter.UTM_CONTENT
 import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.service.impl.BaseInterfaceServiceImpl
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.testUtil.*
@@ -111,7 +110,10 @@ class BaseInterfaceServiceImplTest {
 
         verifyAll {
             shortLinkService.find(byAlias(VALID_STUB))
-            utmParameterService.findByTypeAndValueOrThrow(UtmParameterType.CONTENT, VALID_STUB)
+            utmParameterService.findByTypeAndValueOrThrow(
+                testUtmParameterType,
+                VALID_STUB
+            )
             redirectService.create(expectedRedirect)
         }
     }

@@ -16,7 +16,6 @@
 
 package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
@@ -95,14 +94,14 @@ val shortLinkUpdateDto = ShortLinkUpdateDto(
 )
 
 val utmParameterAlterationDto = UtmParameterAlterationDto(
-    UtmParameterType.CONTENT,
+    testUtmParameterType,
     VALID_STUB,
     false
 )
 
 val utmParameterDto = UtmParameterDto(
     VALID_STUB,
-    UtmParameterType.CONTENT,
+    testUtmParameterType,
     VALID_STUB,
     false,
     setOf(),

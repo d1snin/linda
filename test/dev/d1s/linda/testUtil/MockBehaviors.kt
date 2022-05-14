@@ -23,7 +23,6 @@ import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.domain.availability.AvailabilityChange
 import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
@@ -202,15 +201,15 @@ fun UtmParameterService.prepare() {
     } returns (utmParameter to utmParameterDto)
 
     every {
-        findByTypeAndValue(UtmParameterType.CONTENT, VALID_STUB)
+        findByTypeAndValue(testUtmParameterType, VALID_STUB)
     } returns Optional.of(utmParameter)
 
     every {
-        findByTypeAndValue(UtmParameterType.CONTENT, INVALID_STUB)
+        findByTypeAndValue(testUtmParameterType, INVALID_STUB)
     } returns Optional.empty()
 
     every {
-        findByTypeAndValueOrThrow(UtmParameterType.CONTENT, VALID_STUB, any())
+        findByTypeAndValueOrThrow(testUtmParameterType, VALID_STUB, any())
     } returns (utmParameter to utmParameterDto)
 
     every {
@@ -368,14 +367,14 @@ fun UtmParameterRepository.prepare() {
 
     every {
         findUtmParameterByTypeAndValue(
-            UtmParameterType.CONTENT,
+            testUtmParameterType,
             VALID_STUB
         )
     } returns Optional.of(utmParameter)
 
     every {
         findUtmParameterByTypeAndValue(
-            UtmParameterType.CONTENT,
+            testUtmParameterType,
             INVALID_STUB
         )
     } returns Optional.empty()
