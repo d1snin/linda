@@ -94,7 +94,7 @@ class BaseInterfaceControllerImplTest {
         }
 
         verify {
-            baseInterfaceService.createRedirectView(
+            baseInterfaceService.createRedirectPage(
                 VALID_STUB,
                 null,
                 null,

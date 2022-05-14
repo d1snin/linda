@@ -46,9 +46,10 @@ import io.mockk.every
 import io.mockk.justRun
 import io.mockk.slot
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.servlet.view.RedirectView
 import java.net.URI
 import java.util.*
 
@@ -93,9 +94,13 @@ fun AvailabilityChangeService.prepare() {
     } returns (availabilityChanges to availabilityChangeDtoSet)
 }
 
+fun testResponseEntity(location: String) = ResponseEntity.status(HttpStatus.FOUND)
+    .location(URI.create(location))
+    .body(VALID_STUB)
+
 fun BaseInterfaceService.prepare() {
     every {
-        createRedirectView(
+        createRedirectPage(
             VALID_STUB,
             null,
             null,
@@ -104,12 +109,12 @@ fun BaseInterfaceService.prepare() {
             VALID_STUB,
             false
         )
-    } returns RedirectView(
+    } returns testResponseEntity(
         baseInterfaceConfirmationMappingWithAlias
     )
 
     every {
-        createRedirectView(
+        createRedirectPage(
             VALID_STUB,
             null,
             null,
@@ -118,9 +123,23 @@ fun BaseInterfaceService.prepare() {
             VALID_STUB,
             true
         )
-    } returns RedirectView(
+    } returns testResponseEntity(
         TEST_URL
     )
+}
+
+fun MetaTagsBridgingService.prepare() {
+    every {
+        fetchMetaTags(shortLink)
+    } returns elementsMock
+
+    every {
+        fetchMetaTagsAsString(shortLink)
+    } returns VALID_STUB
+
+    every {
+        buildHtmlDocument(shortLink)
+    } returns VALID_STUB
 }
 
 fun RedirectService.prepare() {

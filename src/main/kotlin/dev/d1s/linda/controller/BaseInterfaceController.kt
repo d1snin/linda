@@ -19,17 +19,18 @@ package dev.d1s.linda.controller
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_MAPPING
 import dev.d1s.linda.constant.utmParameter.*
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.servlet.view.RedirectView
 import javax.validation.constraints.NotBlank
 
 @Validated
 interface BaseInterfaceController {
 
-    @GetMapping(BASE_INTERFACE_MAPPING)
+    @GetMapping(BASE_INTERFACE_MAPPING, produces = [MediaType.TEXT_HTML_VALUE])
     fun redirect(
         @PathVariable @NotBlank(message = "alias must not be blank.") alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
@@ -37,10 +38,10 @@ interface BaseInterfaceController {
         @RequestParam(UTM_CAMPAIGN, required = false) utmCampaign: String?,
         @RequestParam(UTM_TERM, required = false) utmTerm: String?,
         @RequestParam(UTM_CONTENT, required = false) utmContent: String?
-    ): RedirectView
+    ): ResponseEntity<String>
 
     // I think I'm dumb.
-    @GetMapping(BASE_INTERFACE_CONFIRMATION_MAPPING)
+    @GetMapping(BASE_INTERFACE_CONFIRMATION_MAPPING, produces = [MediaType.TEXT_HTML_VALUE])
     fun confirmRedirect(
         @PathVariable @NotBlank(message = "alias must not be blank.") alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
@@ -48,5 +49,5 @@ interface BaseInterfaceController {
         @RequestParam(UTM_CAMPAIGN, required = false) utmCampaign: String?,
         @RequestParam(UTM_TERM, required = false) utmTerm: String?,
         @RequestParam(UTM_CONTENT, required = false) utmContent: String?
-    ): RedirectView
+    ): ResponseEntity<String>
 }

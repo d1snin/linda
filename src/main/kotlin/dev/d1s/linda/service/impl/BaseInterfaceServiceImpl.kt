@@ -21,19 +21,19 @@ import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.domain.Redirect
 import dev.d1s.linda.domain.utmParameter.UtmParameterType
-import dev.d1s.linda.service.BaseInterfaceService
-import dev.d1s.linda.service.RedirectService
-import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.service.UtmParameterService
+import dev.d1s.linda.service.*
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.web.servlet.view.RedirectView
+import java.net.URI
 
 @Service
 @ConditionalOnProperty("linda.base-interface.enabled", matchIfMissing = true)
@@ -54,9 +54,12 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
     @Autowired
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
+    @Autowired
+    private lateinit var metaTagsBridgingService: MetaTagsBridgingService
+
     private val log = logging()
 
-    override fun createRedirectView(
+    override fun createRedirectPage(
         alias: String,
         utmSource: String?,
         utmMedium: String?,
@@ -64,7 +67,7 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
         utmTerm: String?,
         utmContent: String?,
         confirmed: Boolean
-    ): RedirectView {
+    ): ResponseEntity<String> {
         val utmMap = mapOf(
             UtmParameterType.SOURCE to utmSource,
             UtmParameterType.MEDIUM to utmMedium,
@@ -79,12 +82,16 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
 
         val requireConfirmation = properties.requireConfirmation
 
+        val (shortLink, _) = shortLinkService.find(byAlias(alias))
+
+        val htmlPage = metaTagsBridgingService.buildHtmlDocument(shortLink)
+
         if (!confirmed && requireConfirmation) {
             log.debug {
                 "redirect is unconfirmed"
             }
 
-            return RedirectView(
+            return redirect(
                 buildFromCurrentRequest {
                     configureSsl(sslConfigurationProperties.fallbackToHttps)
                     path(BASE_INTERFACE_CONFIRMATION_SEGMENT)
@@ -103,11 +110,10 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
                     log.debug {
                         "responding with redirect to the confirmation endpoint: $it"
                     }
-                }
+                },
+                htmlPage
             )
         }
-
-        val (shortLink, _) = shortLinkService.find(byAlias(alias))
 
         val utmParameters = buildSet {
             utmMap.forEach { (type, nullableValue) ->
@@ -125,6 +131,12 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             }
         )
 
-        return RedirectView(shortLink.url)
+        return this.redirect(shortLink.url, htmlPage)
     }
+
+    private fun redirect(location: String, html: String?) =
+        ResponseEntity.status(HttpStatus.FOUND)
+            .location(URI.create(location))
+            .contentType(MediaType.TEXT_HTML)
+            .body(html)
 }

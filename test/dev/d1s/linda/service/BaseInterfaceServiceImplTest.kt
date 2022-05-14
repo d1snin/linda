@@ -64,6 +64,9 @@ class BaseInterfaceServiceImplTest {
     @MockkBean(relaxed = true)
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
 
+    @MockkBean
+    private lateinit var metaTagsBridgingService: MetaTagsBridgingService
+
     private val utmParameterDomains = utmParameters
 
     private val expectedRedirect = Redirect(shortLink).apply {
@@ -76,6 +79,7 @@ class BaseInterfaceServiceImplTest {
         redirectService.prepare()
         utmParameterService.prepare()
         properties.prepare()
+        metaTagsBridgingService.prepare()
 
         every {
             redirectService.create(expectedRedirect)
@@ -90,6 +94,8 @@ class BaseInterfaceServiceImplTest {
             ) isEqualTo VALID_STUB
 
             verifyAll {
+                shortLinkService.find(byAlias(VALID_STUB))
+                metaTagsBridgingService.buildHtmlDocument(shortLink)
                 servletUriComponentsBuilderMock.configureSsl(false)
                 servletUriComponentsBuilderMock.path(BASE_INTERFACE_CONFIRMATION_SEGMENT)
                 servletUriComponentsBuilderMock.replaceQueryParams(
@@ -110,6 +116,7 @@ class BaseInterfaceServiceImplTest {
 
         verifyAll {
             shortLinkService.find(byAlias(VALID_STUB))
+            metaTagsBridgingService.buildHtmlDocument(shortLink)
             utmParameterService.findByTypeAndValueOrThrow(
                 testUtmParameterType,
                 VALID_STUB
@@ -137,7 +144,7 @@ class BaseInterfaceServiceImplTest {
     }
 
     private fun createRedirectView(confirmed: Boolean) =
-        baseInterfaceServiceImpl.createRedirectView(
+        baseInterfaceServiceImpl.createRedirectPage(
             VALID_STUB,
             null,
             null,
@@ -145,5 +152,5 @@ class BaseInterfaceServiceImplTest {
             null,
             VALID_STUB,
             confirmed
-        ).url
+        ).headers.location.toString()
 }

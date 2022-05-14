@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.service
+package dev.d1s.linda.configuration
 
-import org.springframework.http.ResponseEntity
+import org.springframework.cache.annotation.EnableCaching
+import org.springframework.context.annotation.Configuration
 
-interface BaseInterfaceService {
-
-    fun createRedirectPage(
-        alias: String,
-        utmSource: String?,
-        utmMedium: String?,
-        utmCampaign: String?,
-        utmTerm: String?,
-        utmContent: String?,
-        confirmed: Boolean
-    ): ResponseEntity<String>
-}
+@EnableCaching
+@Configuration
+class CachingConfiguration
