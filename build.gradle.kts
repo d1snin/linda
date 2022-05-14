@@ -26,6 +26,8 @@ val longPollingStarterVersion: String by project
 val coroutinesVersion: String by project
 val striktVersion: String by project
 val springMockkVersion: String by project
+val jsoupVersion: String by project
+val kotlinxHtmlVersion: String by project
 
 dependencies {
     implementation(kotlin("reflect"))
@@ -41,12 +43,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("org.mariadb.jdbc:mariadb-java-client")
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("dev.d1s.long-polling:spring-boot-starter-lp-server-web:$longPollingStarterVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jsoup:jsoup:$jsoupVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
     testImplementation("dev.d1s.teabags:teabag-testing-spring-web:$teabagsVersion")

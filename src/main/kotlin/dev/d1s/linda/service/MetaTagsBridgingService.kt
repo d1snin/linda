@@ -16,17 +16,14 @@
 
 package dev.d1s.linda.service
 
-import org.springframework.http.ResponseEntity
+import dev.d1s.linda.domain.ShortLink
+import org.jsoup.select.Elements
 
-interface BaseInterfaceService {
+interface MetaTagsBridgingService {
 
-    fun createRedirectPage(
-        alias: String,
-        utmSource: String?,
-        utmMedium: String?,
-        utmCampaign: String?,
-        utmTerm: String?,
-        utmContent: String?,
-        confirmed: Boolean
-    ): ResponseEntity<String>
+    fun fetchMetaTags(shortLink: ShortLink): Elements?
+
+    fun fetchMetaTagsAsString(shortLink: ShortLink): String?
+
+    fun buildHtmlDocument(shortLink: ShortLink): String?
 }

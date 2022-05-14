@@ -20,8 +20,8 @@ import dev.d1s.linda.controller.BaseInterfaceController
 import dev.d1s.linda.service.BaseInterfaceService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.servlet.view.RedirectView
 
 @Controller
 @ConditionalOnProperty("linda.base-interface.enabled", matchIfMissing = true)
@@ -37,7 +37,7 @@ class BaseInterfaceControllerImpl : BaseInterfaceController {
         utmCampaign: String?,
         utmTerm: String?,
         utmContent: String?
-    ): RedirectView = baseInterfaceService.createRedirectView(
+    ): ResponseEntity<String> = baseInterfaceService.createRedirectPage(
         alias, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, false
     )
 
@@ -48,7 +48,7 @@ class BaseInterfaceControllerImpl : BaseInterfaceController {
         utmCampaign: String?,
         utmTerm: String?,
         utmContent: String?
-    ): RedirectView = baseInterfaceService.createRedirectView(
+    ): ResponseEntity<String> = baseInterfaceService.createRedirectPage(
         alias, utmSource, utmMedium, utmCampaign, utmTerm, utmContent, true
     )
 }

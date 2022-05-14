@@ -21,6 +21,7 @@ import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
+import org.jsoup.select.Elements
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.http.client.ClientHttpResponse
@@ -53,3 +54,9 @@ val servletUriComponentsBuilderMock =
             build(false).toUriString()
         } returns VALID_STUB
     }
+
+val elementsMock = mockk<Elements> {
+    every {
+        this@mockk.toString()
+    } returns VALID_STUB
+}
