@@ -16,17 +16,19 @@
 
 package dev.d1s.linda.entity.utmParameter
 
-import dev.d1s.linda.entity.Identifiable
 import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.entity.ShortLink
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.GenericGenerator
-import java.time.Instant
-import javax.persistence.*
+import dev.d1s.linda.entity.common.Identifiable
+import org.hibernate.Hibernate
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.ManyToMany
+import javax.persistence.Table
 
 @Entity
 @Table(name = "utm_parameter")
 data class UtmParameter(
+
     @Column(nullable = false)
     var type: UtmParameterType,
 
@@ -35,16 +37,8 @@ data class UtmParameter(
 
     @Column(nullable = false)
     var allowOverride: Boolean
-) : Identifiable {
-    @Id
-    @Column
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    override var id: String? = null
 
-    @Column
-    @CreationTimestamp
-    override var creationTime: Instant? = null
+) : Identifiable() {
 
     @ManyToMany(mappedBy = "utmParameters")
     var redirects: MutableSet<Redirect> = mutableSetOf()
@@ -57,23 +51,13 @@ data class UtmParameter(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
         other as UtmParameter
 
-        if (type != other.type) return false
-        if (parameterValue != other.parameterValue) return false
-        if (id != other.id) return false
-
-        return true
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int {
-        var result = type.hashCode()
-        result = 31 * result + parameterValue.hashCode()
-        result = 31 * result + (id?.hashCode() ?: 0)
-        return result
-    }
+    override fun hashCode(): Int = javaClass.hashCode()
 
     override fun toString(): String = "${id ?: "unsaved"} " +
             "(${type.rawParameter}=$parameterValue)"

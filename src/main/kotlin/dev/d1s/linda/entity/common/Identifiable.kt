@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.entity
+package dev.d1s.linda.entity.common
 
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
+import javax.persistence.Column
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.PrePersist
 
-interface Identifiable {
+abstract class Identifiable {
 
-    var id: String?
+    @Id
+    @Column
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    var id: String? = null
 
-    var creationTime: Instant?
+    @Column
+    @CreationTimestamp
+    var creationTime: Instant? = null
+
+    @PrePersist
+    fun setCreationTime() {
+        creationTime = Instant.now()
+    }
 }

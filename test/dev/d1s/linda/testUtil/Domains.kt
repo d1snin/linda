@@ -16,11 +16,11 @@
 
 package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.entity.Identifiable
 import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.alias.FriendlyAliases
 import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.teabag.testing.constant.VALID_STUB
@@ -68,8 +68,8 @@ val friendlyAliases = FriendlyAliases(
 )
 
 val identifiableSet = setOf(
-    object : Identifiable {
-        override var id: String? = VALID_STUB
-        override var creationTime = Instant.EPOCH
-    } as Identifiable // ¯\_(ツ)_/¯ 'public' property exposes its 'local' type argument <no name provided>
+    (object : Identifiable() {} as Identifiable).apply {
+        id = VALID_STUB
+        creationTime = Instant.EPOCH
+    }
 )

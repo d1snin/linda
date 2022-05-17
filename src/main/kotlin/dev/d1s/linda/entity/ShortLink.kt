@@ -17,16 +17,16 @@
 package dev.d1s.linda.entity
 
 import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.utmParameter.UtmParameter
-import dev.d1s.linda.util.mapToIdSet
-import org.hibernate.annotations.GenericGenerator
+import org.hibernate.Hibernate
 import java.time.Duration
-import java.time.Instant
 import javax.persistence.*
 
 @Entity
 @Table(name = "short_link")
 data class ShortLink(
+
     @Column(nullable = false)
     var url: String,
 
@@ -53,16 +53,9 @@ data class ShortLink(
         joinColumns = [JoinColumn(name = "short_link_id")],
         inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
     )
-    var allowedUtmParameters: MutableSet<UtmParameter>,
-) : Identifiable {
-    @Id
-    @Column
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    override var id: String? = null
+    var allowedUtmParameters: MutableSet<UtmParameter>
 
-    @Column
-    override var creationTime: Instant? = null
+) : Identifiable() {
 
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
     var redirects: Set<Redirect> = setOf()
@@ -70,47 +63,17 @@ data class ShortLink(
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "shortLink")
     var availabilityChanges: MutableSet<AvailabilityChange> = mutableSetOf()
 
-    @PrePersist
-    fun setCreationTime() {
-        creationTime = Instant.now()
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
         other as ShortLink
 
-        if (url != other.url) return false
-        if (alias != other.alias) return false
-        if (id != other.id) return false
-
-        return true
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int {
-        var result = url.hashCode()
-        result = 31 * result + alias.hashCode()
-        result = 31 * result + (id?.hashCode() ?: 0)
-        return result
-    }
+    override fun hashCode(): Int = javaClass.hashCode()
 
-    override fun toString(): String = "ShortLink(" +
-            "url='$url', " +
-            "alias='$alias', " +
-            "allowUtmParameters=$allowUtmParameters, " +
-            "id=$id, " +
-            "creationTime=$creationTime, " +
-            "redirects=${
-                redirects.mapToIdSet()
-            }, " +
-            "availabilityChanges=${
-                availabilityChanges.mapToIdSet()
-            }, " +
-            "defaultUtmParameters=${
-                defaultUtmParameters.mapToIdSet()
-            }, " +
-            "allowedUtmParameters=${
-                allowedUtmParameters.mapToIdSet()
-            })"
+    override fun toString(): String {
+        return "ShortLink(url='$url', alias='$alias', allowUtmParameters=$allowUtmParameters, deleteAfter=$deleteAfter, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters, redirects=$redirects, availabilityChanges=$availabilityChanges)"
+    }
 }

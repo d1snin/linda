@@ -21,6 +21,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class UtmParameterAlterationDto(
+
     @field:NotNull(message = "type field must not be null.")
     val type: UtmParameterType,
 

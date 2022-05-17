@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
 
 data class ShortLinkUpdateDto(
+
     @field:Pattern(
         regexp = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;]*[-a-zA-Z\\d+&@#/%=~_|]",
         message = "The provided URL must be valid."

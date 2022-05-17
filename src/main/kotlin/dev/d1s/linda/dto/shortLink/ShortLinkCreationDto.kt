@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
 
 data class ShortLinkCreationDto(
+
     // see https://stackoverflow.com/questions/163360/regular-expression-to-match-urls-in-java
     @field:Pattern(
         regexp = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;]*[-a-zA-Z\\d+&@#/%=~_|]",

@@ -16,62 +16,36 @@
 
 package dev.d1s.linda.entity.availability
 
-import dev.d1s.linda.entity.Identifiable
 import dev.d1s.linda.entity.ShortLink
-import org.hibernate.annotations.GenericGenerator
-import java.time.Instant
+import dev.d1s.linda.entity.common.Identifiable
+import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
 @Table(name = "availability_change")
 data class AvailabilityChange(
+
     @ManyToOne(cascade = [CascadeType.MERGE])
     var shortLink: ShortLink,
 
     @Column
     var unavailabilityReason: UnavailabilityReason?
-) : Identifiable {
-    @Id
-    @Column
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    override var id: String? = null
 
-    @Column
-    override var creationTime: Instant? = null
+) : Identifiable() {
 
     val available get() = unavailabilityReason == null
 
-    @PrePersist
-    fun setCreationTime() {
-        creationTime = Instant.now()
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
+        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
         other as AvailabilityChange
 
-        if (shortLink != other.shortLink) return false
-        if (unavailabilityReason != other.unavailabilityReason) return false
-        if (id != other.id) return false
-        if (creationTime != other.creationTime) return false
-
-        return true
+        return id != null && id == other.id
     }
 
-    override fun hashCode(): Int {
-        var result = shortLink.hashCode()
-        result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
-        result = 31 * result + (id?.hashCode() ?: 0)
-        result = 31 * result + (creationTime?.hashCode() ?: 0)
-        return result
-    }
+    override fun hashCode(): Int = javaClass.hashCode()
 
-    override fun toString(): String = "AvailabilityChange(" +
-            "shortLink=${shortLink.id}, " +
-            "unavailabilityReason=$unavailabilityReason, " +
-            "id=$id, " +
-            "creationTime=$creationTime)"
+    override fun toString(): String {
+        return "AvailabilityChange(shortLink=$shortLink, unavailabilityReason=$unavailabilityReason, available=$available)"
+    }
 }
