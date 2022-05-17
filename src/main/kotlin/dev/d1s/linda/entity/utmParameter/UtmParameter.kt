@@ -19,7 +19,6 @@ package dev.d1s.linda.entity.utmParameter
 import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.common.Identifiable
-import org.hibernate.Hibernate
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.ManyToMany
@@ -51,13 +50,25 @@ data class UtmParameter(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        if (javaClass != other?.javaClass) return false
+
         other as UtmParameter
 
-        return id != null && id == other.id
+        if (id != other.id) return false
+        if (type != other.type) return false
+        if (parameterValue != other.parameterValue) return false
+        if (allowOverride != other.allowOverride) return false
+
+        return true
     }
 
-    override fun hashCode(): Int = javaClass.hashCode()
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + type.hashCode()
+        result = 31 * result + parameterValue.hashCode()
+        result = 31 * result + allowOverride.hashCode()
+        return result
+    }
 
     override fun toString(): String = "${id ?: "unsaved"} " +
             "(${type.rawParameter}=$parameterValue)"

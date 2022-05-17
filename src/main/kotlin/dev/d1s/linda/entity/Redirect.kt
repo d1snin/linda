@@ -18,7 +18,6 @@ package dev.d1s.linda.entity
 
 import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.utmParameter.UtmParameter
-import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
@@ -40,15 +39,23 @@ data class Redirect(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        if (javaClass != other?.javaClass) return false
+
         other as Redirect
 
-        return id != null && id == other.id
+        if (id != other.id) return false
+        if (shortLink != other.shortLink) return false
+
+        return true
     }
 
-    override fun hashCode(): Int = javaClass.hashCode()
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + shortLink.hashCode()
+        return result
+    }
 
     override fun toString(): String {
-        return "Redirect(shortLink=$shortLink, utmParameters=$utmParameters)"
+        return "Redirect(id=$id, creationTime=$creationTime, shortLink=$shortLink, utmParameters=$utmParameters)"
     }
 }

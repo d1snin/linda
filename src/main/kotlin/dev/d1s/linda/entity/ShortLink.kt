@@ -19,7 +19,6 @@ package dev.d1s.linda.entity
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.utmParameter.UtmParameter
-import org.hibernate.Hibernate
 import java.time.Duration
 import javax.persistence.*
 
@@ -65,15 +64,29 @@ data class ShortLink(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+        if (javaClass != other?.javaClass) return false
+
         other as ShortLink
 
-        return id != null && id == other.id
+        if (id != other.id) return false
+        if (url != other.url) return false
+        if (alias != other.alias) return false
+        if (allowUtmParameters != other.allowUtmParameters) return false
+        if (deleteAfter != other.deleteAfter) return false
+
+        return true
     }
 
-    override fun hashCode(): Int = javaClass.hashCode()
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + url.hashCode()
+        result = 31 * result + alias.hashCode()
+        result = 31 * result + allowUtmParameters.hashCode()
+        result = 31 * result + (deleteAfter?.hashCode() ?: 0)
+        return result
+    }
 
     override fun toString(): String {
-        return "ShortLink(url='$url', alias='$alias', allowUtmParameters=$allowUtmParameters, deleteAfter=$deleteAfter, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters, redirects=$redirects, availabilityChanges=$availabilityChanges)"
+        return "ShortLink(id=$id, creationTime=$creationTime, url='$url', alias='$alias', allowUtmParameters=$allowUtmParameters, deleteAfter=$deleteAfter, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters, redirects=$redirects, availabilityChanges=$availabilityChanges)"
     }
 }

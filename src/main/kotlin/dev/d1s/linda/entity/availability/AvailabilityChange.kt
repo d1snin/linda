@@ -18,7 +18,6 @@ package dev.d1s.linda.entity.availability
 
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.common.Identifiable
-import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
@@ -35,17 +34,28 @@ data class AvailabilityChange(
 
     val available get() = unavailabilityReason == null
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as AvailabilityChange
-
-        return id != null && id == other.id
-    }
-
-    override fun hashCode(): Int = javaClass.hashCode()
 
     override fun toString(): String {
-        return "AvailabilityChange(shortLink=$shortLink, unavailabilityReason=$unavailabilityReason, available=$available)"
+        return "AvailabilityChange(id=$id, creationTime=$creationTime, shortLink=$shortLink, unavailabilityReason=$unavailabilityReason, available=$available)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AvailabilityChange
+
+        if (id != other.id) return false
+        if (shortLink != other.shortLink) return false
+        if (unavailabilityReason != other.unavailabilityReason) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + shortLink.hashCode()
+        result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
+        return result
     }
 }
