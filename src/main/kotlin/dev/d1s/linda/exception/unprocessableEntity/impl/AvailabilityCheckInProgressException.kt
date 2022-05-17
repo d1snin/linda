@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias.impl
+package dev.d1s.linda.exception.unprocessableEntity.impl
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
-import dev.d1s.linda.constant.error.EMPTY_CUSTOM_ALIAS_ERROR
+import dev.d1s.linda.constant.error.AVAILABILITY_CHECK_IN_PROGRESS_ERROR
 import org.springframework.http.HttpStatus
 
-object EmptyCustomAliasException : HttpStatusException(
-    ErrorResponseData(HttpStatus.BAD_REQUEST, EMPTY_CUSTOM_ALIAS_ERROR)
+object AvailabilityCheckInProgressException : HttpStatusException(
+    ErrorResponseData(
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        AVAILABILITY_CHECK_IN_PROGRESS_ERROR
+    )
 )

@@ -26,7 +26,7 @@ import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
 import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData
-import dev.d1s.linda.exception.alreadyExists.impl.UtmParameterAlreadyExistsException
+import dev.d1s.linda.exception.unprocessableEntity.impl.UtmParameterAlreadyExistsException
 import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService

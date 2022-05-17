@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.customAlias.impl
+package dev.d1s.linda.exception.unprocessableEntity.impl
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import dev.d1s.linda.constant.error.CUSTOM_ALIAS_NOT_DEFINED_ERROR
-import org.springframework.http.HttpStatus
+import dev.d1s.linda.constant.error.ERROR_ALIAS_ALREADY_EXISTS
+import dev.d1s.linda.exception.unprocessableEntity.EntityAlreadyExistsException
 
-object CustomAliasNotDefinedException : HttpStatusException(
-    ErrorResponseData(
-        HttpStatus.BAD_REQUEST,
-        CUSTOM_ALIAS_NOT_DEFINED_ERROR
-    )
+object AliasAlreadyExistsException : EntityAlreadyExistsException(
+    ERROR_ALIAS_ALREADY_EXISTS
 )

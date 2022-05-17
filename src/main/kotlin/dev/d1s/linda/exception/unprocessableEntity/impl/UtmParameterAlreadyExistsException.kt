@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.alreadyExists
+package dev.d1s.linda.exception.unprocessableEntity.impl
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
+import dev.d1s.linda.constant.error.ERROR_UTM_PARAMETER_ALREADY_EXISTS
 import org.springframework.http.HttpStatus
 
-abstract class EntityAlreadyExistsException(message: String) : HttpStatusException(
-    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, message)
+object UtmParameterAlreadyExistsException : HttpStatusException(
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, ERROR_UTM_PARAMETER_ALREADY_EXISTS)
 )

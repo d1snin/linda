@@ -24,9 +24,9 @@ import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.event.data.redirect.CommonRedirectEventData
 import dev.d1s.linda.event.data.redirect.RedirectUpdatedEventData
-import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParameterOverrideNotAllowedException
-import dev.d1s.linda.exception.notAllowed.impl.IllegalUtmParametersException
-import dev.d1s.linda.exception.notAllowed.impl.UtmParametersNotAllowedException
+import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParameterOverrideNotAllowedException
+import dev.d1s.linda.exception.badRequest.impl.utmParameter.IllegalUtmParametersException
+import dev.d1s.linda.exception.badRequest.impl.utmParameter.UtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.impl.RedirectServiceImpl

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.notAllowed.impl
+package dev.d1s.linda.exception.badRequest.impl.customAlias
 
-import dev.d1s.linda.constant.error.ILLEGAL_UTM_PARAMETERS_ERROR
-import dev.d1s.linda.entity.utmParameter.UtmParameter
-import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
+import dev.d1s.linda.constant.error.EMPTY_CUSTOM_ALIAS_ERROR
+import dev.d1s.linda.exception.badRequest.BadRequestException
 
-class IllegalUtmParametersException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
-    ILLEGAL_UTM_PARAMETERS_ERROR.format(utmParameters)
+object EmptyCustomAliasException : BadRequestException(
+    EMPTY_CUSTOM_ALIAS_ERROR
 )

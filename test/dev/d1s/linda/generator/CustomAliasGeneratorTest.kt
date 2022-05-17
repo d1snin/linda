@@ -18,9 +18,9 @@ package dev.d1s.linda.generator
 
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.constant.parameter.CUSTOM_ALIAS_PARAMETER
-import dev.d1s.linda.exception.alreadyExists.impl.AliasAlreadyExistsException
-import dev.d1s.linda.exception.customAlias.impl.CustomAliasNotDefinedException
-import dev.d1s.linda.exception.customAlias.impl.EmptyCustomAliasException
+import dev.d1s.linda.exception.unprocessableEntity.impl.AliasAlreadyExistsException
+import dev.d1s.linda.exception.badRequest.impl.customAlias.CustomAliasNotDefinedException
+import dev.d1s.linda.exception.badRequest.impl.customAlias.EmptyCustomAliasException
 import dev.d1s.linda.generator.impl.CustomAliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.testUtil.prepare

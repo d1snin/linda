@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception
+package dev.d1s.linda.exception.unprocessableEntity
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
-import dev.d1s.linda.constant.error.AVAILABILITY_CHECK_IN_PROGRESS_ERROR
 import org.springframework.http.HttpStatus
 
-object AvailabilityCheckInProgressException : HttpStatusException(
-    ErrorResponseData(
-        HttpStatus.UNPROCESSABLE_ENTITY,
-        AVAILABILITY_CHECK_IN_PROGRESS_ERROR
-    )
+abstract class EntityAlreadyExistsException(message: String) : HttpStatusException(
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, message)
 )

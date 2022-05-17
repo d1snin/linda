@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.alreadyExists.impl
+package dev.d1s.linda.exception.badRequest.impl.customAlias
 
-import dev.d1s.linda.constant.error.ERROR_ALIAS_ALREADY_EXISTS
-import dev.d1s.linda.exception.alreadyExists.EntityAlreadyExistsException
+import dev.d1s.linda.constant.error.CUSTOM_ALIAS_NOT_DEFINED_ERROR
+import dev.d1s.linda.exception.badRequest.BadRequestException
 
-object AliasAlreadyExistsException : EntityAlreadyExistsException(
-    ERROR_ALIAS_ALREADY_EXISTS
+object CustomAliasNotDefinedException : BadRequestException(
+    CUSTOM_ALIAS_NOT_DEFINED_ERROR
 )

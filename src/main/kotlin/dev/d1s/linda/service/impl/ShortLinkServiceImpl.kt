@@ -25,7 +25,7 @@ import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
 import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData
-import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParametersNotAllowedException
+import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService

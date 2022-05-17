@@ -31,7 +31,7 @@ import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.event.data.availabilityChange.AvailabilityCheckPerformedEventData
 import dev.d1s.linda.event.data.availabilityChange.CommonAvailabilityChangeEventData
 import dev.d1s.linda.event.data.availabilityChange.GlobalAvailabilityCheckPerformedEventData
-import dev.d1s.linda.exception.AvailabilityCheckInProgressException
+import dev.d1s.linda.exception.unprocessableEntity.impl.AvailabilityCheckInProgressException
 import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.AvailabilityChangeService

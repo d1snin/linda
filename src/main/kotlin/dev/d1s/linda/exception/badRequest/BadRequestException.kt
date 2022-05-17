@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.notAllowed
+package dev.d1s.linda.exception.badRequest
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
 import org.springframework.http.HttpStatus
 
-abstract class ActionNotAllowedException(message: String) : HttpStatusException(
+abstract class BadRequestException(message: String) : HttpStatusException(
     ErrorResponseData(HttpStatus.BAD_REQUEST, message)
 )

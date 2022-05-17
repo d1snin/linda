@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.notAllowed.impl
+package dev.d1s.linda.exception.badRequest.impl.utmParameter
 
 import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR
 import dev.d1s.linda.entity.utmParameter.UtmParameter
-import dev.d1s.linda.exception.notAllowed.ActionNotAllowedException
+import dev.d1s.linda.exception.badRequest.BadRequestException
 
-class DefaultUtmParametersNotAllowedException(utmParameters: Set<UtmParameter>) : ActionNotAllowedException(
+class DefaultUtmParametersNotAllowedException(
+    utmParameters: Set<UtmParameter>
+) : BadRequestException(
     DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR.format(utmParameters)
 )
