@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.dto.converter.impl.availabilityChange
 
-import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
 import org.springframework.stereotype.Component
