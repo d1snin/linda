@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.dto.utmParameter
 
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 

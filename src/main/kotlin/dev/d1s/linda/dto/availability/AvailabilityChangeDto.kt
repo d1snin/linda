@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.dto.availability
 
-import dev.d1s.linda.domain.availability.UnavailabilityReason
+import dev.d1s.linda.entity.availability.UnavailabilityReason
 import java.time.Instant
 
 class AvailabilityChangeDto(

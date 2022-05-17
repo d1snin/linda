@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.dto.utmParameter
 
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import java.time.Instant
 
 data class UtmParameterDto(

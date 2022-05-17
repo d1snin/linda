@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.service.MetaTagsBridgingService
 import kotlinx.html.head
 import kotlinx.html.html

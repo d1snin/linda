@@ -19,8 +19,8 @@ package dev.d1s.linda.service.impl
 import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.teabag.dto.EntityWithDto
 import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.redirect.RedirectDto

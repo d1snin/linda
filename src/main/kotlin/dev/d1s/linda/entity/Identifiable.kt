@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.exception.alreadyExists
+package dev.d1s.linda.entity
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.exception.HttpStatusException
-import org.springframework.http.HttpStatus
+import java.time.Instant
 
-abstract class DomainAlreadyExistsException(message: String) : HttpStatusException(
-    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, message)
-)
+interface Identifiable {
+
+    var id: String?
+
+    var creationTime: Instant?
+}

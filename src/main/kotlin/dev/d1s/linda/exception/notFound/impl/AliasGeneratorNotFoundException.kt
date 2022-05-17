@@ -17,8 +17,8 @@
 package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.constant.error.ALIAS_GENERATOR_NOT_FOUND_ERROR
-import dev.d1s.linda.exception.notFound.DomainNotFoundException
+import dev.d1s.linda.exception.notFound.EntityNotFoundException
 
-class AliasGeneratorNotFoundException(aliasGenerator: String) : DomainNotFoundException(
+class AliasGeneratorNotFoundException(aliasGenerator: String) : EntityNotFoundException(
     ALIAS_GENERATOR_NOT_FOUND_ERROR.format(aliasGenerator)
 )

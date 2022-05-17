@@ -21,7 +21,7 @@ import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperti
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
 import dev.d1s.linda.constant.utmParameter.UTM_CONTENT
-import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.service.impl.BaseInterfaceServiceImpl
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.testUtil.*
@@ -67,10 +67,10 @@ class BaseInterfaceServiceImplTest {
     @MockkBean
     private lateinit var metaTagsBridgingService: MetaTagsBridgingService
 
-    private val utmParameterDomains = utmParameters
+    private val utmParameterEntities = utmParameters
 
     private val expectedRedirect = Redirect(shortLink).apply {
-        this.utmParameters = utmParameterDomains.toMutableSet()
+        this.utmParameters = utmParameterEntities.toMutableSet()
     }
 
     @BeforeEach

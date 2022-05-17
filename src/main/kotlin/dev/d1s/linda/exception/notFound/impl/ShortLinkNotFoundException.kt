@@ -17,8 +17,8 @@
 package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.constant.error.SHORT_LINK_NOT_FOUND_ERROR
-import dev.d1s.linda.exception.notFound.DomainNotFoundException
+import dev.d1s.linda.exception.notFound.EntityNotFoundException
 
-class ShortLinkNotFoundException(id: String) : DomainNotFoundException(
+class ShortLinkNotFoundException(id: String) : EntityNotFoundException(
     SHORT_LINK_NOT_FOUND_ERROR.format(id)
 )

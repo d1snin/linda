@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.repository
 
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.entity.ShortLink
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.*

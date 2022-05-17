@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.utmParameter
+package dev.d1s.linda.entity.utmParameter
 
-import dev.d1s.linda.domain.Identifiable
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.entity.Identifiable
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.ShortLink
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant

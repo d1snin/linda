@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.domain.Identifiable
+import dev.d1s.linda.entity.Identifiable
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import java.time.Instant
 

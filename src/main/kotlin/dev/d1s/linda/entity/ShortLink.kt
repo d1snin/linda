@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain
+package dev.d1s.linda.entity
 
-import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.util.mapToIdSet
 import org.hibernate.annotations.GenericGenerator
 import java.time.Duration

@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.utmParameter
+package dev.d1s.linda.exception.alreadyExists
 
-enum class UtmParameterPurpose {
-    DEFAULT, ALLOWED
-}
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
+
+abstract class EntityAlreadyExistsException(message: String) : HttpStatusException(
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, message)
+)

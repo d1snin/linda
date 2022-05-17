@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.availability
+package dev.d1s.linda.entity.utmParameter
 
-enum class UnavailabilityReason {
-    BAD_STATUS, CONNECTION_ERROR, MALFORMED_URL
+import dev.d1s.linda.constant.utmParameter.*
+
+enum class UtmParameterType(val rawParameter: String) {
+    SOURCE(UTM_SOURCE),
+    MEDIUM(UTM_MEDIUM),
+    CAMPAIGN(UTM_CAMPAIGN),
+    TERM(UTM_TERM),
+    CONTENT(UTM_CONTENT)
 }

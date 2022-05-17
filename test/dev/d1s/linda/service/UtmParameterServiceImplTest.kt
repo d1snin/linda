@@ -20,7 +20,7 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
-import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
 import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData

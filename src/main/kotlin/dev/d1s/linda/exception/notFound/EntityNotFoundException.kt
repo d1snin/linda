@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.utmParameter
+package dev.d1s.linda.exception.notFound
 
-import dev.d1s.linda.constant.utmParameter.*
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-enum class UtmParameterType(val rawParameter: String) {
-    SOURCE(UTM_SOURCE),
-    MEDIUM(UTM_MEDIUM),
-    CAMPAIGN(UTM_CAMPAIGN),
-    TERM(UTM_TERM),
-    CONTENT(UTM_CONTENT)
-}
+open class EntityNotFoundException(message: String) : HttpStatusException(
+    ErrorResponseData(HttpStatus.NOT_FOUND, message)
+)

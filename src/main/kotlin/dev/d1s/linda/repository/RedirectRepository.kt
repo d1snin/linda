@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.repository
 
-import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.entity.Redirect
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

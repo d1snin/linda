@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.service
 
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.teabag.dto.EntityWithDto
 import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto

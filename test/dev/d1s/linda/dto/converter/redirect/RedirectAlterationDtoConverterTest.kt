@@ -17,7 +17,7 @@
 package dev.d1s.linda.dto.converter.redirect
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.dto.converter.impl.redirect.RedirectAlterationDtoConverter
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService

@@ -17,7 +17,7 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.teabag.web.dto.ErrorDto

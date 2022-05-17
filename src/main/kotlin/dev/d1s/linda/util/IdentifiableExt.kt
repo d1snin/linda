@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.util
 
-import dev.d1s.linda.domain.Identifiable
+import dev.d1s.linda.entity.Identifiable
 import dev.d1s.teabag.stdlib.collection.mapToSet
 
 fun Set<Identifiable>.mapToIdSet() = this.mapToSet {

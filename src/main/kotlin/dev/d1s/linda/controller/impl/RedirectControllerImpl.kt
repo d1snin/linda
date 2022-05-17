@@ -18,7 +18,7 @@ package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.controller.RedirectController
-import dev.d1s.linda.domain.Redirect
+import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.service.RedirectService

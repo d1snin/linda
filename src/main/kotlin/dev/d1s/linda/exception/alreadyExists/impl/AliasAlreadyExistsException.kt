@@ -17,8 +17,8 @@
 package dev.d1s.linda.exception.alreadyExists.impl
 
 import dev.d1s.linda.constant.error.ERROR_ALIAS_ALREADY_EXISTS
-import dev.d1s.linda.exception.alreadyExists.DomainAlreadyExistsException
+import dev.d1s.linda.exception.alreadyExists.EntityAlreadyExistsException
 
-object AliasAlreadyExistsException : DomainAlreadyExistsException(
+object AliasAlreadyExistsException : EntityAlreadyExistsException(
     ERROR_ALIAS_ALREADY_EXISTS
 )

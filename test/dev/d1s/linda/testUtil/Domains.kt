@@ -16,13 +16,13 @@
 
 package dev.d1s.linda.testUtil
 
-import dev.d1s.linda.domain.Identifiable
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.alias.FriendlyAliases
-import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.Identifiable
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.alias.FriendlyAliases
+import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import java.time.Instant
 

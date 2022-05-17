@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.domain.availability
+package dev.d1s.linda.entity
 
-import dev.d1s.linda.domain.Identifiable
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import javax.persistence.*
 
 @Entity
-@Table(name = "availability_change")
-data class AvailabilityChange(
+@Table(name = "redirect")
+data class Redirect(
     @ManyToOne(cascade = [CascadeType.MERGE])
-    var shortLink: ShortLink,
-
-    @Column
-    var unavailabilityReason: UnavailabilityReason?
+    var shortLink: ShortLink
 ) : Identifiable {
     @Id
     @Column
@@ -40,7 +36,13 @@ data class AvailabilityChange(
     @Column
     override var creationTime: Instant? = null
 
-    val available get() = unavailabilityReason == null
+    @ManyToMany
+    @JoinTable(
+        name = "redirect_utm_parameter",
+        joinColumns = [JoinColumn(name = "redirect_id")],
+        inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
+    )
+    var utmParameters: MutableSet<UtmParameter> = mutableSetOf()
 
     @PrePersist
     fun setCreationTime() {
@@ -49,12 +51,9 @@ data class AvailabilityChange(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as AvailabilityChange
+        if (other !is Redirect) return false
 
         if (shortLink != other.shortLink) return false
-        if (unavailabilityReason != other.unavailabilityReason) return false
         if (id != other.id) return false
         if (creationTime != other.creationTime) return false
 
@@ -63,15 +62,16 @@ data class AvailabilityChange(
 
     override fun hashCode(): Int {
         var result = shortLink.hashCode()
-        result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
         result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + (creationTime?.hashCode() ?: 0)
         return result
     }
 
-    override fun toString(): String = "AvailabilityChange(" +
-            "shortLink=${shortLink.id}, " +
-            "unavailabilityReason=$unavailabilityReason, " +
-            "id=$id, " +
-            "creationTime=$creationTime)"
+    override fun toString(): String {
+        return "Redirect(" +
+                "shortLink=$shortLink, " +
+                "id=$id, " +
+                "creationTime=$creationTime, " +
+                "utmParameters=$utmParameters)"
+    }
 }

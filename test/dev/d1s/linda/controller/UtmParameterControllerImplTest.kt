@@ -20,7 +20,7 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.UtmParameterControllerImpl
-import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.testUtil.*

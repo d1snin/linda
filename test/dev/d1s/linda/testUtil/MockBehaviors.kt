@@ -19,10 +19,10 @@ package dev.d1s.linda.testUtil
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.domain.utmParameter.UtmParameter
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.dto.redirect.RedirectAlterationDto

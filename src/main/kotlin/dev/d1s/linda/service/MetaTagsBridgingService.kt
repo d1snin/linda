@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.service
 
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.entity.ShortLink
 import org.jsoup.select.Elements
 
 interface MetaTagsBridgingService {

@@ -17,8 +17,8 @@
 package dev.d1s.linda.exception.notFound.impl
 
 import dev.d1s.linda.constant.error.AVAILABILITY_CHANGE_NOT_FOUND_ERROR
-import dev.d1s.linda.exception.notFound.DomainNotFoundException
+import dev.d1s.linda.exception.notFound.EntityNotFoundException
 
-class AvailabilityChangeNotFoundException(id: String) : DomainNotFoundException(
+class AvailabilityChangeNotFoundException(id: String) : EntityNotFoundException(
     AVAILABILITY_CHANGE_NOT_FOUND_ERROR.format(id)
 )

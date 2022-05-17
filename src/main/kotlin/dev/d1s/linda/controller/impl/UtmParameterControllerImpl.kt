@@ -18,8 +18,8 @@ package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.controller.UtmParameterController
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.service.UtmParameterService

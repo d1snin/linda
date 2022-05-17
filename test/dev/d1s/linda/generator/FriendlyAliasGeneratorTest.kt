@@ -18,7 +18,7 @@ package dev.d1s.linda.generator
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.linda.domain.alias.FriendlyAliases
+import dev.d1s.linda.entity.alias.FriendlyAliases
 import dev.d1s.linda.generator.impl.FriendlyAliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.testUtil.friendlyAliases

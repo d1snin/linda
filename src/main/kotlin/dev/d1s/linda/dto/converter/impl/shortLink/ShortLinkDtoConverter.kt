@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.dto.converter.impl.shortLink
 
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.checks.checkNotNull
