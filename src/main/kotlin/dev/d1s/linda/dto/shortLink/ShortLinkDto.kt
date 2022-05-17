@@ -21,7 +21,7 @@ import java.time.Instant
 
 data class ShortLinkDto(
     val id: String,
-    val url: String,
+    val target: String,
     val alias: String,
     val allowUtmParameters: Boolean,
     val deleteAfter: Duration?,

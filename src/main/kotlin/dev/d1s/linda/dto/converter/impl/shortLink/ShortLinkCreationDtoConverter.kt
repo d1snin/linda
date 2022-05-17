@@ -36,7 +36,7 @@ class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLi
 
     override fun convertToEntity(dto: ShortLinkCreationDto): ShortLink =
         ShortLink(
-            dto.url,
+            dto.target,
             aliasGeneratorService
                 .getAliasGenerator(dto.aliasGeneratorId)
                 .generateAlias(dto),

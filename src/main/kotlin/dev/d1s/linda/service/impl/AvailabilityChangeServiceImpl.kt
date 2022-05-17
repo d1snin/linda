@@ -178,7 +178,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
         try {
             response = requestFactory.createRequest(
-                URI.create(shortLink.url),
+                URI.create(shortLink.target),
                 HttpMethod.GET
             ).execute()
         } catch (_: IOException) {

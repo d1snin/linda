@@ -39,7 +39,7 @@ class MetaTagsBridgingServiceImpl : MetaTagsBridgingService {
 
     override fun fetchMetaTags(shortLink: ShortLink): Elements? =
         try {
-            Jsoup.connect(shortLink.url)
+            Jsoup.connect(shortLink.target)
                 .get()
                 .getElementsByTag(META_TAG)
                 .also {
@@ -60,7 +60,7 @@ class MetaTagsBridgingServiceImpl : MetaTagsBridgingService {
         metaTagsBridgingService.fetchMetaTagsAsString(shortLink)?.let {
             createHTML().html {
                 head {
-                    comment(" The following meta tags are taken from ${shortLink.url} ")
+                    comment(" The following meta tags are taken from ${shortLink.target} ")
 
                     unsafe {
                         +it

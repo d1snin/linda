@@ -39,7 +39,7 @@ class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> 
     private lateinit var utmParameterService: UtmParameterService
 
     override fun convertToEntity(dto: ShortLinkUpdateDto): ShortLink = ShortLink(
-        dto.url,
+        dto.target,
         dto.alias,
         dto.allowUtmParameters,
         dto.deleteAfter,

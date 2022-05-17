@@ -27,7 +27,7 @@ import javax.persistence.*
 data class ShortLink(
 
     @Column(nullable = false)
-    var url: String,
+    var target: String,
 
     @Column(nullable = false, unique = true)
     var alias: String,
@@ -69,7 +69,7 @@ data class ShortLink(
         other as ShortLink
 
         if (id != other.id) return false
-        if (url != other.url) return false
+        if (target != other.target) return false
         if (alias != other.alias) return false
         if (allowUtmParameters != other.allowUtmParameters) return false
         if (deleteAfter != other.deleteAfter) return false
@@ -79,7 +79,7 @@ data class ShortLink(
 
     override fun hashCode(): Int {
         var result = id.hashCode()
-        result = 31 * result + url.hashCode()
+        result = 31 * result + target.hashCode()
         result = 31 * result + alias.hashCode()
         result = 31 * result + allowUtmParameters.hashCode()
         result = 31 * result + (deleteAfter?.hashCode() ?: 0)
@@ -87,6 +87,6 @@ data class ShortLink(
     }
 
     override fun toString(): String {
-        return "ShortLink(id=$id, creationTime=$creationTime, url='$url', alias='$alias', allowUtmParameters=$allowUtmParameters, deleteAfter=$deleteAfter, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters, redirects=$redirects, availabilityChanges=$availabilityChanges)"
+        return "ShortLink(id=$id, creationTime=$creationTime, target='$target', alias='$alias', allowUtmParameters=$allowUtmParameters, deleteAfter=$deleteAfter, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters, redirects=$redirects, availabilityChanges=$availabilityChanges)"
     }
 }

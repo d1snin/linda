@@ -131,7 +131,7 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             }
         )
 
-        return this.redirect(shortLink.url, htmlPage)
+        return this.redirect(shortLink.target, htmlPage)
     }
 
     private fun redirect(location: String, html: String?) =

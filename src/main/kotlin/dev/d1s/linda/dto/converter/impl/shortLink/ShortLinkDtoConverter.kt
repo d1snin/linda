@@ -29,7 +29,7 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
     override fun convertToDto(entity: ShortLink): ShortLinkDto =
         ShortLinkDto(
             entity.id.checkNotNull("id"),
-            entity.url,
+            entity.target,
             entity.alias,
             entity.allowUtmParameters,
             entity.deleteAfter,

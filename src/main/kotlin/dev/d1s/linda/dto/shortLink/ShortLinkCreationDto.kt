@@ -26,9 +26,9 @@ data class ShortLinkCreationDto(
     // see https://stackoverflow.com/questions/163360/regular-expression-to-match-urls-in-java
     @field:Pattern(
         regexp = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;]*[-a-zA-Z\\d+&@#/%=~_|]",
-        message = "The provided URL must be valid."
+        message = "The provided target must be valid URL."
     )
-    val url: String,
+    val target: String,
 
     @field:NotBlank(message = "aliasGeneratorId must not be blank.")
     val aliasGeneratorId: String,

@@ -41,7 +41,7 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link"/>
             </column>
-            <column name="url" type="VARCHAR(255)">
+            <column name="target" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="alias" type="VARCHAR(255)">

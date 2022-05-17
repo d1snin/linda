@@ -185,7 +185,7 @@ class ShortLinkServiceImpl : ShortLinkService {
 
         val willSchedule = foundShortLink.deleteAfter != shortLink.deleteAfter
 
-        foundShortLink.url = shortLink.url
+        foundShortLink.target = shortLink.target
         foundShortLink.alias = shortLink.alias
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
         foundShortLink.deleteAfter = shortLink.deleteAfter
