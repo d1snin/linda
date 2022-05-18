@@ -19,11 +19,9 @@ package dev.d1s.linda.service.impl
 import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
+import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
-import dev.d1s.teabag.dto.EntityWithDto
-import dev.d1s.teabag.dto.EntityWithDtoSet
-import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.event.data.redirect.CommonRedirectEventData
 import dev.d1s.linda.event.data.redirect.RedirectUpdatedEventData
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParameterOverrideNotAllowedException
@@ -35,6 +33,8 @@ import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.teabag.dto.util.convertToDtoIf
 import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.teabag.dto.util.converterForSet
@@ -98,7 +98,7 @@ class RedirectServiceImpl : RedirectService {
     override fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
         val createdRedirect = redirectService.assignUtmParametersAndSave(
             redirect.apply {
-                validate()
+                this.validate()
 
                 val defaultUtmParameters = shortLink.defaultUtmParameters
 
@@ -137,16 +137,11 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional
     override fun update(id: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
-        redirect.validate()
-
         val (foundRedirect, oldRedirectDto) = redirectService.findById(id, true)
 
         foundRedirect.shortLink = redirect.shortLink
 
-        val savedRedirect = redirectService.assignUtmParametersAndSave(
-            foundRedirect,
-            redirect.utmParameters
-        )
+        val savedRedirect = redirectRepository.save(foundRedirect)
 
         log.debug {
             "updated redirect: $savedRedirect"

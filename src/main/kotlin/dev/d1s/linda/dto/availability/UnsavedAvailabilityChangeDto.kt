@@ -20,6 +20,6 @@ import dev.d1s.linda.entity.availability.UnavailabilityReason
 
 data class UnsavedAvailabilityChangeDto(
     val shortLink: String,
-    val available: Boolean,
-    val unavailabilityReason: UnavailabilityReason?
+    val unavailabilityReason: UnavailabilityReason?,
+    val available: Boolean
 )

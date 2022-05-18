@@ -21,27 +21,27 @@ import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_CREATED_GROUP
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHECK_PERFORMED_GROUP
 import dev.d1s.linda.constant.lp.GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP
+import dev.d1s.linda.dto.availability.AvailabilityChangeDto
+import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.availability.UnavailabilityReason
-import dev.d1s.teabag.dto.EntityWithDto
-import dev.d1s.teabag.dto.EntityWithDtoSet
-import dev.d1s.linda.dto.availability.AvailabilityChangeDto
-import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.event.data.availabilityChange.AvailabilityCheckPerformedEventData
 import dev.d1s.linda.event.data.availabilityChange.CommonAvailabilityChangeEventData
 import dev.d1s.linda.event.data.availabilityChange.GlobalAvailabilityCheckPerformedEventData
-import dev.d1s.linda.exception.unprocessableEntity.impl.AvailabilityCheckInProgressException
 import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
+import dev.d1s.linda.exception.unprocessableEntity.impl.AvailabilityCheckInProgressException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.byId
-import dev.d1s.teabag.dto.util.convertToDtoIf
-import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
+import dev.d1s.teabag.dto.util.convertToDtoIf
+import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.teabag.dto.util.converterForSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -273,7 +273,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
             log.debug {
                 "checked the availability of all short links: ${
-                    changes.mapToIdSet().filterNotNull()
+                    changes.mapToIdSet(false /* unsaved */)
                 }"
             }
 

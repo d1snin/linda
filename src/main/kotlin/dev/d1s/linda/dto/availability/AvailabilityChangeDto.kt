@@ -19,41 +19,10 @@ package dev.d1s.linda.dto.availability
 import dev.d1s.linda.entity.availability.UnavailabilityReason
 import java.time.Instant
 
-class AvailabilityChangeDto(
+data class AvailabilityChangeDto(
     val id: String,
+    val creationTime: Instant,
     val shortLink: String,
-    val available: Boolean,
     val unavailabilityReason: UnavailabilityReason?,
-    val creationTime: Instant
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as AvailabilityChangeDto
-
-        if (id != other.id) return false
-        if (shortLink != other.shortLink) return false
-        if (available != other.available) return false
-        if (unavailabilityReason != other.unavailabilityReason) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + shortLink.hashCode()
-        result = 31 * result + available.hashCode()
-        result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
-        return result
-    }
-
-    override fun toString(): String {
-        return "AvailabilityChangeDto(" +
-                "id='$id', " +
-                "shortLink='$shortLink', " +
-                "available=$available, " +
-                "unavailabilityReason=$unavailabilityReason, " +
-                "creationTime=$creationTime)"
-    }
-}
+    val available: Boolean,
+)

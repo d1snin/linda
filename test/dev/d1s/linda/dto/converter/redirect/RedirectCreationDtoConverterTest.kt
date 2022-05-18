@@ -17,13 +17,13 @@
 package dev.d1s.linda.dto.converter.redirect
 
 import com.ninjasquad.springmockk.MockkBean
+import dev.d1s.linda.dto.converter.impl.redirect.RedirectCreationDtoConverter
 import dev.d1s.linda.entity.Redirect
-import dev.d1s.linda.dto.converter.impl.redirect.RedirectAlterationDtoConverter
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.linda.testUtil.prepare
-import dev.d1s.linda.testUtil.redirectAlterationDto
+import dev.d1s.linda.testUtil.redirectCreationDto
 import dev.d1s.linda.testUtil.shortLink
 import dev.d1s.teabag.testing.constant.VALID_STUB
 import io.mockk.verify
@@ -36,11 +36,11 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [RedirectAlterationDtoConverter::class])
-class RedirectAlterationDtoConverterTest {
+@ContextConfiguration(classes = [RedirectCreationDtoConverter::class])
+class RedirectCreationDtoConverterTest {
 
     @Autowired
-    private lateinit var converter: RedirectAlterationDtoConverter
+    private lateinit var converter: RedirectCreationDtoConverter
 
     @MockkBean
     private lateinit var shortLinkService: ShortLinkService
@@ -55,9 +55,9 @@ class RedirectAlterationDtoConverterTest {
     }
 
     @Test
-    fun `should convert redirect alteration dto to entity`() {
+    fun `should convert redirect creation dto to redirect`() {
         expectThat(
-            converter.convertToEntity(redirectAlterationDto)
+            converter.convertToEntity(redirectCreationDto)
         ) isEqualTo Redirect(shortLink)
 
         verify {

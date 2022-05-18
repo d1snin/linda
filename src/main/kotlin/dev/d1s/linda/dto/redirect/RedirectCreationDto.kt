@@ -19,7 +19,7 @@ package dev.d1s.linda.dto.redirect
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
-data class RedirectAlterationDto(
+data class RedirectCreationDto(
 
     @field:NotBlank(message = "shortLink must not be blank.")
     val shortLink: String,

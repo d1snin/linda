@@ -19,6 +19,7 @@ package dev.d1s.linda.entity
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.util.mapToIdSet
 import java.time.Duration
 import javax.persistence.*
 
@@ -87,6 +88,15 @@ data class ShortLink(
     }
 
     override fun toString(): String {
-        return "ShortLink(id=$id, creationTime=$creationTime, target='$target', alias='$alias', allowUtmParameters=$allowUtmParameters, deleteAfter=$deleteAfter, defaultUtmParameters=$defaultUtmParameters, allowedUtmParameters=$allowedUtmParameters, redirects=$redirects, availabilityChanges=$availabilityChanges)"
+        return "ShortLink(id=$id, " +
+                "creationTime=$creationTime, " +
+                "target='$target', " +
+                "alias='$alias', " +
+                "allowUtmParameters=$allowUtmParameters, " +
+                "deleteAfter=$deleteAfter, " +
+                "defaultUtmParameters=${defaultUtmParameters.mapToIdSet(false)}, " +
+                "allowedUtmParameters=${allowedUtmParameters.mapToIdSet(false)}, " +
+                "redirects=${redirects.mapToIdSet(false)}, " +
+                "availabilityChanges=${availabilityChanges.mapToIdSet(false)})"
     }
 }

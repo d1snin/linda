@@ -34,11 +34,6 @@ data class AvailabilityChange(
 
     val available get() = unavailabilityReason == null
 
-
-    override fun toString(): String {
-        return "AvailabilityChange(id=$id, creationTime=$creationTime, shortLink=$shortLink, unavailabilityReason=$unavailabilityReason, available=$available)"
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -57,5 +52,13 @@ data class AvailabilityChange(
         result = 31 * result + shortLink.hashCode()
         result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
         return result
+    }
+
+    override fun toString(): String {
+        return "AvailabilityChange(id=$id, " +
+                "creationTime=$creationTime, " +
+                "shortLink=${shortLink.id}, " +
+                "unavailabilityReason=$unavailabilityReason, " +
+                "available=$available)"
     }
 }

@@ -20,8 +20,9 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.RedirectControllerImpl
+import dev.d1s.linda.dto.redirect.RedirectCreationDto
+import dev.d1s.linda.dto.redirect.RedirectUpdateDto
 import dev.d1s.linda.entity.Redirect
-import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.testUtil.*
 import dev.d1s.teabag.dto.DtoConverter
@@ -56,7 +57,10 @@ class RedirectControllerImplTest {
     private lateinit var redirectService: RedirectService
 
     @MockkBean
-    private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
+    private lateinit var redirectCreationDtoConverter: DtoConverter<RedirectCreationDto, Redirect>
+
+    @MockkBean
+    private lateinit var redirectUpdateDtoConverter: DtoConverter<RedirectUpdateDto, Redirect>
 
     @Suppress("unused")
     @MockkBean(relaxed = true)
@@ -65,7 +69,8 @@ class RedirectControllerImplTest {
     @BeforeEach
     fun setup() {
         redirectService.prepare()
-        redirectAlterationDtoConverter.prepare()
+        redirectCreationDtoConverter.prepare()
+        redirectUpdateDtoConverter.prepare()
     }
 
     @Test
@@ -100,7 +105,7 @@ class RedirectControllerImplTest {
     @Test
     fun `should create redirect`() {
         mockMvc.post(REDIRECTS_CREATE_MAPPING) {
-            jsonObjectBody(redirectAlterationDto)
+            jsonObjectBody(redirectCreationDto)
 
         }.andExpect {
             status {
@@ -111,8 +116,8 @@ class RedirectControllerImplTest {
         }
 
         verifyAll {
-            redirectAlterationDtoConverter.convertToEntity(
-                redirectAlterationDto
+            redirectCreationDtoConverter.convertToEntity(
+                redirectCreationDto
             )
 
             redirectService.create(redirect)
@@ -124,7 +129,7 @@ class RedirectControllerImplTest {
         mockMvc.put(
             REDIRECTS_UPDATE_MAPPING.setId()
         ) {
-            jsonObjectBody(redirectAlterationDto)
+            jsonObjectBody(redirectUpdateDto)
 
         }.andExpect {
             ok()
@@ -133,8 +138,8 @@ class RedirectControllerImplTest {
         }
 
         verifyAll {
-            redirectAlterationDtoConverter.convertToEntity(
-                redirectAlterationDto
+            redirectUpdateDtoConverter.convertToEntity(
+                redirectUpdateDto
             )
 
             redirectService.update(

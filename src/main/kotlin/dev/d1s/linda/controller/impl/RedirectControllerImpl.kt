@@ -18,9 +18,10 @@ package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.controller.RedirectController
-import dev.d1s.linda.entity.Redirect
-import dev.d1s.linda.dto.redirect.RedirectAlterationDto
+import dev.d1s.linda.dto.redirect.RedirectUpdateDto
+import dev.d1s.linda.dto.redirect.RedirectCreationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.dto.DtoConverter
@@ -40,7 +41,10 @@ class RedirectControllerImpl : RedirectController {
     private lateinit var redirectService: RedirectService
 
     @Autowired
-    private lateinit var redirectAlterationDtoConverter: DtoConverter<RedirectAlterationDto, Redirect>
+    private lateinit var redirectCreationDtoConverter: DtoConverter<RedirectCreationDto, Redirect>
+
+    @Autowired
+    private lateinit var redirectUpdateDtoConverter: DtoConverter<RedirectUpdateDto, Redirect>
 
     @Autowired
     private lateinit var sslConfigurationProperties: SslConfigurationProperties
@@ -60,10 +64,10 @@ class RedirectControllerImpl : RedirectController {
     }
 
     @Secured
-    override fun create(alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> {
+    override fun create(creation: RedirectCreationDto): ResponseEntity<RedirectDto> {
         val (_, redirect) = redirectService.create(
-            redirectAlterationDtoConverter.convertToEntity(
-                alteration
+            redirectCreationDtoConverter.convertToEntity(
+                creation
             )
         )
 
@@ -77,10 +81,10 @@ class RedirectControllerImpl : RedirectController {
     }
 
     @Secured
-    override fun update(identifier: String, alteration: RedirectAlterationDto): ResponseEntity<RedirectDto> {
+    override fun update(identifier: String, alteration: RedirectUpdateDto): ResponseEntity<RedirectDto> {
         val (_, redirect) = redirectService.update(
             identifier,
-            redirectAlterationDtoConverter.convertToEntity(
+            redirectUpdateDtoConverter.convertToEntity(
                 alteration
             )
         )

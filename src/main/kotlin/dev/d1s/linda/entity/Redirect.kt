@@ -56,6 +56,9 @@ data class Redirect(
     }
 
     override fun toString(): String {
-        return "Redirect(id=$id, creationTime=$creationTime, shortLink=$shortLink, utmParameters=$utmParameters)"
+        return "Redirect(id=$id, " +
+                "creationTime=$creationTime, " +
+                "shortLink=${shortLink.id} , " +
+                "utmParameters=$utmParameters)"
     }
 }

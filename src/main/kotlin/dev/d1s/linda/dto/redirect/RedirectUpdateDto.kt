@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.shortLink
+package dev.d1s.linda.dto.redirect
 
-import java.time.Duration
-import java.time.Instant
+import javax.validation.constraints.NotBlank
 
-data class ShortLinkDto(
-    val id: String,
-    val creationTime: Instant,
-    val target: String,
-    val alias: String,
-    val allowUtmParameters: Boolean,
-    val deleteAfter: Duration?,
-    val defaultUtmParameters: Set<String>,
-    val allowedUtmParameters: Set<String>,
-    val redirects: Set<String>,
-    val availabilityChanges: Set<String>,
+data class RedirectUpdateDto(
+
+    @field:NotBlank(message = "shortLink must not be blank.")
+    val shortLink: String
 )

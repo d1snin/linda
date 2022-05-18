@@ -18,8 +18,9 @@ package dev.d1s.linda.testUtil
 
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
-import dev.d1s.linda.dto.redirect.RedirectAlterationDto
+import dev.d1s.linda.dto.redirect.RedirectCreationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.dto.redirect.RedirectUpdateDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
@@ -30,29 +31,33 @@ import java.time.Instant
 
 val availabilityChangeDto = AvailabilityChangeDto(
     VALID_STUB,
+    Instant.EPOCH,
     VALID_STUB,
-    true,
     null,
-    Instant.EPOCH
+    true
 )
 
 val unsavedAvailabilityChangeDto = UnsavedAvailabilityChangeDto(
     VALID_STUB,
-    true,
-    null
+    null,
+    true
 )
 
 val availabilityChangeDtoSet = setOf(availabilityChangeDto)
 
-val redirectAlterationDto = RedirectAlterationDto(
+val redirectCreationDto = RedirectCreationDto(
     VALID_STUB,
     setOf()
 )
 
+val redirectUpdateDto = RedirectUpdateDto(
+    VALID_STUB
+)
+
 val redirectDto = RedirectDto(
     VALID_STUB,
-    VALID_STUB,
     Instant.EPOCH,
+    VALID_STUB,
     setOf()
 )
 
@@ -69,13 +74,13 @@ val shortLinkCreationDto = ShortLinkCreationDto(
 
 val shortLinkDto = ShortLinkDto(
     VALID_STUB,
+    Instant.EPOCH,
     TEST_URL,
     VALID_STUB,
     false,
     null,
     setOf(),
     setOf(),
-    Instant.EPOCH,
     setOf(),
     setOf()
 )
@@ -88,8 +93,6 @@ val shortLinkUpdateDto = ShortLinkUpdateDto(
     false,
     null,
     setOf(),
-    setOf(),
-    setOf(),
     setOf()
 )
 
@@ -101,12 +104,12 @@ val utmParameterAlterationDto = UtmParameterAlterationDto(
 
 val utmParameterDto = UtmParameterDto(
     VALID_STUB,
+    Instant.EPOCH,
     testUtmParameterType,
     VALID_STUB,
     false,
     setOf(),
     setOf(),
-    Instant.EPOCH,
     setOf()
 )
 

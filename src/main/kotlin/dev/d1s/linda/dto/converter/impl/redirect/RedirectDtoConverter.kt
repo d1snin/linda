@@ -16,10 +16,9 @@
 
 package dev.d1s.linda.dto.converter.impl.redirect
 
-import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.entity.Redirect
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.checks.checkNotNull
 import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
 
@@ -28,11 +27,11 @@ class RedirectDtoConverter : DtoConverter<RedirectDto, Redirect> {
 
     override fun convertToDto(entity: Redirect): RedirectDto =
         RedirectDto(
-            entity.id.checkNotNull("id"),
-            entity.shortLink.id.checkNotNull("short link id"),
-            entity.creationTime.checkNotNull("creation time"),
+            requireNotNull(entity.id),
+            requireNotNull(entity.creationTime),
+            requireNotNull(entity.shortLink.id),
             entity.utmParameters.mapToSet {
-                it.id.checkNotNull("UTM parameter's id")
+                requireNotNull(it.id)
             }
         )
 }

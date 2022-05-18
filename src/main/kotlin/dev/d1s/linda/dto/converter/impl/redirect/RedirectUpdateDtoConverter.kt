@@ -16,37 +16,25 @@
 
 package dev.d1s.linda.dto.converter.impl.redirect
 
+import dev.d1s.linda.dto.redirect.RedirectUpdateDto
 import dev.d1s.linda.entity.Redirect
-import dev.d1s.linda.dto.redirect.RedirectAlterationDto
 import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class RedirectAlterationDtoConverter : DtoConverter<RedirectAlterationDto, Redirect> {
+class RedirectUpdateDtoConverter : DtoConverter<RedirectUpdateDto, Redirect> {
 
     @Autowired
     private lateinit var shortLinkService: ShortLinkService
 
-    @Autowired
-    private lateinit var utmParameterService: UtmParameterService
-
-    override fun convertToEntity(dto: RedirectAlterationDto): Redirect {
+    override fun convertToEntity(dto: RedirectUpdateDto): Redirect {
         val (shortLink, _) = shortLinkService.find(byId(dto.shortLink))
 
         return Redirect(
             shortLink
-        ).apply {
-            utmParameters = dto.utmParameters.mapToMutableSet {
-                val (utmParameter, _) =
-                    utmParameterService.findById(it)
-
-                utmParameter
-            }
-        }
+        )
     }
 }

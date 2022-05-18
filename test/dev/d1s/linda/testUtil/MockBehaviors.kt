@@ -19,19 +19,20 @@ package dev.d1s.linda.testUtil
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
-import dev.d1s.linda.entity.Redirect
-import dev.d1s.linda.entity.ShortLink
-import dev.d1s.linda.entity.availability.AvailabilityChange
-import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
-import dev.d1s.linda.dto.redirect.RedirectAlterationDto
+import dev.d1s.linda.dto.redirect.RedirectCreationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.dto.redirect.RedirectUpdateDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
 import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.repository.RedirectRepository
@@ -483,10 +484,17 @@ fun DtoSetConverterFacade<RedirectDto, Redirect>.prepare() {
     } returns redirectDtoSet
 }
 
-@JvmName("prepareDtoConverterRedirectAlterationDtoRedirect")
-fun DtoConverter<RedirectAlterationDto, Redirect>.prepare() {
+@JvmName("prepareDtoConverterRedirectCreationDtoRedirect")
+fun DtoConverter<RedirectCreationDto, Redirect>.prepare() {
     every {
-        convertToEntity(redirectAlterationDto)
+        convertToEntity(redirectCreationDto)
+    } returns redirect
+}
+
+@JvmName("prepareDtoConverterRedirectUpdateDtoRedirect")
+fun DtoConverter<RedirectUpdateDto, Redirect>.prepare() {
+    every {
+        convertToEntity(redirectUpdateDto)
     } returns redirect
 }
 

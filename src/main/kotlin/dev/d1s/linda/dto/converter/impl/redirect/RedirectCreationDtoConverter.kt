@@ -14,34 +14,39 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.converter.impl.shortLink
+package dev.d1s.linda.dto.converter.impl.redirect
 
-import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
-import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.dto.redirect.RedirectCreationDto
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
+import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> {
+class RedirectCreationDtoConverter : DtoConverter<RedirectCreationDto, Redirect> {
+
+    @Autowired
+    private lateinit var shortLinkService: ShortLinkService
 
     @Autowired
     private lateinit var utmParameterService: UtmParameterService
 
-    override fun convertToEntity(dto: ShortLinkUpdateDto): ShortLink = ShortLink(
-        dto.target,
-        dto.alias,
-        dto.allowUtmParameters,
-        dto.deleteAfter,
-        dto.defaultUtmParameters.mapToMutableSet {
-            val (utmParameter, _) = utmParameterService.findById(it)
-            utmParameter
-        },
-        dto.allowedUtmParameters.mapToMutableSet {
-            val (utmParameter, _) = utmParameterService.findById(it)
-            utmParameter
+    override fun convertToEntity(dto: RedirectCreationDto): Redirect {
+        val (shortLink, _) = shortLinkService.find(byId(dto.shortLink))
+
+        return Redirect(
+            shortLink
+        ).apply {
+            utmParameters = dto.utmParameters.mapToMutableSet {
+                val (utmParameter, _) =
+                    utmParameterService.findById(it)
+
+                utmParameter
+            }
         }
-    )
+    }
 }

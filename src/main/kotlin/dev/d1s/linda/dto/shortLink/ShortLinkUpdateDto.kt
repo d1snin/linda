@@ -42,10 +42,4 @@ data class ShortLinkUpdateDto(
 
     @field:NotNull(message = "allowedUtmParameters field must not be null")
     val allowedUtmParameters: Set<String>,
-
-    @field:NotNull(message = "redirects field must not be null.")
-    val redirects: Set<String>,
-
-    @field:NotNull(message = "availabilityChanges field must not be null.")
-    val availabilityChanges: Set<String>
 )

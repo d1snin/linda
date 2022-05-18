@@ -20,9 +20,9 @@ import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationPro
 import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
 import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParametersNotAllowedException
@@ -142,10 +142,9 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLink
         )
 
-        if (
-            availabilityChecksConfigurationProperties.eagerAvailabilityCheck
-        ) {
-            val (availabilityChange, _) = availabilityChangeService.checkAvailability(savedShortLink)
+        if (availabilityChecksConfigurationProperties.eagerAvailabilityCheck) {
+            val (availabilityChange, _)
+                    = availabilityChangeService.checkAvailability(savedShortLink)
 
             shortLink.availabilityChanges += availabilityChange
         }
@@ -189,7 +188,6 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.alias = shortLink.alias
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
         foundShortLink.deleteAfter = shortLink.deleteAfter
-        foundShortLink.redirects = shortLink.redirects
 
         shortLinkService.assignUtmParameters(
             foundShortLink,

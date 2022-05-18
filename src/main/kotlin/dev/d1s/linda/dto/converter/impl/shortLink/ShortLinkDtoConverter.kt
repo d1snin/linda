@@ -16,11 +16,10 @@
 
 package dev.d1s.linda.dto.converter.impl.shortLink
 
-import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.checks.checkNotNull
-import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
 
 @Component
@@ -28,23 +27,15 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
 
     override fun convertToDto(entity: ShortLink): ShortLinkDto =
         ShortLinkDto(
-            entity.id.checkNotNull("id"),
+            requireNotNull(entity.id),
+            requireNotNull(entity.creationTime),
             entity.target,
             entity.alias,
             entity.allowUtmParameters,
             entity.deleteAfter,
-            entity.defaultUtmParameters.mapToSet {
-                it.id.checkNotNull("default utm parameter's id")
-            },
-            entity.allowedUtmParameters.mapToSet {
-                it.id.checkNotNull("allowed utm parameter's id")
-            },
-            entity.creationTime.checkNotNull("creation time"),
-            entity.redirects.mapToSet {
-                it.id.checkNotNull("redirect id")
-            },
-            entity.availabilityChanges.mapToSet {
-                it.id.checkNotNull("availability change's id")
-            }
+            entity.defaultUtmParameters.mapToIdSet(),
+            entity.allowedUtmParameters.mapToIdSet(),
+            entity.redirects.mapToIdSet(),
+            entity.availabilityChanges.mapToIdSet()
         )
 }

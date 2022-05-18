@@ -16,18 +16,17 @@
 
 package dev.d1s.linda.dto.converter.impl.availabilityChange
 
-import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
+import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.checks.checkNotNull
 import org.springframework.stereotype.Component
 
 @Component
 class UnsavedAvailabilityChangeDtoConverter : DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange> {
 
     override fun convertToDto(entity: AvailabilityChange): UnsavedAvailabilityChangeDto = UnsavedAvailabilityChangeDto(
-        entity.shortLink.id.checkNotNull("short link's id"),
-        entity.available,
-        entity.unavailabilityReason
+        requireNotNull(entity.shortLink.id),
+        entity.unavailabilityReason,
+        entity.available
     )
 }

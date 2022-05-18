@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.dto.converter.impl.shortLink
 
-import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
+import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.service.AliasGeneratorService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.teabag.dto.DtoConverter

@@ -19,11 +19,9 @@ package dev.d1s.linda.entity.common
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
-import javax.persistence.Column
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.PrePersist
+import javax.persistence.*
 
+@MappedSuperclass
 abstract class Identifiable {
 
     @Id
