@@ -22,8 +22,7 @@ import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
-import dev.d1s.linda.event.data.redirect.CommonRedirectEventData
-import dev.d1s.linda.event.data.redirect.RedirectUpdatedEventData
+import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParameterOverrideNotAllowedException
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.IllegalUtmParametersException
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.UtmParametersNotAllowedException
@@ -129,7 +128,7 @@ class RedirectServiceImpl : RedirectService {
         publisher.publish(
             REDIRECT_CREATED_GROUP,
             dto.shortLink,
-            CommonRedirectEventData(dto)
+            dto
         )
 
         return createdRedirect to dto
@@ -152,7 +151,10 @@ class RedirectServiceImpl : RedirectService {
         publisher.publish(
             REDIRECT_UPDATED_GROUP,
             id,
-            RedirectUpdatedEventData(oldRedirectDto!!, dto)
+            EntityUpdatedEventData(
+                oldRedirectDto!!,
+                dto
+            )
         )
 
         return savedRedirect to dto
@@ -186,7 +188,7 @@ class RedirectServiceImpl : RedirectService {
         publisher.publish(
             REDIRECT_REMOVED_GROUP,
             id,
-            CommonRedirectEventData(redirectDto!!)
+            redirectDto!!
         )
 
         log.debug {

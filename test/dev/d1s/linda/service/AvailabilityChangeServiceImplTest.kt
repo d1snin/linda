@@ -22,13 +22,10 @@ import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_CREATED_GROUP
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHECK_PERFORMED_GROUP
 import dev.d1s.linda.constant.lp.GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP
-import dev.d1s.linda.entity.availability.AvailabilityChange
-import dev.d1s.linda.entity.availability.UnavailabilityReason
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
-import dev.d1s.linda.event.data.availabilityChange.AvailabilityCheckPerformedEventData
-import dev.d1s.linda.event.data.availabilityChange.CommonAvailabilityChangeEventData
-import dev.d1s.linda.event.data.availabilityChange.GlobalAvailabilityCheckPerformedEventData
+import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.availability.UnavailabilityReason
 import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.impl.AvailabilityChangeServiceImpl
@@ -168,7 +165,7 @@ class AvailabilityChangeServiceImplTest {
             publisher.publish(
                 AVAILABILITY_CHANGE_CREATED_GROUP,
                 VALID_STUB,
-                CommonAvailabilityChangeEventData(availabilityChangeDto)
+                availabilityChangeDto
             )
         }
     }
@@ -188,9 +185,7 @@ class AvailabilityChangeServiceImplTest {
             publisher.publish(
                 AVAILABILITY_CHANGE_REMOVED_GROUP,
                 VALID_STUB,
-                CommonAvailabilityChangeEventData(
-                    availabilityChangeDto
-                )
+                availabilityChangeDto
             )
         }
     }
@@ -278,9 +273,7 @@ class AvailabilityChangeServiceImplTest {
             publisher.publish(
                 GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP,
                 null,
-                GlobalAvailabilityCheckPerformedEventData(
-                    availabilityChangeDtoSet
-                )
+                availabilityChangeDtoSet
             )
         }
     }
@@ -303,9 +296,7 @@ class AvailabilityChangeServiceImplTest {
             publisher.publish(
                 AVAILABILITY_CHECK_PERFORMED_GROUP,
                 shortLink.id,
-                AvailabilityCheckPerformedEventData(
-                    unsavedAvailabilityChangeDto
-                )
+                unsavedAvailabilityChangeDto
             )
         }
     }

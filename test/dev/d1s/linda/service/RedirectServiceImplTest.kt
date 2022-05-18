@@ -20,10 +20,9 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
-import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.dto.redirect.RedirectDto
-import dev.d1s.linda.event.data.redirect.CommonRedirectEventData
-import dev.d1s.linda.event.data.redirect.RedirectUpdatedEventData
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParameterOverrideNotAllowedException
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.IllegalUtmParametersException
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.UtmParametersNotAllowedException
@@ -132,7 +131,7 @@ class RedirectServiceImplTest {
             publisher.publish(
                 REDIRECT_CREATED_GROUP,
                 VALID_STUB,
-                CommonRedirectEventData(redirectDto)
+                redirectDto
             )
         }
     }
@@ -224,7 +223,10 @@ class RedirectServiceImplTest {
             publisher.publish(
                 REDIRECT_UPDATED_GROUP,
                 VALID_STUB,
-                RedirectUpdatedEventData(redirectDto, dto!!)
+                EntityUpdatedEventData(
+                    redirectDto,
+                    dto!!
+                )
             )
         }
     }
@@ -262,7 +264,7 @@ class RedirectServiceImplTest {
             publisher.publish(
                 REDIRECT_REMOVED_GROUP,
                 VALID_STUB,
-                CommonRedirectEventData(redirectDto)
+                redirectDto
             )
         }
     }

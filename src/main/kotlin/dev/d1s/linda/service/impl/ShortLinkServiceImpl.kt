@@ -23,8 +23,7 @@ import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
-import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
-import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData
+import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
@@ -168,7 +167,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         publisher.publish(
             SHORT_LINK_CREATED_GROUP,
             dto.id,
-            CommonShortLinkEventData(dto)
+            dto
         )
 
         return savedShortLink to dto
@@ -218,7 +217,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         publisher.publish(
             SHORT_LINK_UPDATED_GROUP,
             id,
-            ShortLinkUpdatedEventData(
+            EntityUpdatedEventData(
                 oldShortLinkDto,
                 dto
             )
@@ -278,9 +277,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         publisher.publish(
             SHORT_LINK_REMOVED_GROUP,
             id,
-            CommonShortLinkEventData(
-                shortLinkDto
-            )
+            shortLinkDto!!
         )
     }
 

@@ -26,9 +26,6 @@ import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.availability.UnavailabilityReason
-import dev.d1s.linda.event.data.availabilityChange.AvailabilityCheckPerformedEventData
-import dev.d1s.linda.event.data.availabilityChange.CommonAvailabilityChangeEventData
-import dev.d1s.linda.event.data.availabilityChange.GlobalAvailabilityCheckPerformedEventData
 import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
 import dev.d1s.linda.exception.unprocessableEntity.impl.AvailabilityCheckInProgressException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
@@ -143,7 +140,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         publisher.publish(
             AVAILABILITY_CHANGE_CREATED_GROUP,
             dto.shortLink,
-            CommonAvailabilityChangeEventData(dto)
+            dto
         )
 
         log.debug {
@@ -167,7 +164,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         publisher.publish(
             AVAILABILITY_CHANGE_REMOVED_GROUP,
             dto!!.id,
-            CommonAvailabilityChangeEventData(dto)
+            dto
         )
     }
 
@@ -216,9 +213,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         publisher.publish(
             AVAILABILITY_CHECK_PERFORMED_GROUP,
             shortLink.id,
-            AvailabilityCheckPerformedEventData(
-                dto
-            )
+            dto
         )
 
         return availabilityChange to dto
@@ -283,9 +278,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             publisher.publish(
                 GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP,
                 null,
-                GlobalAvailabilityCheckPerformedEventData(
-                    changesDtoSet
-                )
+                changesDtoSet
             )
 
             changes to changesDtoSet

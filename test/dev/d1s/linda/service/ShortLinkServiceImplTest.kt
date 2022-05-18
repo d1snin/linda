@@ -21,11 +21,10 @@ import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationPro
 import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
-import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData
+import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.exception.badRequest.impl.utmParameter.DefaultUtmParametersNotAllowedException
 import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
@@ -171,9 +170,8 @@ class ShortLinkServiceImplTest {
             publisher.publish(
                 SHORT_LINK_CREATED_GROUP,
                 VALID_STUB,
-                CommonShortLinkEventData(shortLinkDto)
+                shortLinkDto
             )
-
         }
     }
 
@@ -213,7 +211,7 @@ class ShortLinkServiceImplTest {
             publisher.publish(
                 SHORT_LINK_UPDATED_GROUP,
                 VALID_STUB,
-                ShortLinkUpdatedEventData(
+                EntityUpdatedEventData(
                     shortLinkDto,
                     dto!!
                 )
@@ -278,9 +276,7 @@ class ShortLinkServiceImplTest {
             publisher.publish(
                 SHORT_LINK_REMOVED_GROUP,
                 VALID_STUB,
-                CommonShortLinkEventData(
-                    shortLinkDto
-                )
+                shortLinkDto
             )
         }
     }

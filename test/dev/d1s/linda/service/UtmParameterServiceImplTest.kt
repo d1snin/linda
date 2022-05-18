@@ -20,12 +20,11 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
-import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
-import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
-import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData
-import dev.d1s.linda.exception.unprocessableEntity.impl.UtmParameterAlreadyExistsException
+import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
+import dev.d1s.linda.exception.unprocessableEntity.impl.UtmParameterAlreadyExistsException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.impl.UtmParameterServiceImpl
 import dev.d1s.linda.testUtil.*
@@ -189,7 +188,7 @@ class UtmParameterServiceImplTest {
             publisher.publish(
                 UTM_PARAMETER_CREATED_GROUP,
                 VALID_STUB,
-                CommonUtmParameterEventData(utmParameterDto)
+                utmParameterDto
             )
         }
     }
@@ -225,7 +224,7 @@ class UtmParameterServiceImplTest {
             publisher.publish(
                 UTM_PARAMETER_UPDATED_GROUP,
                 utmParameter.id,
-                UtmParameterUpdatedEventData(
+                EntityUpdatedEventData(
                     utmParameterDto,
                     dto!!
                 )
@@ -247,7 +246,7 @@ class UtmParameterServiceImplTest {
             publisher.publish(
                 UTM_PARAMETER_REMOVED_GROUP,
                 VALID_STUB,
-                CommonUtmParameterEventData(utmParameterDto)
+                utmParameterDto
             )
         }
     }

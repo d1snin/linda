@@ -19,21 +19,20 @@ package dev.d1s.linda.service.impl
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
+import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.entity.utmParameter.UtmParameterType
-import dev.d1s.teabag.dto.EntityWithDto
-import dev.d1s.teabag.dto.EntityWithDtoSet
-import dev.d1s.linda.dto.utmParameter.UtmParameterDto
-import dev.d1s.linda.event.data.utmParameter.CommonUtmParameterEventData
-import dev.d1s.linda.event.data.utmParameter.UtmParameterUpdatedEventData
-import dev.d1s.linda.exception.unprocessableEntity.impl.UtmParameterAlreadyExistsException
+import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
+import dev.d1s.linda.exception.unprocessableEntity.impl.UtmParameterAlreadyExistsException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.teabag.dto.util.convertToDtoIf
 import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.teabag.dto.util.converterForSet
@@ -145,7 +144,7 @@ class UtmParameterServiceImpl : UtmParameterService {
         publisher.publish(
             UTM_PARAMETER_CREATED_GROUP,
             utmParameter.id!!,
-            CommonUtmParameterEventData(dto)
+            dto
         )
 
         return savedUtmParameter to dto
@@ -174,7 +173,7 @@ class UtmParameterServiceImpl : UtmParameterService {
         publisher.publish(
             UTM_PARAMETER_UPDATED_GROUP,
             id,
-            UtmParameterUpdatedEventData(
+            EntityUpdatedEventData(
                 oldUtmParameterDto!!,
                 dto
             )
@@ -197,7 +196,7 @@ class UtmParameterServiceImpl : UtmParameterService {
         publisher.publish(
             UTM_PARAMETER_REMOVED_GROUP,
             id,
-            CommonUtmParameterEventData(dto!!)
+            dto!!
         )
     }
 }
