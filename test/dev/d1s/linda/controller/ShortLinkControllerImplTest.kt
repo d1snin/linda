@@ -20,9 +20,9 @@ import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.api.*
 import dev.d1s.linda.controller.impl.ShortLinkControllerImpl
-import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
+import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType

@@ -17,9 +17,9 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
-import dev.d1s.linda.dto.redirect.RedirectUpdateDto
 import dev.d1s.linda.dto.redirect.RedirectCreationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.dto.redirect.RedirectUpdateDto
 import dev.d1s.teabag.web.dto.ErrorDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.headers.Header

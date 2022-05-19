@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.dto.converter.impl.utmParameter
 
-import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.dto.utmParameter.UtmParameterAlterationDto
+import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.teabag.dto.DtoConverter
 import org.springframework.stereotype.Component
 

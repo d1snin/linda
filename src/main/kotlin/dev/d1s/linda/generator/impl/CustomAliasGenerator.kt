@@ -18,9 +18,9 @@ package dev.d1s.linda.generator.impl
 
 import dev.d1s.linda.constant.parameter.CUSTOM_ALIAS_PARAMETER
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
-import dev.d1s.linda.exception.unprocessableEntity.impl.AliasAlreadyExistsException
 import dev.d1s.linda.exception.badRequest.impl.customAlias.CustomAliasNotDefinedException
 import dev.d1s.linda.exception.badRequest.impl.customAlias.EmptyCustomAliasException
+import dev.d1s.linda.exception.unprocessableEntity.impl.AliasAlreadyExistsException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.teabag.web.currentRequest

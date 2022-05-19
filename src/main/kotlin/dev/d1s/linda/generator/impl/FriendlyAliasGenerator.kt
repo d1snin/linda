@@ -17,8 +17,8 @@
 package dev.d1s.linda.generator.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import dev.d1s.linda.entity.alias.FriendlyAliases
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
+import dev.d1s.linda.entity.alias.FriendlyAliases
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.ShortLinkService
 import org.springframework.beans.factory.annotation.Autowired

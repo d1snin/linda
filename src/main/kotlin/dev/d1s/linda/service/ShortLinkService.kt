@@ -16,12 +16,12 @@
 
 package dev.d1s.linda.service
 
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
+import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.teabag.dto.EntityWithDto
 import dev.d1s.teabag.dto.EntityWithDtoSet
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 
 interface ShortLinkService {
 
