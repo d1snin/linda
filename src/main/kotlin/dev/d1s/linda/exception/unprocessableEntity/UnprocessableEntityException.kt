@@ -20,6 +20,6 @@ import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.advice.exception.HttpStatusException
 import org.springframework.http.HttpStatus
 
-abstract class EntityAlreadyExistsException(message: String) : HttpStatusException(
+abstract class UnprocessableEntityException(message: String) : HttpStatusException(
     ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, message)
 )

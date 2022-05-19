@@ -17,8 +17,8 @@
 package dev.d1s.linda.exception.unprocessableEntity.impl
 
 import dev.d1s.linda.constant.error.ERROR_ALIAS_ALREADY_EXISTS
-import dev.d1s.linda.exception.unprocessableEntity.EntityAlreadyExistsException
+import dev.d1s.linda.exception.unprocessableEntity.UnprocessableEntityException
 
-object AliasAlreadyExistsException : EntityAlreadyExistsException(
+object AliasAlreadyExistsException : UnprocessableEntityException(
     ERROR_ALIAS_ALREADY_EXISTS
 )
