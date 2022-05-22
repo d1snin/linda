@@ -16,18 +16,20 @@
 
 package dev.d1s.linda.dto.shortLink
 
+import dev.d1s.linda.entity.alias.AliasType
 import java.time.Duration
 import java.time.Instant
 
 data class ShortLinkDto(
     val id: String,
-    val url: String,
-    val alias: String,
-    val allowUtmParameters: Boolean,
-    val deleteAfter: Duration?,
-    val defaultUtmParameters: Set<String>,
-    val allowedUtmParameters: Set<String>,
     val creationTime: Instant,
+    override val alias: String,
+    override val target: String,
+    override val aliasType: AliasType,
+    override val allowUtmParameters: Boolean,
+    override val deleteAfter: Duration?,
+    override val defaultUtmParameters: Set<String>,
+    override val allowedUtmParameters: Set<String>,
     val redirects: Set<String>,
     val availabilityChanges: Set<String>,
-)
+) : CommonShortLinkDto

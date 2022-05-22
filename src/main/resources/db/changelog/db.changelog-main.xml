@@ -1,13 +1,28 @@
+<!--
+  ~ Copyright 2022 Linda project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-    <changeSet id="1652168062128-1" author="d1snin (generated)">
+    <changeSet id="0" author="d1snin (me@d1s.dev)">
         <createSequence incrementBy="1" sequenceName="system-uuid" startValue="1"/>
-    </changeSet>
-    <changeSet id="1652168062128-2" author="d1snin (generated)">
+
         <createTable tableName="availability_change">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_availability_change"/>
@@ -16,8 +31,7 @@
             <column name="unavailability_reason" type="INT"/>
             <column name="creation_time" type="DATETIME"/>
         </createTable>
-    </changeSet>
-    <changeSet id="1652168062128-3" author="d1snin (generated)">
+
         <createTable tableName="redirect">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect"/>
@@ -25,8 +39,7 @@
             <column name="short_link_id" type="VARCHAR(255)"/>
             <column name="creation_time" type="DATETIME"/>
         </createTable>
-    </changeSet>
-    <changeSet id="1652168062128-4" author="d1snin (generated)">
+
         <createTable tableName="redirect_utm_parameter">
             <column name="redirect_id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect_utm_parameter"/>
@@ -35,16 +48,18 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect_utm_parameter"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1652168062128-5" author="d1snin (generated)">
+
         <createTable tableName="short_link">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link"/>
             </column>
-            <column name="url" type="VARCHAR(255)">
+            <column name="alias" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="alias" type="VARCHAR(255)">
+            <column name="target" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="alias_type" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="allow_utm_parameters" type="BOOLEAN">
@@ -53,8 +68,7 @@
             <column name="delete_after" type="BIGINT"/>
             <column name="creation_time" type="DATETIME"/>
         </createTable>
-    </changeSet>
-    <changeSet id="1652168062128-6" author="d1snin (generated)">
+
         <createTable tableName="short_link_allowed_utm_parameter">
             <column name="short_link_id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_allowed_utm_parameter"/>
@@ -63,8 +77,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_allowed_utm_parameter"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1652168062128-7" author="d1snin (generated)">
+
         <createTable tableName="short_link_default_utm_parameter">
             <column name="short_link_id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_default_utm_parameter"/>
@@ -73,8 +86,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_default_utm_parameter"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1652168062128-8" author="d1snin (generated)">
+
         <createTable tableName="utm_parameter">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_utm_parameter"/>
@@ -90,46 +102,37 @@
             </column>
             <column name="creation_time" type="DATETIME"/>
         </createTable>
-    </changeSet>
-    <changeSet id="1652168062128-9" author="d1snin (generated)">
+
         <addUniqueConstraint columnNames="alias" constraintName="uc_short_link_alias" tableName="short_link"/>
-    </changeSet>
-    <changeSet id="1652168062128-10" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="availability_change"
                                  constraintName="FK_AVAILABILITY_CHANGE_ON_SHORTLINK" referencedColumnNames="id"
                                  referencedTableName="short_link"/>
-    </changeSet>
-    <changeSet id="1652168062128-11" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="redirect"
                                  constraintName="FK_REDIRECT_ON_SHORTLINK" referencedColumnNames="id"
                                  referencedTableName="short_link"/>
-    </changeSet>
-    <changeSet id="1652168062128-12" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="redirect_id" baseTableName="redirect_utm_parameter"
                                  constraintName="fk_redutmpar_on_redirect" referencedColumnNames="id"
                                  referencedTableName="redirect"/>
-    </changeSet>
-    <changeSet id="1652168062128-13" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="utm_parameter_id" baseTableName="redirect_utm_parameter"
                                  constraintName="fk_redutmpar_on_utm_parameter" referencedColumnNames="id"
                                  referencedTableName="utm_parameter"/>
-    </changeSet>
-    <changeSet id="1652168062128-14" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="short_link_allowed_utm_parameter"
                                  constraintName="fk_sholinallutmpar_on_short_link" referencedColumnNames="id"
                                  referencedTableName="short_link"/>
-    </changeSet>
-    <changeSet id="1652168062128-15" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="utm_parameter_id" baseTableName="short_link_allowed_utm_parameter"
                                  constraintName="fk_sholinallutmpar_on_utm_parameter" referencedColumnNames="id"
                                  referencedTableName="utm_parameter"/>
-    </changeSet>
-    <changeSet id="1652168062128-16" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="short_link_default_utm_parameter"
                                  constraintName="fk_sholindefutmpar_on_short_link" referencedColumnNames="id"
                                  referencedTableName="short_link"/>
-    </changeSet>
-    <changeSet id="1652168062128-17" author="d1snin (generated)">
+
         <addForeignKeyConstraint baseColumnNames="utm_parameter_id" baseTableName="short_link_default_utm_parameter"
                                  constraintName="fk_sholindefutmpar_on_utm_parameter" referencedColumnNames="id"
                                  referencedTableName="utm_parameter"/>

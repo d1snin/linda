@@ -11,6 +11,7 @@ Redirecting service with UTM parameters support.
 <!-- ## [*Documentation is available on https://linda.d1s.dev!*](https://linda.d1s.dev/) -->
 
 ## License
+
 ```
 Copyright 2022 Linda project
 

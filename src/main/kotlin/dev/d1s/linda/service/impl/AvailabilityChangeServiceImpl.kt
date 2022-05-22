@@ -17,31 +17,32 @@
 package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
+import dev.d1s.linda.constant.error.AVAILABILITY_CHANGE_NOT_FOUND_ERROR
+import dev.d1s.linda.constant.error.AVAILABILITY_CHECK_IN_PROGRESS_ERROR
+import dev.d1s.linda.constant.error.CAN_NOT_CHECK_AVAILABILITY_ERROR
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_CREATED_GROUP
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHANGE_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.AVAILABILITY_CHECK_PERFORMED_GROUP
 import dev.d1s.linda.constant.lp.GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.linda.domain.availability.UnavailabilityReason
-import dev.d1s.teabag.dto.EntityWithDto
-import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
-import dev.d1s.linda.event.data.availabilityChange.AvailabilityCheckPerformedEventData
-import dev.d1s.linda.event.data.availabilityChange.CommonAvailabilityChangeEventData
-import dev.d1s.linda.event.data.availabilityChange.GlobalAvailabilityCheckPerformedEventData
-import dev.d1s.linda.exception.AvailabilityCheckInProgressException
-import dev.d1s.linda.exception.notFound.impl.AvailabilityChangeNotFoundException
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.alias.AliasType
+import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.linda.entity.availability.UnavailabilityReason
+import dev.d1s.linda.exception.BadRequestException
+import dev.d1s.linda.exception.UnprocessableEntityException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.byId
-import dev.d1s.teabag.dto.util.convertToDtoIf
-import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
+import dev.d1s.teabag.dto.util.convertToDtoIf
+import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.teabag.dto.util.converterForSet
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -54,6 +55,7 @@ import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
+import org.webjars.NotFoundException
 import java.io.IOException
 import java.net.URI
 import java.util.concurrent.atomic.AtomicBoolean
@@ -114,7 +116,9 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     @Transactional(readOnly = true)
     override fun findById(id: String, requireDto: Boolean): EntityWithDto<AvailabilityChange, AvailabilityChangeDto> {
         val availabilityChange = availabilityChangeRepository.findById(id).orElseThrow {
-            AvailabilityChangeNotFoundException(id)
+            NotFoundException(
+                AVAILABILITY_CHANGE_NOT_FOUND_ERROR.format(id)
+            )
         }
 
         log.debug {
@@ -143,7 +147,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         publisher.publish(
             AVAILABILITY_CHANGE_CREATED_GROUP,
             dto.shortLink,
-            CommonAvailabilityChangeEventData(dto)
+            dto
         )
 
         log.debug {
@@ -167,18 +171,22 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         publisher.publish(
             AVAILABILITY_CHANGE_REMOVED_GROUP,
             dto!!.id,
-            CommonAvailabilityChangeEventData(dto)
+            dto
         )
     }
 
     override fun checkAvailability(shortLink: ShortLink): EntityWithDto<AvailabilityChange, UnsavedAvailabilityChangeDto> {
+        if (shortLink.aliasType == AliasType.TEMPLATE) {
+            throw BadRequestException(CAN_NOT_CHECK_AVAILABILITY_ERROR)
+        }
+
         var available = true
         var unavailabilityReason: UnavailabilityReason? = null
         var response: ClientHttpResponse by Delegates.notNull()
 
         try {
             response = requestFactory.createRequest(
-                URI.create(shortLink.url),
+                URI.create(shortLink.target),
                 HttpMethod.GET
             ).execute()
         } catch (_: IOException) {
@@ -216,9 +224,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
         publisher.publish(
             AVAILABILITY_CHECK_PERFORMED_GROUP,
             shortLink.id,
-            AvailabilityCheckPerformedEventData(
-                dto
-            )
+            dto
         )
 
         return availabilityChange to dto
@@ -252,7 +258,9 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             }
 
             if (checksRunning.get()) {
-                throw AvailabilityCheckInProgressException
+                throw UnprocessableEntityException(
+                    AVAILABILITY_CHECK_IN_PROGRESS_ERROR
+                )
             }
 
             var changes: Set<AvailabilityChange> by Delegates.notNull()
@@ -261,11 +269,14 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
             val (shortLinks, _) = shortLinkService.findAll()
 
-            changes = shortLinks.map {
-                async {
-                    availabilityChangeService.checkAndSaveAvailability(it)
-                }
-            }.awaitAll()
+            changes = shortLinks
+                .filter {
+                    it.aliasType != AliasType.TEMPLATE
+                }.map {
+                    async {
+                        availabilityChangeService.checkAndSaveAvailability(it)
+                    }
+                }.awaitAll()
                 .filterNotNull()
                 .toSet()
 
@@ -273,7 +284,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
             log.debug {
                 "checked the availability of all short links: ${
-                    changes.mapToIdSet().filterNotNull()
+                    changes.mapToIdSet(false /* unsaved */)
                 }"
             }
 
@@ -283,9 +294,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
             publisher.publish(
                 GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP,
                 null,
-                GlobalAvailabilityCheckPerformedEventData(
-                    changesDtoSet
-                )
+                changesDtoSet
             )
 
             changes to changesDtoSet

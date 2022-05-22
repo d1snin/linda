@@ -19,10 +19,9 @@ package dev.d1s.linda.service.impl
 import dev.d1s.linda.configuration.properties.BaseInterfaceConfigurationProperties
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_SEGMENT
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.linda.service.*
-import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.teabag.web.buildFromCurrentRequest
 import dev.d1s.teabag.web.configureSsl
 import org.lighthousegames.logging.logging
@@ -82,9 +81,11 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
 
         val requireConfirmation = properties.requireConfirmation
 
-        val (shortLink, _) = shortLinkService.find(byAlias(alias))
+        val (resolvedAlias, _) = shortLinkService.resolveAlias(alias)
 
-        val htmlPage = metaTagsBridgingService.buildHtmlDocument(shortLink)
+        val target = resolvedAlias.target
+
+        val htmlPage = metaTagsBridgingService.buildHtmlDocument(target)
 
         if (!confirmed && requireConfirmation) {
             log.debug {
@@ -126,12 +127,12 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
         }
 
         redirectService.create(
-            Redirect(shortLink).apply {
+            Redirect(resolvedAlias.shortLink).apply {
                 this.utmParameters = utmParameters.toMutableSet()
             }
         )
 
-        return this.redirect(shortLink.url, htmlPage)
+        return this.redirect(target, htmlPage)
     }
 
     private fun redirect(location: String, html: String?) =

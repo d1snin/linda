@@ -16,7 +16,8 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.linda.exception.notFound.impl.AliasGeneratorNotFoundException
+import dev.d1s.linda.constant.error.ALIAS_GENERATOR_NOT_FOUND_ERROR
+import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.AliasGeneratorService
 import org.lighthousegames.logging.logging
@@ -33,7 +34,9 @@ class AliasGeneratorServiceImpl : AliasGeneratorService {
 
     override fun getAliasGenerator(identifier: String): AliasGenerator = (aliasGenerators.firstOrNull {
         it.identifier == identifier
-    } ?: throw AliasGeneratorNotFoundException(identifier)).also {
+    } ?: throw NotFoundException(
+        ALIAS_GENERATOR_NOT_FOUND_ERROR.format(identifier)
+    )).also {
         log.debug {
             "retrieved alias generator: $identifier"
         }

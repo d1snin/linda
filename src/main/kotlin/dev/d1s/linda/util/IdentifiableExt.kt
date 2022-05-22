@@ -16,9 +16,13 @@
 
 package dev.d1s.linda.util
 
-import dev.d1s.linda.domain.Identifiable
+import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.teabag.stdlib.collection.mapToSet
 
-fun Set<Identifiable>.mapToIdSet() = this.mapToSet {
-    it.id
+fun Set<Identifiable>.mapToIdSet(requireNotNull: Boolean = true) = this.mapToSet {
+    if (requireNotNull) {
+        requireNotNull(it.id)
+    } else {
+        it.id ?: "unsaved"
+    }
 }

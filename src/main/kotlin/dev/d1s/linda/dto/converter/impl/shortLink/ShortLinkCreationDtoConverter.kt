@@ -16,11 +16,15 @@
 
 package dev.d1s.linda.dto.converter.impl.shortLink
 
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.constant.error.NO_ALIAS_OR_ALIAS_GENERATOR_PRESENT_ERROR
+import dev.d1s.linda.dto.shortLink.CommonShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.exception.BadRequestException
 import dev.d1s.linda.service.AliasGeneratorService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.DtoValidator
 import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -29,26 +33,37 @@ import org.springframework.stereotype.Component
 class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLink> {
 
     @Autowired
+    private lateinit var commonShortLinkDtoValidator: DtoValidator<CommonShortLinkDto>
+
+    @Autowired
     private lateinit var aliasGeneratorService: AliasGeneratorService
 
     @Autowired
     private lateinit var utmParameterService: UtmParameterService
 
-    override fun convertToEntity(dto: ShortLinkCreationDto): ShortLink =
+    override fun convertToEntity(dto: ShortLinkCreationDto): ShortLink = dto.run {
+        commonShortLinkDtoValidator.validate(this)
+
         ShortLink(
-            dto.url,
-            aliasGeneratorService
-                .getAliasGenerator(dto.aliasGeneratorId)
-                .generateAlias(dto),
-            dto.allowUtmParameters,
-            dto.deleteAfter,
-            dto.defaultUtmParameters.mapToMutableSet {
+            // note that the aliasGeneratorId is ignored if the alias is not null.
+            alias ?: aliasGeneratorService
+                .getAliasGenerator(
+                    aliasGeneratorId ?: throw BadRequestException(
+                        NO_ALIAS_OR_ALIAS_GENERATOR_PRESENT_ERROR
+                    )
+                ).generateAlias(this),
+            target,
+            aliasType,
+            allowUtmParameters,
+            deleteAfter,
+            defaultUtmParameters.mapToMutableSet {
                 val (utmParameter, _) = utmParameterService.findById(it)
                 utmParameter
             },
-            dto.allowedUtmParameters.mapToMutableSet {
+            allowedUtmParameters.mapToMutableSet {
                 val (utmParameter, _) = utmParameterService.findById(it)
                 utmParameter
             }
         )
+    }
 }

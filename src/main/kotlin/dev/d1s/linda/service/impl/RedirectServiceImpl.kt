@@ -16,25 +16,26 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETER_OVERRIDE_ERROR
+import dev.d1s.linda.constant.error.ILLEGAL_UTM_PARAMETERS_ERROR
+import dev.d1s.linda.constant.error.REDIRECT_NOT_FOUND_ERROR
+import dev.d1s.linda.constant.error.UTM_PARAMETERS_NOT_ALLOWED_ERROR
 import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
-import dev.d1s.linda.domain.Redirect
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.teabag.dto.EntityWithDto
-import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.redirect.RedirectDto
-import dev.d1s.linda.event.data.redirect.CommonRedirectEventData
-import dev.d1s.linda.event.data.redirect.RedirectUpdatedEventData
-import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParameterOverrideNotAllowedException
-import dev.d1s.linda.exception.notAllowed.impl.IllegalUtmParametersException
-import dev.d1s.linda.exception.notAllowed.impl.UtmParametersNotAllowedException
-import dev.d1s.linda.exception.notFound.impl.RedirectNotFoundException
+import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.event.data.EntityUpdatedEventData
+import dev.d1s.linda.exception.BadRequestException
+import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.teabag.dto.util.convertToDtoIf
 import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.teabag.dto.util.converterForSet
@@ -83,7 +84,9 @@ class RedirectServiceImpl : RedirectService {
     @Transactional(readOnly = true)
     override fun findById(id: String, requireDto: Boolean): EntityWithDto<Redirect, RedirectDto> {
         val redirect = redirectRepository.findById(id).orElseThrow {
-            RedirectNotFoundException(id)
+            NotFoundException(
+                REDIRECT_NOT_FOUND_ERROR.format(id)
+            )
         }
 
         log.debug {
@@ -98,7 +101,7 @@ class RedirectServiceImpl : RedirectService {
     override fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
         val createdRedirect = redirectService.assignUtmParametersAndSave(
             redirect.apply {
-                validate()
+                this.validate()
 
                 val defaultUtmParameters = shortLink.defaultUtmParameters
 
@@ -108,7 +111,9 @@ class RedirectServiceImpl : RedirectService {
                             && !defaultUtmParameter.allowOverride
                             && utmParameter !in defaultUtmParameters
                         ) {
-                            throw DefaultUtmParameterOverrideNotAllowedException(defaultUtmParameters)
+                            throw BadRequestException(
+                                DEFAULT_UTM_PARAMETER_OVERRIDE_ERROR.format(defaultUtmParameter)
+                            )
                         }
                     }
 
@@ -129,7 +134,7 @@ class RedirectServiceImpl : RedirectService {
         publisher.publish(
             REDIRECT_CREATED_GROUP,
             dto.shortLink,
-            CommonRedirectEventData(dto)
+            dto
         )
 
         return createdRedirect to dto
@@ -137,16 +142,11 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional
     override fun update(id: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
-        redirect.validate()
-
         val (foundRedirect, oldRedirectDto) = redirectService.findById(id, true)
 
         foundRedirect.shortLink = redirect.shortLink
 
-        val savedRedirect = redirectService.assignUtmParametersAndSave(
-            foundRedirect,
-            redirect.utmParameters
-        )
+        val savedRedirect = redirectRepository.save(foundRedirect)
 
         log.debug {
             "updated redirect: $savedRedirect"
@@ -157,7 +157,10 @@ class RedirectServiceImpl : RedirectService {
         publisher.publish(
             REDIRECT_UPDATED_GROUP,
             id,
-            RedirectUpdatedEventData(oldRedirectDto!!, dto)
+            EntityUpdatedEventData(
+                oldRedirectDto!!,
+                dto
+            )
         )
 
         return savedRedirect to dto
@@ -191,7 +194,7 @@ class RedirectServiceImpl : RedirectService {
         publisher.publish(
             REDIRECT_REMOVED_GROUP,
             id,
-            CommonRedirectEventData(redirectDto!!)
+            redirectDto!!
         )
 
         log.debug {
@@ -202,17 +205,19 @@ class RedirectServiceImpl : RedirectService {
     private fun Redirect.validate() {
         if (utmParameters.isNotEmpty()) {
             if (!shortLink.allowUtmParameters) {
-                throw UtmParametersNotAllowedException
+                throw BadRequestException(UTM_PARAMETERS_NOT_ALLOWED_ERROR)
             }
 
             val allowedUtmParameters = shortLink.allowedUtmParameters
 
             if (allowedUtmParameters.isNotEmpty()) {
                 if (!allowedUtmParameters.containsAll(utmParameters)) {
-                    throw IllegalUtmParametersException(
-                        utmParameters.filter {
-                            it !in allowedUtmParameters
-                        }.toSet()
+                    throw BadRequestException(
+                        ILLEGAL_UTM_PARAMETERS_ERROR.format(
+                            utmParameters.filter {
+                                it !in allowedUtmParameters
+                            }
+                        )
                     )
                 }
             }

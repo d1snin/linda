@@ -36,7 +36,7 @@ class Crc32AliasGenerator : AliasGenerator {
         val aliasCandidate = "%08x".format(
             Locale.US,
             CRC32().apply {
-                update(creation.url.toByteArray())
+                update(creation.target.toByteArray())
             }.value
         )
 

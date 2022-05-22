@@ -16,16 +16,20 @@
 
 package dev.d1s.linda.service
 
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.utmParameter.UtmParameterPurpose
+import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
+import dev.d1s.linda.dto.shortLink.ShortLinkDto
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.alias.ResolvedAlias
+import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
+import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.teabag.dto.EntityWithDto
 import dev.d1s.teabag.dto.EntityWithDtoSet
-import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 
 interface ShortLinkService {
 
     fun findAll(requireDto: Boolean = false): EntityWithDtoSet<ShortLink, ShortLinkDto>
+
+    fun findAllByAlias(regex: String): Set<ShortLink>
 
     fun find(
         shortLinkFindingStrategy: ShortLinkFindingStrategy,
@@ -47,4 +51,15 @@ interface ShortLinkService {
     fun scheduleForDeletion(shortLink: ShortLink)
 
     fun scheduleAllEphemeralShortLinksForDeletion()
+
+    fun initializeTemplateAliasRegexes()
+
+    fun resolveAlias(
+        alias: String,
+        requireDto: Boolean = false
+    ): EntityWithDto<ResolvedAlias, ResolvedAliasDto>
+
+    fun buildTemplateAliasRegex(shortLink: ShortLink): Regex
+
+    fun checkForCollision(shortLink: ShortLink)
 }

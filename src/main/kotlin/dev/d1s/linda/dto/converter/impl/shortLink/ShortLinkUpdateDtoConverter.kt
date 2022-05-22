@@ -16,12 +16,12 @@
 
 package dev.d1s.linda.dto.converter.impl.shortLink
 
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.dto.shortLink.CommonShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
-import dev.d1s.linda.service.AvailabilityChangeService
-import dev.d1s.linda.service.RedirectService
+import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.teabag.dto.DtoConverter
+import dev.d1s.teabag.dto.DtoValidator
 import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -30,36 +30,28 @@ import org.springframework.stereotype.Component
 class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> {
 
     @Autowired
-    private lateinit var redirectService: RedirectService
-
-    @Autowired
-    private lateinit var availabilityChangeService: AvailabilityChangeService
+    private lateinit var commonShortLinkDtoValidator: DtoValidator<CommonShortLinkDto>
 
     @Autowired
     private lateinit var utmParameterService: UtmParameterService
 
-    override fun convertToEntity(dto: ShortLinkUpdateDto): ShortLink = ShortLink(
-        dto.url,
-        dto.alias,
-        dto.allowUtmParameters,
-        dto.deleteAfter,
-        dto.defaultUtmParameters.mapToMutableSet {
-            val (utmParameter, _) = utmParameterService.findById(it)
-            utmParameter
-        },
-        dto.allowedUtmParameters.mapToMutableSet {
-            val (utmParameter, _) = utmParameterService.findById(it)
-            utmParameter
-        }
-    ).apply {
-        redirects = dto.redirects.mapToMutableSet {
-            val (redirect, _) = redirectService.findById(it)
-            redirect
-        }
+    override fun convertToEntity(dto: ShortLinkUpdateDto): ShortLink = dto.run {
+        commonShortLinkDtoValidator.validate(this)
 
-        availabilityChanges = dto.availabilityChanges.mapToMutableSet {
-            val (availabilityChange, _) = availabilityChangeService.findById(it)
-            availabilityChange
-        }
+        ShortLink(
+            alias,
+            target,
+            aliasType,
+            allowUtmParameters,
+            deleteAfter,
+            defaultUtmParameters.mapToMutableSet {
+                val (utmParameter, _) = utmParameterService.findById(it)
+                utmParameter
+            },
+            allowedUtmParameters.mapToMutableSet {
+                val (utmParameter, _) = utmParameterService.findById(it)
+                utmParameter
+            }
+        )
     }
 }

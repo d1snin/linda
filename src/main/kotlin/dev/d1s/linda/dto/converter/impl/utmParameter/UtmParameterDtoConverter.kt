@@ -16,11 +16,10 @@
 
 package dev.d1s.linda.dto.converter.impl.utmParameter
 
-import dev.d1s.linda.domain.utmParameter.UtmParameter
 import dev.d1s.linda.dto.utmParameter.UtmParameterDto
+import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.teabag.dto.DtoConverter
-import dev.d1s.teabag.stdlib.checks.checkNotNull
-import dev.d1s.teabag.stdlib.collection.mapToSet
 import org.springframework.stereotype.Component
 
 @Component
@@ -28,19 +27,13 @@ class UtmParameterDtoConverter : DtoConverter<UtmParameterDto, UtmParameter> {
 
     override fun convertToDto(entity: UtmParameter): UtmParameterDto =
         UtmParameterDto(
-            entity.id.checkNotNull("id"),
+            requireNotNull(entity.id),
+            requireNotNull(entity.creationTime),
             entity.type,
             entity.parameterValue,
             entity.allowOverride,
-            entity.defaultForShortLinks.mapToSet {
-                it.id.checkNotNull("short link's id")
-            },
-            entity.allowedForShortLinks.mapToSet {
-                it.id.checkNotNull("short link's id")
-            },
-            entity.creationTime.checkNotNull("creationTime"),
-            entity.redirects.mapToSet {
-                it.id.checkNotNull("redirect's id")
-            }
+            entity.redirects.mapToIdSet(),
+            entity.defaultForShortLinks.mapToIdSet(),
+            entity.allowedForShortLinks.mapToIdSet()
         )
 }

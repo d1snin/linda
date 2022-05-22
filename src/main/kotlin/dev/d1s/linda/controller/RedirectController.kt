@@ -17,8 +17,9 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
-import dev.d1s.linda.dto.redirect.RedirectAlterationDto
+import dev.d1s.linda.dto.redirect.RedirectCreationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
+import dev.d1s.linda.dto.redirect.RedirectUpdateDto
 import dev.d1s.teabag.web.dto.ErrorDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.headers.Header
@@ -73,7 +74,7 @@ interface RedirectController {
         ]
     )
     fun findById(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<RedirectDto>
 
     @PostMapping(REDIRECTS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -114,7 +115,7 @@ interface RedirectController {
         ]
     )
     fun create(
-        @RequestBody @Valid alteration: RedirectAlterationDto
+        @RequestBody @Valid creation: RedirectCreationDto
     ): ResponseEntity<RedirectDto>
 
     @PutMapping(REDIRECTS_UPDATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -152,8 +153,8 @@ interface RedirectController {
         ]
     )
     fun update(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
-        @RequestBody @Valid alteration: RedirectAlterationDto
+        @PathVariable @NotBlank identifier: String,
+        @RequestBody @Valid alteration: RedirectUpdateDto
     ): ResponseEntity<RedirectDto>
 
     @DeleteMapping(REDIRECTS_REMOVE_BY_ID_MAPPING)
@@ -177,6 +178,6 @@ interface RedirectController {
         ]
     )
     fun removeById(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<*>
 }

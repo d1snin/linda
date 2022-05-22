@@ -16,8 +16,9 @@
 
 package dev.d1s.linda.repository
 
-import dev.d1s.linda.domain.ShortLink
+import dev.d1s.linda.entity.ShortLink
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -25,6 +26,12 @@ import java.util.*
 interface ShortLinkRepository : JpaRepository<ShortLink, String> {
 
     fun findByAlias(alias: String): Optional<ShortLink>
+
+    @Query(
+        nativeQuery = true,
+        value = "select * from short_link where alias regexp ?"
+    )
+    fun findByAliasMatches(regex: String): Set<ShortLink>
 
     fun findByDeleteAfterIsNotNull(): Set<ShortLink>
 }

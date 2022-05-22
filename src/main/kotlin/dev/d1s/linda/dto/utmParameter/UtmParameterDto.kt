@@ -16,16 +16,16 @@
 
 package dev.d1s.linda.dto.utmParameter
 
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import java.time.Instant
 
 data class UtmParameterDto(
     val id: String,
+    val creationTime: Instant,
     val type: UtmParameterType,
     val parameterValue: String,
     val allowOverride: Boolean,
+    val redirects: Set<String>,
     val defaultForShortLinks: Set<String>,
-    val allowedForShortLinks: Set<String>,
-    val creationTime: Instant,
-    val redirects: Set<String>
+    val allowedForShortLinks: Set<String>
 )

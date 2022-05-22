@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.repository
 
-import dev.d1s.linda.domain.utmParameter.UtmParameter
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

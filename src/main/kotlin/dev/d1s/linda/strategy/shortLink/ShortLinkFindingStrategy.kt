@@ -16,25 +16,30 @@
 
 package dev.d1s.linda.strategy.shortLink
 
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType.BY_ALIAS
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType.BY_ID
+import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType.*
 import dev.d1s.linda.util.thisOrDefaultType
 
-sealed class ShortLinkFindingStrategy {
+sealed interface ShortLinkFindingStrategy {
 
-    abstract val identifier: String
+    val identifier: String
 
-    data class ById(override val identifier: String) : ShortLinkFindingStrategy()
-    data class ByAlias(override val identifier: String) : ShortLinkFindingStrategy()
+    data class ById(override val identifier: String) : ShortLinkFindingStrategy
+
+    data class ByAlias(override val identifier: String) : ShortLinkFindingStrategy
 }
 
 enum class ShortLinkFindingStrategyType {
     BY_ID, BY_ALIAS
 }
 
-fun byId(id: String) = ShortLinkFindingStrategy.ById(id)
-fun byAlias(alias: String) = ShortLinkFindingStrategy.ByAlias(alias)
-fun byType(type: ShortLinkFindingStrategyType?, identifier: String) = when (type.thisOrDefaultType) {
-    BY_ID -> ShortLinkFindingStrategy.ById(identifier)
-    BY_ALIAS -> ShortLinkFindingStrategy.ByAlias(identifier)
-}
+fun byId(id: String) =
+    ShortLinkFindingStrategy.ById(id)
+
+fun byAlias(alias: String) =
+    ShortLinkFindingStrategy.ByAlias(alias)
+
+fun byType(type: ShortLinkFindingStrategyType?, identifier: String) =
+    when (type.thisOrDefaultType) {
+        BY_ID -> ShortLinkFindingStrategy.ById(identifier)
+        BY_ALIAS -> ShortLinkFindingStrategy.ByAlias(identifier)
+    }

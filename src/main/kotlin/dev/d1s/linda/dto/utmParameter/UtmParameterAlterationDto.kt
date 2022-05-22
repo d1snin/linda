@@ -16,17 +16,18 @@
 
 package dev.d1s.linda.dto.utmParameter
 
-import dev.d1s.linda.domain.utmParameter.UtmParameterType
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class UtmParameterAlterationDto(
-    @field:NotNull(message = "type field must not be null.")
+
+    @field:NotNull
     val type: UtmParameterType,
 
-    @field:NotBlank(message = "parameterValue field must not be blank.")
+    @field:NotBlank
     val parameterValue: String,
 
-    @field:NotNull(message = "allowOverride field must not be null.")
+    @field:NotNull
     val allowOverride: Boolean
 )

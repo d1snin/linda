@@ -16,7 +16,6 @@
 
 package dev.d1s.linda.service.impl
 
-import dev.d1s.linda.domain.ShortLink
 import dev.d1s.linda.service.MetaTagsBridgingService
 import kotlinx.html.head
 import kotlinx.html.html
@@ -37,14 +36,14 @@ class MetaTagsBridgingServiceImpl : MetaTagsBridgingService {
 
     private val log = logging()
 
-    override fun fetchMetaTags(shortLink: ShortLink): Elements? =
+    override fun fetchMetaTags(target: String): Elements? =
         try {
-            Jsoup.connect(shortLink.url)
+            Jsoup.connect(target)
                 .get()
                 .getElementsByTag(META_TAG)
                 .also {
                     log.debug {
-                        "fetched meta tags from $shortLink: $it"
+                        "fetched meta tags from $target: $it"
                     }
                 }
         } catch (_: Exception) {
@@ -52,15 +51,15 @@ class MetaTagsBridgingServiceImpl : MetaTagsBridgingService {
             null
         }
 
-    override fun fetchMetaTagsAsString(shortLink: ShortLink): String? =
-        metaTagsBridgingService.fetchMetaTags(shortLink)?.toString()
+    override fun fetchMetaTagsAsString(target: String): String? =
+        metaTagsBridgingService.fetchMetaTags(target)?.toString()
 
-    @Cacheable(cacheNames = [HTML_DOCUMENT_CACHE], key = "#shortLink.id")
-    override fun buildHtmlDocument(shortLink: ShortLink): String? =
-        metaTagsBridgingService.fetchMetaTagsAsString(shortLink)?.let {
+    @Cacheable(cacheNames = [HTML_DOCUMENT_CACHE])
+    override fun buildHtmlDocument(target: String): String? =
+        metaTagsBridgingService.fetchMetaTagsAsString(target)?.let {
             createHTML().html {
                 head {
-                    comment(" The following meta tags are taken from ${shortLink.url} ")
+                    comment(" The following meta tags are taken from $target ")
 
                     unsafe {
                         +it

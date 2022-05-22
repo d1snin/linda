@@ -20,7 +20,7 @@ import java.time.Instant
 
 data class RedirectDto(
     val id: String,
-    val shortLink: String,
     val creationTime: Instant,
+    val shortLink: String,
     val utmParameters: Set<String>
 )

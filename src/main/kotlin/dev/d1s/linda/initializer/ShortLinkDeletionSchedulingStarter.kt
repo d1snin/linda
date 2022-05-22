@@ -35,8 +35,6 @@ class ShortLinkDeletionSchedulingStarter : InitializingBean {
             "scheduling all ephemeral short links for deletion on application launch right now"
         }
 
-        runCatching {
-            shortLinkService.scheduleAllEphemeralShortLinksForDeletion()
-        }
+        shortLinkService.scheduleAllEphemeralShortLinksForDeletion()
     }
 }

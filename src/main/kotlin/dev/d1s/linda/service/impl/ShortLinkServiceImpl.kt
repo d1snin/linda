@@ -17,16 +17,26 @@
 package dev.d1s.linda.service.impl
 
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
+import dev.d1s.linda.constant.error.ALIAS_ALREADY_EXISTS_ERROR
+import dev.d1s.linda.constant.error.ALIAS_TEMPLATE_COLLISION_ERROR
+import dev.d1s.linda.constant.error.ALIAS_UNRESOLVED_ERROR
+import dev.d1s.linda.constant.error.SHORT_LINK_NOT_FOUND_ERROR
 import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.utmParameter.UtmParameterPurpose
+import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_REGEX
+import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_REPLACEMENT_REGEX
+import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_SEPARATOR_ESCAPE
+import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_SEPARATOR_REGEX
+import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.event.data.shortLink.CommonShortLinkEventData
-import dev.d1s.linda.event.data.shortLink.ShortLinkUpdatedEventData
-import dev.d1s.linda.exception.notAllowed.impl.DefaultUtmParametersNotAllowedException
-import dev.d1s.linda.exception.notFound.impl.ShortLinkNotFoundException
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.alias.AliasType
+import dev.d1s.linda.entity.alias.ResolvedAlias
+import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
+import dev.d1s.linda.event.data.EntityUpdatedEventData
+import dev.d1s.linda.exception.UnprocessableEntityException
+import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
@@ -51,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import kotlin.properties.Delegates
 
 @Service
 class ShortLinkServiceImpl : ShortLinkService {
@@ -71,6 +82,9 @@ class ShortLinkServiceImpl : ShortLinkService {
     private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
 
     @Autowired
+    private lateinit var resolvedAliasDtoConverter: DtoConverter<ResolvedAliasDto, ResolvedAlias>
+
+    @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Lazy
@@ -81,10 +95,18 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLinkDtoConverter.converterForSet()
     }
 
-    private val log = logging()
-
     private val scheduledDeletions =
         mutableMapOf<String, ScheduledFuture<*>>()
+
+    private val templateVariableRegex = TEMPLATE_VARIABLE_REGEX.toRegex()
+
+    private val templateVariableSeparatorRegex = TEMPLATE_VARIABLE_SEPARATOR_REGEX.toRegex()
+
+    private val templateVariableSeparatorEscapeRegex = TEMPLATE_VARIABLE_SEPARATOR_ESCAPE.toRegex()
+
+    private val templateAliasRegexes = mutableSetOf<Regex>()
+
+    private val log = logging()
 
     @Transactional(readOnly = true)
     override fun findAll(requireDto: Boolean): EntityWithDtoSet<ShortLink, ShortLinkDto> {
@@ -101,17 +123,28 @@ class ShortLinkServiceImpl : ShortLinkService {
     }
 
     @Transactional(readOnly = true)
+    override fun findAllByAlias(regex: String): Set<ShortLink> =
+        shortLinkRepository.findByAliasMatches(regex)
+
+    @Transactional(readOnly = true)
     override fun find(
         shortLinkFindingStrategy: ShortLinkFindingStrategy,
         requireDto: Boolean
     ): EntityWithDto<ShortLink, ShortLinkDto> {
+        val identifier = shortLinkFindingStrategy.identifier
+
         val shortLink = when (shortLinkFindingStrategy) {
-            is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(shortLinkFindingStrategy.identifier)
+            is ShortLinkFindingStrategy.ById -> shortLinkRepository.findById(
+                identifier
+            )
+
             is ShortLinkFindingStrategy.ByAlias -> shortLinkRepository.findByAlias(
-                shortLinkFindingStrategy.identifier
+                identifier
             )
         }.orElseThrow {
-            ShortLinkNotFoundException(shortLinkFindingStrategy.identifier)
+            NotFoundException(
+                SHORT_LINK_NOT_FOUND_ERROR.format(identifier)
+            )
         }
 
         log.debug {
@@ -124,7 +157,13 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @Transactional
     override fun create(shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
-        shortLink.validate()
+        shortLinkService.checkForCollision(shortLink)
+
+        if (shortLink.aliasType == AliasType.TEMPLATE) {
+            templateAliasRegexes.add(
+                shortLinkService.buildTemplateAliasRegex(shortLink)
+            )
+        }
 
         shortLinkService.assignUtmParameters(
             shortLink,
@@ -142,10 +181,11 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLink
         )
 
-        if (
-            availabilityChecksConfigurationProperties.eagerAvailabilityCheck
+        if (availabilityChecksConfigurationProperties.eagerAvailabilityCheck
+            && shortLink.aliasType != AliasType.TEMPLATE
         ) {
-            val (availabilityChange, _) = availabilityChangeService.checkAvailability(savedShortLink)
+            val (availabilityChange, _)
+                    = availabilityChangeService.checkAvailability(savedShortLink)
 
             shortLink.availabilityChanges += availabilityChange
         }
@@ -169,7 +209,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         publisher.publish(
             SHORT_LINK_CREATED_GROUP,
             dto.id,
-            CommonShortLinkEventData(dto)
+            dto
         )
 
         return savedShortLink to dto
@@ -177,7 +217,7 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @Transactional
     override fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
-        shortLink.validate()
+        shortLinkService.checkForCollision(shortLink)
 
         val (foundShortLink, _) = shortLinkService.find(byId(id))
 
@@ -185,11 +225,20 @@ class ShortLinkServiceImpl : ShortLinkService {
 
         val willSchedule = foundShortLink.deleteAfter != shortLink.deleteAfter
 
-        foundShortLink.url = shortLink.url
+        val willReplaceRegex: Boolean = foundShortLink.alias != shortLink.alias
+                && shortLink.aliasType == AliasType.TEMPLATE
+
+        if (willReplaceRegex) {
+            templateAliasRegexes.remove(
+                shortLinkService.buildTemplateAliasRegex(foundShortLink)
+            )
+        }
+
+        foundShortLink.target = shortLink.target
         foundShortLink.alias = shortLink.alias
+        foundShortLink.aliasType = shortLink.aliasType
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
         foundShortLink.deleteAfter = shortLink.deleteAfter
-        foundShortLink.redirects = shortLink.redirects
 
         shortLinkService.assignUtmParameters(
             foundShortLink,
@@ -213,6 +262,12 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLinkService.scheduleForDeletion(savedShortLink)
         }
 
+        if (willReplaceRegex) {
+            templateAliasRegexes.add(
+                shortLinkService.buildTemplateAliasRegex(shortLink)
+            )
+        }
+
         val dto = shortLinkDtoConverter.convertToDto(
             savedShortLink
         )
@@ -220,7 +275,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         publisher.publish(
             SHORT_LINK_UPDATED_GROUP,
             id,
-            ShortLinkUpdatedEventData(
+            EntityUpdatedEventData(
                 oldShortLinkDto,
                 dto
             )
@@ -271,6 +326,10 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun removeById(id: String) {
         val (shortLink, shortLinkDto) = shortLinkService.find(byId(id), true)
 
+        templateAliasRegexes.remove(
+            shortLinkService.buildTemplateAliasRegex(shortLink)
+        )
+
         shortLinkRepository.delete(shortLink)
 
         log.debug {
@@ -280,16 +339,14 @@ class ShortLinkServiceImpl : ShortLinkService {
         publisher.publish(
             SHORT_LINK_REMOVED_GROUP,
             id,
-            CommonShortLinkEventData(
-                shortLinkDto
-            )
+            shortLinkDto!!
         )
     }
 
     override fun doesAliasExist(alias: String): Boolean = try {
         shortLinkService.find(byAlias(alias))
         true
-    } catch (_: ShortLinkNotFoundException) {
+    } catch (_: NotFoundException) {
         false
     }
 
@@ -344,9 +401,120 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
     }
 
-    private fun ShortLink.validate() {
-        if (!allowUtmParameters && defaultUtmParameters.isNotEmpty()) {
-            throw DefaultUtmParametersNotAllowedException(defaultUtmParameters)
+    override fun initializeTemplateAliasRegexes() {
+        log.debug {
+            "initializing template alias regexes"
+        }
+
+        val (shortLinks, _) = shortLinkService.findAll()
+
+        templateAliasRegexes.addAll(
+            shortLinks
+                .filter {
+                    it.aliasType == AliasType.TEMPLATE
+                } // replace with repository function?
+                .map {
+                    shortLinkService.buildTemplateAliasRegex(it)
+                }
+        )
+
+        log.debug {
+            "initialized template alias regexes"
+        }
+    }
+
+    override fun resolveAlias(
+        alias: String,
+        requireDto: Boolean
+    ): EntityWithDto<ResolvedAlias, ResolvedAliasDto> {
+        var target: String by Delegates.notNull()
+        var shortLink: ShortLink by Delegates.notNull()
+
+        try {
+            val (foundShortLink, _) = shortLinkService.find(byAlias(alias))
+            shortLink = foundShortLink
+            target = foundShortLink.target
+        } catch (_: NotFoundException) {
+            val triggeredRegex = templateAliasRegexes.firstOrNull {
+                it.matches(alias)
+            } ?: throw NotFoundException(
+                ALIAS_UNRESOLVED_ERROR.format(alias)
+            )
+
+            val foundShortLink = shortLinkService.findAllByAlias(
+                triggeredRegex.pattern
+            ).firstOrNull() ?: throw NotFoundException(
+                ALIAS_UNRESOLVED_ERROR.format(alias)
+            )
+
+            shortLink = foundShortLink
+
+            val aliasSegments = alias.split(templateVariableSeparatorRegex).map {
+                it.replace(templateVariableSeparatorEscapeRegex, "")
+            }
+
+            val originAliasSegments = foundShortLink.alias.split(templateVariableSeparatorRegex)
+
+            val valueMap = buildMap {
+                originAliasSegments.zip(aliasSegments).forEach {
+                    if (it.first != it.second) {
+                        put(it.first, it.second)
+                    }
+                }
+            }
+
+            var result = foundShortLink.target
+
+            valueMap.forEach {
+                result = result.replace(it.key, it.value)
+            }
+
+            target = result
+        }
+
+        val resolvedAlias = ResolvedAlias(target, shortLink)
+
+        log.debug {
+            "resolved alias $alias: $resolvedAlias"
+        }
+
+        return resolvedAlias to resolvedAliasDtoConverter.convertToDtoIf(
+            resolvedAlias,
+            requireDto
+        )
+    }
+
+    override fun buildTemplateAliasRegex(shortLink: ShortLink): Regex =
+        "^${
+            shortLink.alias.replace(
+                templateVariableRegex,
+                TEMPLATE_VARIABLE_REPLACEMENT_REGEX
+            )
+        }$".toRegex().also {
+            log.debug {
+                "built template alias regex for $shortLink: $it"
+            }
+        }
+
+    @Transactional(readOnly = true)
+    override fun checkForCollision(shortLink: ShortLink) {
+        val alias = shortLink.alias
+
+        if (shortLink.aliasType == AliasType.TEMPLATE) {
+            if (shortLinkRepository.findByAliasMatches(
+                    shortLinkService.buildTemplateAliasRegex(shortLink).pattern
+                ).isNotEmpty()
+            ) {
+                throw UnprocessableEntityException(
+                    ALIAS_TEMPLATE_COLLISION_ERROR.format(alias)
+                )
+            }
+        } else {
+            if (shortLinkService.doesAliasExist(alias)) {
+                throw UnprocessableEntityException(
+                    ALIAS_ALREADY_EXISTS_ERROR.format(alias)
+                )
+            }
         }
     }
 

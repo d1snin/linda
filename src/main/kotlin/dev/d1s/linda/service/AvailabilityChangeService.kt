@@ -16,12 +16,12 @@
 
 package dev.d1s.linda.service
 
-import dev.d1s.linda.domain.ShortLink
-import dev.d1s.linda.domain.availability.AvailabilityChange
-import dev.d1s.teabag.dto.EntityWithDto
-import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
+import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.availability.AvailabilityChange
+import dev.d1s.teabag.dto.EntityWithDto
+import dev.d1s.teabag.dto.EntityWithDtoSet
 
 interface AvailabilityChangeService {
 
