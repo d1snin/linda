@@ -75,7 +75,7 @@ interface AvailabilityChangeController {
         ]
     )
     fun findById(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<AvailabilityChangeDto>
 
     @PostMapping(AVAILABILITY_CHANGES_TRIGGER_CHECKS, produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -133,7 +133,7 @@ interface AvailabilityChangeController {
         ]
     )
     fun triggerCheckForShortLink(
-        @PathVariable @NotBlank(message = "identifier must not be blank") identifier: String
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<UnsavedAvailabilityChangeDto>
 
     @DeleteMapping(AVAILABILITY_CHANGES_REMOVE_BY_ID_MAPPING)
@@ -157,6 +157,6 @@ interface AvailabilityChangeController {
         ]
     )
     fun removeById(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<*>
 }

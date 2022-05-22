@@ -71,7 +71,7 @@ interface UtmParameterController {
         ]
     )
     fun findById(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<UtmParameterDto>
 
     @GetMapping(UTM_PARAMETERS_FIND_BY_TYPE_AND_VALUE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -101,7 +101,7 @@ interface UtmParameterController {
     )
     fun findByTypeAndValue(
         @PathVariable type: UtmParameterType,
-        @PathVariable @NotBlank(message = "UTM parameter value must not be blank.") value: String
+        @PathVariable @NotBlank value: String
     ): ResponseEntity<UtmParameterDto>
 
     @PostMapping(UTM_PARAMETERS_CREATE_MAPPING, produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -180,7 +180,7 @@ interface UtmParameterController {
         ]
     )
     fun update(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String,
+        @PathVariable @NotBlank identifier: String,
         @RequestBody @Valid alteration: UtmParameterAlterationDto
     ): ResponseEntity<UtmParameterDto>
 
@@ -205,6 +205,6 @@ interface UtmParameterController {
         ]
     )
     fun removeById(
-        @PathVariable @NotBlank(message = "identifier must not be blank.") identifier: String
+        @PathVariable @NotBlank identifier: String
     ): ResponseEntity<*>
 }

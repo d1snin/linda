@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.entity.alias
 
-import javax.validation.constraints.NotBlank
+enum class AliasType {
 
-data class RedirectUpdateDto(
+    @Suppress("unused")
+    FIXED,
 
-    @field:NotBlank
-    val shortLink: String
-)
+    TEMPLATE
+}

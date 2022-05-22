@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.constant.regex
 
-import javax.validation.constraints.NotBlank
+// {example_template_variable}
+const val TEMPLATE_VARIABLE_REGEX = "\\{([a-z]|([a-z]-[a-z]))+}"
 
-data class RedirectUpdateDto(
+// example-{template-declaration}
+const val TEMPLATE_REGEX = "^(([a-z]+-)|($TEMPLATE_VARIABLE_REGEX-))+([a-z]+|($TEMPLATE_VARIABLE_REGEX))$"
 
-    @field:NotBlank
-    val shortLink: String
-)
+// example-(.+)
+const val TEMPLATE_VARIABLE_REPLACEMENT_REGEX = "(.+)"
+
+const val TEMPLATE_VARIABLE_SEPARATOR_REGEX = "-(?!\\!)"
+
+// I use "!" for escaping since "\" should always be encoded in URLs.
+const val TEMPLATE_VARIABLE_SEPARATOR_ESCAPE = "(?<=-)!"

@@ -32,7 +32,7 @@ interface BaseInterfaceController {
 
     @GetMapping(BASE_INTERFACE_MAPPING, produces = [MediaType.TEXT_HTML_VALUE])
     fun redirect(
-        @PathVariable @NotBlank(message = "alias must not be blank.") alias: String,
+        @PathVariable @NotBlank alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
         @RequestParam(UTM_MEDIUM, required = false) utmMedium: String?,
         @RequestParam(UTM_CAMPAIGN, required = false) utmCampaign: String?,
@@ -43,7 +43,7 @@ interface BaseInterfaceController {
     // I think I'm dumb.
     @GetMapping(BASE_INTERFACE_CONFIRMATION_MAPPING, produces = [MediaType.TEXT_HTML_VALUE])
     fun confirmRedirect(
-        @PathVariable @NotBlank(message = "alias must not be blank.") alias: String,
+        @PathVariable @NotBlank alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
         @RequestParam(UTM_MEDIUM, required = false) utmMedium: String?,
         @RequestParam(UTM_CAMPAIGN, required = false) utmCampaign: String?,

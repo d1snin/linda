@@ -16,14 +16,13 @@
 
 package dev.d1s.linda.service
 
-import dev.d1s.linda.entity.ShortLink
 import org.jsoup.select.Elements
 
 interface MetaTagsBridgingService {
 
-    fun fetchMetaTags(shortLink: ShortLink): Elements?
+    fun fetchMetaTags(target: String): Elements?
 
-    fun fetchMetaTagsAsString(shortLink: ShortLink): String?
+    fun fetchMetaTagsAsString(target: String): String?
 
-    fun buildHtmlDocument(shortLink: ShortLink): String?
+    fun buildHtmlDocument(target: String): String?
 }

@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.entity
 
+import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.utmParameter.UtmParameter
@@ -27,11 +28,14 @@ import javax.persistence.*
 @Table(name = "short_link")
 data class ShortLink(
 
+    @Column(nullable = false, unique = true)
+    var alias: String,
+
     @Column(nullable = false)
     var target: String,
 
-    @Column(nullable = false, unique = true)
-    var alias: String,
+    @Column(nullable = false)
+    var aliasType: AliasType,
 
     @Column(nullable = false)
     var allowUtmParameters: Boolean,
@@ -70,8 +74,9 @@ data class ShortLink(
         other as ShortLink
 
         if (id != other.id) return false
-        if (target != other.target) return false
         if (alias != other.alias) return false
+        if (target != other.target) return false
+        if (aliasType != other.aliasType) return false
         if (allowUtmParameters != other.allowUtmParameters) return false
         if (deleteAfter != other.deleteAfter) return false
 
@@ -80,8 +85,9 @@ data class ShortLink(
 
     override fun hashCode(): Int {
         var result = id.hashCode()
-        result = 31 * result + target.hashCode()
         result = 31 * result + alias.hashCode()
+        result = 31 * result + target.hashCode()
+        result = 31 * result + aliasType.hashCode()
         result = 31 * result + allowUtmParameters.hashCode()
         result = 31 * result + (deleteAfter?.hashCode() ?: 0)
         return result
@@ -90,8 +96,9 @@ data class ShortLink(
     override fun toString(): String {
         return "ShortLink(id=$id, " +
                 "creationTime=$creationTime, " +
-                "target='$target', " +
                 "alias='$alias', " +
+                "target='$target', " +
+                "aliasType='$aliasType', " +
                 "allowUtmParameters=$allowUtmParameters, " +
                 "deleteAfter=$deleteAfter, " +
                 "defaultUtmParameters=${defaultUtmParameters.mapToIdSet(false)}, " +

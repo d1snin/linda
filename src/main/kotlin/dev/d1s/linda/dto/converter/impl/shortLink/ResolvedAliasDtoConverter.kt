@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.dto.converter.impl.shortLink
 
-import javax.validation.constraints.NotBlank
+import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
+import dev.d1s.linda.entity.alias.ResolvedAlias
+import dev.d1s.teabag.dto.DtoConverter
+import org.springframework.stereotype.Component
 
-data class RedirectUpdateDto(
+@Component
+class ResolvedAliasDtoConverter : DtoConverter<ResolvedAliasDto, ResolvedAlias> {
 
-    @field:NotBlank
-    val shortLink: String
-)
+    override fun convertToDto(entity: ResolvedAlias): ResolvedAliasDto = ResolvedAliasDto(
+        entity.target,
+        requireNotNull(entity.shortLink.id)
+    )
+}

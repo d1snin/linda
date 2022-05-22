@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.exception.notFound
 
-import javax.validation.constraints.NotBlank
+import dev.d1s.linda.constant.error.UTM_PARAMETER_NOT_FOUND_ERROR
+import dev.d1s.linda.entity.utmParameter.UtmParameterType
 
-data class RedirectUpdateDto(
-
-    @field:NotBlank
-    val shortLink: String
-)
+class UtmParameterNotFoundException(id: String) : NotFoundException(
+    UTM_PARAMETER_NOT_FOUND_ERROR.format(id)
+) {
+    constructor(type: UtmParameterType, parameterValue: String)
+            : this("${type.rawParameter}=$parameterValue")
+}

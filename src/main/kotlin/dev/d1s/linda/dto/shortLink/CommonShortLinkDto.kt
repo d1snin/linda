@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.dto.shortLink
 
-import javax.validation.constraints.NotBlank
+import dev.d1s.linda.entity.alias.AliasType
+import java.time.Duration
 
-data class RedirectUpdateDto(
+interface CommonShortLinkDto {
 
-    @field:NotBlank
-    val shortLink: String
-)
+    val alias: String?
+
+    val target: String
+
+    val aliasType: AliasType
+
+    val allowUtmParameters: Boolean
+
+    val deleteAfter: Duration?
+
+    val defaultUtmParameters: Set<String>
+
+    val allowedUtmParameters: Set<String>
+}

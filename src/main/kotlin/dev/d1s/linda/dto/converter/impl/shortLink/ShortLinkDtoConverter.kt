@@ -29,8 +29,9 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
         ShortLinkDto(
             requireNotNull(entity.id),
             requireNotNull(entity.creationTime),
-            entity.target,
             entity.alias,
+            entity.target,
+            entity.aliasType,
             entity.allowUtmParameters,
             entity.deleteAfter,
             entity.defaultUtmParameters.mapToIdSet(),

@@ -9,6 +9,7 @@ plugins {
 
 group = "dev.d1s"
 version = "0.7.0-beta.0"
+java.targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
@@ -40,6 +41,13 @@ dependencies {
     implementation("dev.d1s:spring-boot-starter-simple-security:$starterSimpleSecurityVersion")
     implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
     implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude(
+            group = "org.springframework.boot",
+            module = "spring-boot-starter-tomcat"
+        )
+    }
+    implementation("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -47,7 +55,6 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("org.mariadb.jdbc:mariadb-java-client")
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("dev.d1s.long-polling:spring-boot-starter-lp-server-web:$longPollingStarterVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -64,7 +71,7 @@ dependencies {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 

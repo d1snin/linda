@@ -21,9 +21,9 @@ import javax.validation.constraints.NotNull
 
 data class RedirectCreationDto(
 
-    @field:NotBlank(message = "shortLink must not be blank.")
+    @field:NotBlank
     val shortLink: String,
 
-    @field:NotNull(message = "utmParameters field must not be null.")
+    @field:NotNull
     val utmParameters: Set<String>
 )

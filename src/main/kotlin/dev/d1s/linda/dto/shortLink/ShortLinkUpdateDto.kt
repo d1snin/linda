@@ -16,6 +16,8 @@
 
 package dev.d1s.linda.dto.shortLink
 
+import dev.d1s.linda.constant.regex.HTTP_URL_REGEX
+import dev.d1s.linda.entity.alias.AliasType
 import java.time.Duration
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -23,23 +25,24 @@ import javax.validation.constraints.Pattern
 
 data class ShortLinkUpdateDto(
 
-    @field:Pattern(
-        regexp = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;]*[-a-zA-Z\\d+&@#/%=~_|]",
-        message = "The provided target must be valid URL."
-    )
-    val target: String,
+    @field:NotBlank
+    override val alias: String,
 
-    @field:NotBlank(message = "aliasGeneratorId must not be blank.")
-    val alias: String,
+    @field:Pattern(regexp = HTTP_URL_REGEX)
+    override val target: String,
 
-    @field:NotNull(message = "allowUtmParameters field must not be null.")
-    val allowUtmParameters: Boolean,
+    @field:NotNull
+    override val aliasType: AliasType,
 
-    val deleteAfter: Duration?,
+    @field:NotNull
+    override val allowUtmParameters: Boolean,
 
-    @field:NotNull(message = "defaultUtmParameters field must not be null")
-    val defaultUtmParameters: Set<String>,
+    override val deleteAfter: Duration?,
 
-    @field:NotNull(message = "allowedUtmParameters field must not be null")
-    val allowedUtmParameters: Set<String>,
-)
+    @field:NotNull
+    override val defaultUtmParameters: Set<String>,
+
+    @field:NotNull
+    override val allowedUtmParameters: Set<String>
+
+) : CommonShortLinkDto

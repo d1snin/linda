@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.constant.regex
 
-import javax.validation.constraints.NotBlank
-
-data class RedirectUpdateDto(
-
-    @field:NotBlank
-    val shortLink: String
-)
+// note that curly braces are allowed in the url for templates support.
+const val HTTP_URL_REGEX = "^https?://[-a-zA-Z\\d+&@#/%?=~_|!:,.;{}]*[-a-zA-Z\\d+&@#/%=~_|{}]"

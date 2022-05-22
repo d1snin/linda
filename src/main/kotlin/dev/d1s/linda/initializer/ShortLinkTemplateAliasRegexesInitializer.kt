@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class ShortLinkDeletionSchedulingStarter : InitializingBean {
+class ShortLinkTemplateAliasRegexesInitializer : InitializingBean {
 
     @Autowired
     private lateinit var shortLinkService: ShortLinkService
@@ -32,9 +32,9 @@ class ShortLinkDeletionSchedulingStarter : InitializingBean {
 
     override fun afterPropertiesSet() {
         log.debug {
-            "scheduling all ephemeral short links for deletion on application launch right now"
+            "initializing template alias regexes on startup."
         }
 
-        shortLinkService.scheduleAllEphemeralShortLinksForDeletion()
+        shortLinkService.initializeTemplateAliasRegexes()
     }
 }

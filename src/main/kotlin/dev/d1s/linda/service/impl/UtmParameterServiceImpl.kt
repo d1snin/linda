@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.linda.constant.error.UTM_PARAMETER_ALREADY_EXISTS_ERROR
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_UPDATED_GROUP
@@ -23,8 +24,8 @@ import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.linda.event.data.EntityUpdatedEventData
-import dev.d1s.linda.exception.notFound.impl.UtmParameterNotFoundException
-import dev.d1s.linda.exception.unprocessableEntity.impl.UtmParameterAlreadyExistsException
+import dev.d1s.linda.exception.UnprocessableEntityException
+import dev.d1s.linda.exception.notFound.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.service.UtmParameterService
@@ -126,7 +127,7 @@ class UtmParameterServiceImpl : UtmParameterService {
     @Transactional
     override fun create(utmParameter: UtmParameter): EntityWithDto<UtmParameter, UtmParameterDto> {
         if (utmParameterService.findByTypeAndValue(utmParameter.type, utmParameter.parameterValue).isPresent) {
-            throw UtmParameterAlreadyExistsException
+            throw UnprocessableEntityException(UTM_PARAMETER_ALREADY_EXISTS_ERROR)
         }
 
         val savedUtmParameter = utmParameterRepository.save(

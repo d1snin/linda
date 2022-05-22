@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.exception
 
-import javax.validation.constraints.NotBlank
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.exception.HttpStatusException
+import org.springframework.http.HttpStatus
 
-data class RedirectUpdateDto(
-
-    @field:NotBlank
-    val shortLink: String
+class UnprocessableEntityException(message: String) : HttpStatusException(
+    ErrorResponseData(HttpStatus.UNPROCESSABLE_ENTITY, message)
 )
