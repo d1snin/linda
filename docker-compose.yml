@@ -12,9 +12,9 @@ services:
     image: mariadb:10.8.2-rc-focal
     container_name: linda-mariadb
     environment:
-      MARIADB_DATABASE: "linda-data"
-      MARIADB_USER: "linda-data"
-      MARIADB_PASSWORD: "linda-data"
+      MARIADB_DATABASE: "linda_data"
+      MARIADB_USER: "linda_data"
+      MARIADB_PASSWORD: "linda_data"
       MARIADB_ROOT_PASSWORD: "root"
     restart: always
     networks:
@@ -35,7 +35,7 @@ services:
     depends_on:
       - linda-mariadb
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://linda-mariadb:3306/linda-data
+      SPRING_DATASOURCE_URL: jdbc:mariadb://linda-mariadb:3306/linda_data
 
 networks:
   linda-net:

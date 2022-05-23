@@ -8,9 +8,9 @@ spring:
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/linda-data
-    username: linda-data
-    password: linda-data
+    url: jdbc:mariadb://localhost:3306/linda_data
+    username: linda_data
+    password: linda_data
 
   jpa:
     database-platform: org.hibernate.dialect.MariaDB106Dialect
