@@ -403,6 +403,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
     }
 
+    @Transactional(readOnly = true)
     override fun initializeTemplateAliasRegexes() {
         log.debug {
             "initializing template alias regexes"
