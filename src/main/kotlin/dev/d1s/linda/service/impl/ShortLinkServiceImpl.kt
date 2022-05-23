@@ -156,6 +156,9 @@ class ShortLinkServiceImpl : ShortLinkService {
     }
 
     @Transactional
+    override fun save(shortLink: ShortLink): ShortLink =
+        shortLinkRepository.save(shortLink)
+
     override fun create(shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
         shortLinkService.checkForCollision(shortLink)
 
@@ -177,7 +180,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             UtmParameterPurpose.ALLOWED
         )
 
-        var savedShortLink = shortLinkRepository.save(
+        var savedShortLink = shortLinkService.save(
             shortLink
         )
 
@@ -190,7 +193,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLink.availabilityChanges += availabilityChange
         }
 
-        savedShortLink = shortLinkRepository.save(
+        savedShortLink = shortLinkService.save(
             shortLink
         )
 
@@ -215,7 +218,6 @@ class ShortLinkServiceImpl : ShortLinkService {
         return savedShortLink to dto
     }
 
-    @Transactional
     override fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
         shortLinkService.checkForCollision(shortLink)
 
@@ -225,7 +227,7 @@ class ShortLinkServiceImpl : ShortLinkService {
 
         val willSchedule = foundShortLink.deleteAfter != shortLink.deleteAfter
 
-        val willReplaceRegex: Boolean = foundShortLink.alias != shortLink.alias
+        val willReplaceRegex = foundShortLink.alias != shortLink.alias
                 && shortLink.aliasType == AliasType.TEMPLATE
 
         if (willReplaceRegex) {
@@ -252,7 +254,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             UtmParameterPurpose.ALLOWED
         )
 
-        val savedShortLink = shortLinkRepository.save(foundShortLink)
+        val savedShortLink = shortLinkService.save(foundShortLink)
 
         log.debug {
             "updated short link: $savedShortLink"
@@ -496,12 +498,11 @@ class ShortLinkServiceImpl : ShortLinkService {
             }
         }
 
-    @Transactional(readOnly = true)
     override fun checkForCollision(shortLink: ShortLink) {
         val alias = shortLink.alias
 
         if (shortLink.aliasType == AliasType.TEMPLATE) {
-            if (shortLinkRepository.findByAliasMatches(
+            if (shortLinkService.findAllByAlias(
                     shortLinkService.buildTemplateAliasRegex(shortLink).pattern
                 ).isNotEmpty()
             ) {

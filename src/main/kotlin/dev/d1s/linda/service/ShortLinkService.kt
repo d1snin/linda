@@ -36,6 +36,8 @@ interface ShortLinkService {
         requireDto: Boolean = false
     ): EntityWithDto<ShortLink, ShortLinkDto>
 
+    fun save(shortLink: ShortLink): ShortLink
+
     fun create(shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto>
 
     fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto>
