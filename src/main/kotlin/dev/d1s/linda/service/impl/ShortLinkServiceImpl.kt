@@ -104,7 +104,7 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     private val templateVariableSeparatorEscapeRegex = TEMPLATE_VARIABLE_SEPARATOR_ESCAPE.toRegex()
 
-    private val templateAliasRegexes = mutableSetOf<Regex>()
+    private val templateAliasRegexes = mutableListOf<Regex>()
 
     private val log = logging()
 
@@ -163,9 +163,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLinkService.checkForCollision(shortLink)
 
         if (shortLink.aliasType == AliasType.TEMPLATE) {
-            templateAliasRegexes.add(
-                shortLinkService.buildTemplateAliasRegex(shortLink)
-            )
+            templateAliasRegexes += shortLinkService.buildTemplateAliasRegex(shortLink)
         }
 
         shortLinkService.assignUtmParameters(
@@ -265,9 +263,8 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
 
         if (willReplaceRegex) {
-            templateAliasRegexes.add(
+            templateAliasRegexes +=
                 shortLinkService.buildTemplateAliasRegex(shortLink)
-            )
         }
 
         val dto = shortLinkDtoConverter.convertToDto(

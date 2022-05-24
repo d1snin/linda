@@ -116,12 +116,12 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
             )
         }
 
-        val utmParameters = buildSet {
+        val utmParameters = buildList {
             utmMap.forEach { (type, nullableValue) ->
                 nullableValue?.let { value ->
                     val (utmParameter, _) = utmParameterService.findByTypeAndValueOrThrow(type, value)
 
-                    add(utmParameter)
+                    this += utmParameter
                 }
             }
         }
