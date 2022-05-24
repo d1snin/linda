@@ -32,6 +32,7 @@ import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.availability.UnavailabilityReason
 import dev.d1s.linda.exception.BadRequestException
 import dev.d1s.linda.exception.UnprocessableEntityException
+import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
@@ -55,7 +56,6 @@ import org.springframework.http.client.ClientHttpResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
-import org.webjars.NotFoundException
 import java.io.IOException
 import java.net.URI
 import java.util.concurrent.atomic.AtomicBoolean
