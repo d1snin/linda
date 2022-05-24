@@ -19,14 +19,13 @@ repositories {
 
 val teabagsVersion: String by project
 val kmLogVersion: String by project
-val springdocVersion: String by project
 val starterAdviceVersion: String by project
 val starterSimpleSecurityVersion: String by project
 val liquibaseVersion: String by project
 val longPollingStarterVersion: String by project
 val coroutinesVersion: String by project
-val striktVersion: String by project
-val springMockkVersion: String by project
+//val striktVersion: String by project
+//val springMockkVersion: String by project
 val jsoupVersion: String by project
 val kotlinxHtmlVersion: String by project
 
@@ -39,8 +38,6 @@ dependencies {
     implementation("org.lighthousegames:logging-jvm:$kmLogVersion")
     implementation("dev.d1s:spring-boot-starter-advice:$starterAdviceVersion")
     implementation("dev.d1s:spring-boot-starter-simple-security:$starterSimpleSecurityVersion")
-    implementation("org.springdoc:springdoc-openapi-ui:$springdocVersion")
-    implementation("org.springdoc:springdoc-openapi-kotlin:$springdocVersion")
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude(
             group = "org.springframework.boot",
@@ -64,8 +61,8 @@ dependencies {
     testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
     testImplementation("dev.d1s.teabags:teabag-testing-spring-web:$teabagsVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
-    testImplementation("io.strikt:strikt-jvm:$striktVersion")
+//    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
+//    testImplementation("io.strikt:strikt-jvm:$striktVersion")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
