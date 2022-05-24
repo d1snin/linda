@@ -73,8 +73,7 @@ class ShortLinkControllerImpl : ShortLinkController {
 
     @Secured
     override fun create(
-        shortLinkCreationDto: ShortLinkCreationDto,
-        customAlias: String?
+        shortLinkCreationDto: ShortLinkCreationDto
     ): ResponseEntity<ShortLinkDto> {
         val (_, shortLink) = shortLinkService.create(
             shortLinkCreationDtoConverter.convertToEntity(

@@ -19,7 +19,6 @@ package dev.d1s.linda.controller
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_CONFIRMATION_MAPPING
 import dev.d1s.linda.constant.mapping.BASE_INTERFACE_MAPPING
 import dev.d1s.linda.constant.utmParameter.*
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -30,7 +29,7 @@ import javax.validation.constraints.NotBlank
 @Validated
 interface BaseInterfaceController {
 
-    @GetMapping(BASE_INTERFACE_MAPPING, produces = [MediaType.TEXT_HTML_VALUE])
+    @GetMapping(BASE_INTERFACE_MAPPING)
     fun redirect(
         @PathVariable @NotBlank alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
@@ -41,7 +40,7 @@ interface BaseInterfaceController {
     ): ResponseEntity<String>
 
     // I think I'm dumb.
-    @GetMapping(BASE_INTERFACE_CONFIRMATION_MAPPING, produces = [MediaType.TEXT_HTML_VALUE])
+    @GetMapping(BASE_INTERFACE_CONFIRMATION_MAPPING)
     fun confirmRedirect(
         @PathVariable @NotBlank alias: String,
         @RequestParam(UTM_SOURCE, required = false) utmSource: String?,
