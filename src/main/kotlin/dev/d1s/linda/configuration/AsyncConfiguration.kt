@@ -29,9 +29,19 @@ class AsyncConfiguration : AsyncConfigurer {
 
     override fun getAsyncExecutor(): Executor =
         ThreadPoolTaskExecutor().apply {
-            corePoolSize = 10
-            maxPoolSize = 80
-            setQueueCapacity(100)
+            corePoolSize = CORE_POOL_SIZE
+            maxPoolSize = MAX_POOL_SIZE
+
+            setQueueCapacity(
+                QUEUE_CAPACITY
+            )
+
             initialize()
         }
+
+    private companion object {
+        private const val CORE_POOL_SIZE = 10
+        private const val MAX_POOL_SIZE = 80
+        private const val QUEUE_CAPACITY = 100
+    }
 }
