@@ -16,6 +16,8 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.advice.exception.NotFoundException
+import dev.d1s.advice.exception.UnprocessableEntityException
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.constant.error.ALIAS_ALREADY_EXISTS_ERROR
 import dev.d1s.linda.constant.error.ALIAS_TEMPLATE_COLLISION_ERROR
@@ -35,8 +37,6 @@ import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.linda.entity.alias.ResolvedAlias
 import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
 import dev.d1s.linda.event.data.EntityUpdatedEventData
-import dev.d1s.linda.exception.UnprocessableEntityException
-import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService

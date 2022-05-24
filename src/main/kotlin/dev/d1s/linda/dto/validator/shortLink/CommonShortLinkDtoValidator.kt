@@ -16,12 +16,12 @@
 
 package dev.d1s.linda.dto.validator.shortLink
 
+import dev.d1s.advice.exception.BadRequestException
 import dev.d1s.linda.constant.error.*
 import dev.d1s.linda.constant.regex.TEMPLATE_REGEX
 import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_REGEX
 import dev.d1s.linda.dto.shortLink.CommonShortLinkDto
 import dev.d1s.linda.entity.alias.AliasType
-import dev.d1s.linda.exception.BadRequestException
 import dev.d1s.teabag.dto.DtoValidator
 import org.springframework.stereotype.Component
 

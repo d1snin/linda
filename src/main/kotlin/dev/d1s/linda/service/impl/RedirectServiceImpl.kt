@@ -16,6 +16,8 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.advice.exception.BadRequestException
+import dev.d1s.advice.exception.NotFoundException
 import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETER_OVERRIDE_ERROR
 import dev.d1s.linda.constant.error.ILLEGAL_UTM_PARAMETERS_ERROR
 import dev.d1s.linda.constant.error.REDIRECT_NOT_FOUND_ERROR
@@ -27,8 +29,6 @@ import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.entity.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.event.data.EntityUpdatedEventData
-import dev.d1s.linda.exception.BadRequestException
-import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.linda.util.mapToIdSet

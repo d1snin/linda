@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.advice.exception.NotFoundException
 import dev.d1s.linda.constant.error.ALIAS_GENERATOR_NOT_FOUND_ERROR
-import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.generator.AliasGenerator
 import dev.d1s.linda.service.AliasGeneratorService
 import org.lighthousegames.logging.logging

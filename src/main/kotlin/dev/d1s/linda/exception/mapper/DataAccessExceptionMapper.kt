@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.exception.mapper
 
-import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.entity.ErrorResponseData
 import dev.d1s.advice.mapper.ExceptionMapper
 import org.springframework.dao.DataAccessException
 import org.springframework.http.HttpStatus

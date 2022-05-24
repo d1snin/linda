@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.exception.notFound
 
+import dev.d1s.advice.exception.NotFoundException
 import dev.d1s.linda.constant.error.UTM_PARAMETER_NOT_FOUND_ERROR
 import dev.d1s.linda.entity.utmParameter.UtmParameterType
 

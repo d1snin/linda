@@ -16,6 +16,7 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.advice.exception.UnprocessableEntityException
 import dev.d1s.linda.constant.error.UTM_PARAMETER_ALREADY_EXISTS_ERROR
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_CREATED_GROUP
 import dev.d1s.linda.constant.lp.UTM_PARAMETER_REMOVED_GROUP
@@ -24,7 +25,6 @@ import dev.d1s.linda.dto.utmParameter.UtmParameterDto
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.entity.utmParameter.UtmParameterType
 import dev.d1s.linda.event.data.EntityUpdatedEventData
-import dev.d1s.linda.exception.UnprocessableEntityException
 import dev.d1s.linda.exception.notFound.UtmParameterNotFoundException
 import dev.d1s.linda.repository.UtmParameterRepository
 import dev.d1s.linda.service.RedirectService

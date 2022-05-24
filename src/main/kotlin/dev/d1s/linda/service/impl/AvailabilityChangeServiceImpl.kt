@@ -16,6 +16,9 @@
 
 package dev.d1s.linda.service.impl
 
+import dev.d1s.advice.exception.BadRequestException
+import dev.d1s.advice.exception.NotFoundException
+import dev.d1s.advice.exception.UnprocessableEntityException
 import dev.d1s.linda.configuration.properties.AvailabilityChecksConfigurationProperties
 import dev.d1s.linda.constant.error.AVAILABILITY_CHANGE_NOT_FOUND_ERROR
 import dev.d1s.linda.constant.error.AVAILABILITY_CHECK_IN_PROGRESS_ERROR
@@ -30,9 +33,6 @@ import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.availability.UnavailabilityReason
-import dev.d1s.linda.exception.BadRequestException
-import dev.d1s.linda.exception.UnprocessableEntityException
-import dev.d1s.linda.exception.notFound.NotFoundException
 import dev.d1s.linda.repository.AvailabilityChangeRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
