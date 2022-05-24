@@ -34,52 +34,66 @@ class CommonShortLinkDtoValidator : DtoValidator<CommonShortLinkDto> {
 
     override fun validate(dto: CommonShortLinkDto) {
         dto.run {
-            if (!dto.allowUtmParameters && defaultUtmParameters.isNotEmpty()) {
+            checkUtmParameters()
+            checkAlias()
+        }
+    }
+
+    private fun CommonShortLinkDto.checkUtmParameters() {
+        if (!allowUtmParameters && defaultUtmParameters.isNotEmpty()) {
+            throw BadRequestException(
+                DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR
+                    .format(defaultUtmParameters)
+            )
+        }
+    }
+
+    private fun CommonShortLinkDto.checkAlias() {
+        if (aliasType == AliasType.TEMPLATE) {
+            alias?.let {
+                it.checkAliasFormat()
+                checkTemplateVariables(it)
+            } ?: throw BadRequestException(
+                NO_ALIAS_PRESENT_ERROR
+            )
+        }
+    }
+
+    private fun String.checkAliasFormat() {
+        if (!matches(templateRegex)) {
+            throw BadRequestException(
+                BAD_TEMPLATE_ERROR.format(this)
+            )
+        }
+    }
+
+    private fun CommonShortLinkDto.checkTemplateVariables(alias: String) {
+        val aliasTemplateVars =
+            templateVariableRegex.findAll(alias).map { res ->
+                res.value
+            }.toList()
+
+        val targetTemplateVars =
+            templateVariableRegex.findAll(target).map { res ->
+                res.value
+            }.toList()
+
+        if (aliasTemplateVars.isEmpty()) {
+            throw BadRequestException(
+                NO_ALIAS_TEMPLATE_VARIABLES_DEFINED_ERROR.format(alias)
+            )
+        }
+
+        if (aliasTemplateVars.size != aliasTemplateVars.toSet().size) {
+            throw BadRequestException(
+                DUPLICATED_TEMPLATE_VARIABLES_ERROR.format(alias)
+            )
+        }
+
+        aliasTemplateVars.forEach { templateVar ->
+            if (!targetTemplateVars.contains(templateVar)) {
                 throw BadRequestException(
-                    DEFAULT_UTM_PARAMETERS_NOT_ALLOWED_ERROR
-                        .format(defaultUtmParameters)
-                )
-            }
-
-            if (aliasType == AliasType.TEMPLATE) {
-                alias?.let {
-                    if (!it.matches(templateRegex)) {
-                        throw BadRequestException(
-                            BAD_TEMPLATE_ERROR.format(it)
-                        )
-                    }
-
-                    val aliasTemplateVars =
-                        templateVariableRegex.findAll(it).map { res ->
-                            res.value
-                        }.toList()
-
-                    val targetTemplateVars =
-                        templateVariableRegex.findAll(dto.target).map { res ->
-                            res.value
-                        }.toList()
-
-                    if (aliasTemplateVars.isEmpty()) {
-                        throw BadRequestException(
-                            NO_ALIAS_TEMPLATE_VARIABLES_DEFINED_ERROR.format(it)
-                        )
-                    }
-
-                    if (aliasTemplateVars.size != aliasTemplateVars.toSet().size) {
-                        throw BadRequestException(
-                            DUPLICATED_TEMPLATE_VARIABLES_ERROR.format(it)
-                        )
-                    }
-
-                    aliasTemplateVars.forEach { templateVar ->
-                        if (!targetTemplateVars.contains(templateVar)) {
-                            throw BadRequestException(
-                                UNUSED_TEMPLATE_VARIABLE_ERROR.format(templateVar)
-                            )
-                        }
-                    }
-                } ?: throw BadRequestException(
-                    NO_ALIAS_PRESENT_ERROR
+                    UNUSED_TEMPLATE_VARIABLE_ERROR.format(templateVar)
                 )
             }
         }
