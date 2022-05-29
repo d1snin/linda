@@ -39,17 +39,17 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class ShortLinkControllerImpl : ShortLinkController {
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
-    @Autowired
-    private lateinit var shortLinkCreationDtoConverter: DtoConverter<ShortLinkCreationDto, ShortLink>
+    @set:Autowired
+    lateinit var shortLinkCreationDtoConverter: DtoConverter<ShortLinkCreationDto, ShortLink>
 
-    @Autowired
-    private lateinit var shortLinkUpdateDtoConverter: DtoConverter<ShortLinkUpdateDto, ShortLink>
+    @set:Autowired
+    lateinit var shortLinkUpdateDtoConverter: DtoConverter<ShortLinkUpdateDto, ShortLink>
 
-    @Autowired
-    private lateinit var sslConfigurationProperties: SslConfigurationProperties
+    @set:Autowired
+    lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     @Secured
     override fun findAll(): ResponseEntity<Set<ShortLinkDto>> {

@@ -64,30 +64,30 @@ import kotlin.properties.Delegates
 @Service
 class AvailabilityChangeServiceImpl : AvailabilityChangeService {
 
-    @Autowired
-    private lateinit var availabilityChangeRepository: AvailabilityChangeRepository
+    @set:Autowired
+    lateinit var availabilityChangeRepository: AvailabilityChangeRepository
 
-    @Autowired
-    private lateinit var publisher: AsyncLongPollingEventPublisher
+    @set:Autowired
+    lateinit var publisher: AsyncLongPollingEventPublisher
 
-    @Autowired
-    private lateinit var restTemplate: RestTemplate
+    @set:Autowired
+    lateinit var restTemplate: RestTemplate
 
-    @Autowired
-    private lateinit var properties: AvailabilityChecksConfigurationProperties
+    @set:Autowired
+    lateinit var properties: AvailabilityChecksConfigurationProperties
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
-    @Autowired
-    private lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
+    @set:Autowired
+    lateinit var availabilityChangeDtoConverter: DtoConverter<AvailabilityChangeDto, AvailabilityChange>
 
-    @Autowired
-    private lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
+    @set:Autowired
+    lateinit var unsavedAvailabilityChangeDtoConverter: DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange>
 
     @Lazy
-    @Autowired
-    private lateinit var availabilityChangeService: AvailabilityChangeServiceImpl
+    @set:Autowired
+    lateinit var availabilityChangeService: AvailabilityChangeServiceImpl
 
     private val availabilityChangeSetDtoConverter by lazy {
         availabilityChangeDtoConverter.converterForSet()

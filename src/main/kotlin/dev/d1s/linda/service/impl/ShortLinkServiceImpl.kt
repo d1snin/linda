@@ -66,30 +66,30 @@ import kotlin.properties.Delegates
 @Service
 class ShortLinkServiceImpl : ShortLinkService {
 
-    @Autowired
-    private lateinit var shortLinkRepository: ShortLinkRepository
+    @set:Autowired
+    lateinit var shortLinkRepository: ShortLinkRepository
 
-    @Autowired
-    private lateinit var availabilityChangeService: AvailabilityChangeService
+    @set:Autowired
+    lateinit var availabilityChangeService: AvailabilityChangeService
 
-    @Autowired
-    private lateinit var availabilityChecksConfigurationProperties: AvailabilityChecksConfigurationProperties
+    @set:Autowired
+    lateinit var availabilityChecksConfigurationProperties: AvailabilityChecksConfigurationProperties
 
-    @Autowired
-    private lateinit var scheduler: ThreadPoolTaskScheduler
+    @set:Autowired
+    lateinit var scheduler: ThreadPoolTaskScheduler
 
-    @Autowired
-    private lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
+    @set:Autowired
+    lateinit var shortLinkDtoConverter: DtoConverter<ShortLinkDto, ShortLink>
 
-    @Autowired
-    private lateinit var resolvedAliasDtoConverter: DtoConverter<ResolvedAliasDto, ResolvedAlias>
+    @set:Autowired
+    lateinit var resolvedAliasDtoConverter: DtoConverter<ResolvedAliasDto, ResolvedAlias>
 
-    @Autowired
-    private lateinit var publisher: AsyncLongPollingEventPublisher
+    @set:Autowired
+    lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Lazy
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkServiceImpl
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkServiceImpl
 
     private val shortLinkDtoSetConverter by lazy {
         shortLinkDtoConverter.converterForSet()

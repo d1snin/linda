@@ -38,23 +38,23 @@ import java.net.URI
 @ConditionalOnProperty("linda.base-interface.enabled", matchIfMissing = true)
 class BaseInterfaceServiceImpl : BaseInterfaceService {
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
-    @Autowired
-    private lateinit var redirectService: RedirectService
+    @set:Autowired
+    lateinit var redirectService: RedirectService
 
-    @Autowired
-    private lateinit var utmParameterService: UtmParameterService
+    @set:Autowired
+    lateinit var utmParameterService: UtmParameterService
 
-    @Autowired
-    private lateinit var properties: BaseInterfaceConfigurationProperties
+    @set:Autowired
+    lateinit var properties: BaseInterfaceConfigurationProperties
 
-    @Autowired
-    private lateinit var sslConfigurationProperties: SslConfigurationProperties
+    @set:Autowired
+    lateinit var sslConfigurationProperties: SslConfigurationProperties
 
-    @Autowired
-    private lateinit var metaTagsBridgingService: MetaTagsBridgingService
+    @set:Autowired
+    lateinit var metaTagsBridgingService: MetaTagsBridgingService
 
     private val log = logging()
 

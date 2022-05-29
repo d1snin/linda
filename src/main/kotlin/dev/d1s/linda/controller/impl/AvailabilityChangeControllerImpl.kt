@@ -31,11 +31,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class AvailabilityChangeControllerImpl : AvailabilityChangeController {
 
-    @Autowired
-    private lateinit var availabilityChangeService: AvailabilityChangeService
+    @set:Autowired
+    lateinit var availabilityChangeService: AvailabilityChangeService
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     @Secured
     override fun findAll(): ResponseEntity<Set<AvailabilityChangeDto>> {

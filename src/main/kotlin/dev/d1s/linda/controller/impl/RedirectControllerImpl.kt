@@ -37,17 +37,17 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class RedirectControllerImpl : RedirectController {
 
-    @Autowired
-    private lateinit var redirectService: RedirectService
+    @set:Autowired
+    lateinit var redirectService: RedirectService
 
-    @Autowired
-    private lateinit var redirectCreationDtoConverter: DtoConverter<RedirectCreationDto, Redirect>
+    @set:Autowired
+    lateinit var redirectCreationDtoConverter: DtoConverter<RedirectCreationDto, Redirect>
 
-    @Autowired
-    private lateinit var redirectUpdateDtoConverter: DtoConverter<RedirectUpdateDto, Redirect>
+    @set:Autowired
+    lateinit var redirectUpdateDtoConverter: DtoConverter<RedirectUpdateDto, Redirect>
 
-    @Autowired
-    private lateinit var sslConfigurationProperties: SslConfigurationProperties
+    @set:Autowired
+    lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     @Secured
     override fun findAll(): ResponseEntity<Set<RedirectDto>> {

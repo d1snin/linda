@@ -37,14 +37,14 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UtmParameterControllerImpl : UtmParameterController {
 
-    @Autowired
-    private lateinit var utmParameterService: UtmParameterService
+    @set:Autowired
+    lateinit var utmParameterService: UtmParameterService
 
-    @Autowired
-    private lateinit var utmParameterAlterationDtoConverter: DtoConverter<UtmParameterAlterationDto, UtmParameter>
+    @set:Autowired
+    lateinit var utmParameterAlterationDtoConverter: DtoConverter<UtmParameterAlterationDto, UtmParameter>
 
-    @Autowired
-    private lateinit var sslConfigurationProperties: SslConfigurationProperties
+    @set:Autowired
+    lateinit var sslConfigurationProperties: SslConfigurationProperties
 
     @Secured
     override fun findAll(): ResponseEntity<Set<UtmParameterDto>> {

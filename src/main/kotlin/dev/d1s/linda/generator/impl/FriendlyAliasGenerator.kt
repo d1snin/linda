@@ -31,14 +31,14 @@ class FriendlyAliasGenerator : AliasGenerator {
 
     override val identifier = "friendly"
 
-    @Autowired
-    private lateinit var resourceLoader: ResourceLoader
+    @set:Autowired
+    lateinit var resourceLoader: ResourceLoader
 
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    @set:Autowired
+    lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     private lateinit var aliases: FriendlyAliases
 

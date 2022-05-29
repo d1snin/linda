@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit
 @Component
 class AvailabilityCheckingTask {
 
-    @Autowired
-    private lateinit var availabilityChangeService: AvailabilityChangeService
+    @set:Autowired
+    lateinit var availabilityChangeService: AvailabilityChangeService
 
     @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.SECONDS)
     fun checkAvailability() {

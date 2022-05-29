@@ -31,8 +31,8 @@ import org.springframework.stereotype.Service
 @Service
 class MetaTagsBridgingServiceImpl : MetaTagsBridgingService {
 
-    @Autowired
-    private lateinit var metaTagsBridgingService: MetaTagsBridgingServiceImpl
+    @set:Autowired
+    lateinit var metaTagsBridgingService: MetaTagsBridgingServiceImpl
 
     private val log = logging()
 

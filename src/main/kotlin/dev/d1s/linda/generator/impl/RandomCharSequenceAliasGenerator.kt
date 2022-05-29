@@ -28,8 +28,8 @@ class RandomCharSequenceAliasGenerator : AliasGenerator {
 
     override val identifier = "random-char-sequence"
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     override fun generateAlias(creation: ShortLinkCreationDto): String {
         var length = INITIAL_LENGTH

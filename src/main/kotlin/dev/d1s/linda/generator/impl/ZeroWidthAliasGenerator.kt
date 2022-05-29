@@ -27,8 +27,8 @@ class ZeroWidthAliasGenerator : AliasGenerator {
 
     override val identifier = "zero-width"
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     override fun generateAlias(creation: ShortLinkCreationDto): String {
         var aliasCandidate = ZERO_WIDTH_SPACE

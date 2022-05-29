@@ -27,8 +27,8 @@ import org.springframework.stereotype.Component
 @Component
 class RedirectUpdateDtoConverter : DtoConverter<RedirectUpdateDto, Redirect> {
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     override fun convertToEntity(dto: RedirectUpdateDto): Redirect {
         val (shortLink, _) = shortLinkService.find(byId(dto.shortLink))

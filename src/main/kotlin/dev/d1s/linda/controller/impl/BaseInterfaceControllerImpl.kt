@@ -27,8 +27,8 @@ import org.springframework.stereotype.Controller
 @ConditionalOnProperty("linda.base-interface.enabled", matchIfMissing = true)
 class BaseInterfaceControllerImpl : BaseInterfaceController {
 
-    @Autowired
-    private lateinit var baseInterfaceService: BaseInterfaceService
+    @set:Autowired
+    lateinit var baseInterfaceService: BaseInterfaceService
 
     override fun redirect(
         alias: String,

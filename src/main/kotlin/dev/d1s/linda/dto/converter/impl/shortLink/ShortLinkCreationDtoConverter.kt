@@ -32,14 +32,14 @@ import org.springframework.stereotype.Component
 @Component
 class ShortLinkCreationDtoConverter : DtoConverter<ShortLinkCreationDto, ShortLink> {
 
-    @Autowired
-    private lateinit var commonShortLinkDtoValidator: DtoValidator<CommonShortLinkDto>
+    @set:Autowired
+    lateinit var commonShortLinkDtoValidator: DtoValidator<CommonShortLinkDto>
 
-    @Autowired
-    private lateinit var aliasGeneratorService: AliasGeneratorService
+    @set:Autowired
+    lateinit var aliasGeneratorService: AliasGeneratorService
 
-    @Autowired
-    private lateinit var utmParameterService: UtmParameterService
+    @set:Autowired
+    lateinit var utmParameterService: UtmParameterService
 
     override fun convertToEntity(dto: ShortLinkCreationDto): ShortLink = dto.run {
         commonShortLinkDtoValidator.validate(this)

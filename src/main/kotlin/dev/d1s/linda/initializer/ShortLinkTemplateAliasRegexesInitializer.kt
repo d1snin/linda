@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component
 @Component
 class ShortLinkTemplateAliasRegexesInitializer : InitializingBean {
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     private val log = logging()
 

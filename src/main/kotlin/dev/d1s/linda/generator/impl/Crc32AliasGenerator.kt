@@ -29,8 +29,8 @@ class Crc32AliasGenerator : AliasGenerator {
 
     override val identifier = "crc32"
 
-    @Autowired
-    private lateinit var shortLinkService: ShortLinkService
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     override fun generateAlias(creation: ShortLinkCreationDto): String {
         val aliasCandidate = "%08x".format(

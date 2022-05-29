@@ -48,18 +48,18 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class RedirectServiceImpl : RedirectService {
 
-    @Autowired
-    private lateinit var redirectRepository: RedirectRepository
+    @set:Autowired
+    lateinit var redirectRepository: RedirectRepository
 
-    @Autowired
-    private lateinit var publisher: AsyncLongPollingEventPublisher
+    @set:Autowired
+    lateinit var publisher: AsyncLongPollingEventPublisher
 
-    @Autowired
-    private lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
+    @set:Autowired
+    lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
 
     @Lazy
-    @Autowired
-    private lateinit var redirectService: RedirectServiceImpl
+    @set:Autowired
+    lateinit var redirectService: RedirectServiceImpl
 
     private val redirectSetDtoConverter by lazy {
         redirectDtoConverter.converterForSet()

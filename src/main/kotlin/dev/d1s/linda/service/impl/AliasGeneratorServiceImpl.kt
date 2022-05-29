@@ -27,8 +27,8 @@ import org.springframework.stereotype.Service
 @Service
 class AliasGeneratorServiceImpl : AliasGeneratorService {
 
-    @Autowired
-    private lateinit var aliasGenerators: Set<AliasGenerator>
+    @set:Autowired
+    lateinit var aliasGenerators: Set<AliasGenerator>
 
     private val log = logging()
 

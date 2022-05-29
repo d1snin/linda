@@ -47,21 +47,21 @@ import java.util.*
 @Service
 class UtmParameterServiceImpl : UtmParameterService {
 
-    @Autowired
-    private lateinit var utmParameterRepository: UtmParameterRepository
+    @set:Autowired
+    lateinit var utmParameterRepository: UtmParameterRepository
 
-    @Autowired
-    private lateinit var redirectService: RedirectService
+    @set:Autowired
+    lateinit var redirectService: RedirectService
 
-    @Autowired
-    private lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
+    @set:Autowired
+    lateinit var utmParameterDtoConverter: DtoConverter<UtmParameterDto, UtmParameter>
 
-    @Autowired
-    private lateinit var publisher: AsyncLongPollingEventPublisher
+    @set:Autowired
+    lateinit var publisher: AsyncLongPollingEventPublisher
 
     @Lazy
-    @Autowired
-    private lateinit var utmParameterService: UtmParameterServiceImpl
+    @set:Autowired
+    lateinit var utmParameterService: UtmParameterServiceImpl
 
     private val utmParameterDtoSetConverter by lazy {
         utmParameterDtoConverter.converterForSet()
