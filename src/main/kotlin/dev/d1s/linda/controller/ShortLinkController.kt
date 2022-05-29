@@ -17,6 +17,7 @@
 package dev.d1s.linda.controller
 
 import dev.d1s.linda.constant.mapping.api.*
+import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
@@ -64,4 +65,11 @@ interface ShortLinkController {
         @NotBlank
         identifier: String
     ): ResponseEntity<*>
+
+    @GetMapping(SHORT_LINKS_ALIAS_RESOLUTION_MAPPING)
+    fun resolveAlias(
+        @RequestParam
+        @NotBlank
+        alias: String
+    ): ResponseEntity<ResolvedAliasDto>
 }
