@@ -239,11 +239,17 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     }
 
     override fun checkAndSaveAvailability(shortLink: ShortLink): AvailabilityChange? {
+        log.debug {
+            "checking and saving the availability change of $shortLink"
+        }
+
         val lastChange = availabilityChangeService.findLast(shortLink.id!!)
-        val (availabilityChange, _) = availabilityChangeService.checkAvailability(shortLink)
+        val (availabilityChange, _) =
+            availabilityChangeService.checkAvailability(shortLink)
 
         return if (lastChange == null || lastChange.available != availabilityChange.available) {
-            val (createdAvailabilityChange, _) = availabilityChangeService.create(availabilityChange)
+            val (createdAvailabilityChange, _) =
+                availabilityChangeService.create(availabilityChange)
             createdAvailabilityChange
         } else {
             null

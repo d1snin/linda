@@ -6,7 +6,7 @@ management:
 
 logging:
   level:
-    root: debug
+    dev.d1s: debug
 
 spring:
   jpa:
