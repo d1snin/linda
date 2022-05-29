@@ -500,13 +500,12 @@ class ShortLinkServiceImpl : ShortLinkService {
         val alias = shortLink.alias
 
         if (shortLink.aliasType == AliasType.TEMPLATE) {
-            if (shortLinkService.findAllByAlias(
-                    shortLinkService.buildTemplateAliasRegex(shortLink).pattern
-                ).isNotEmpty()
-            ) {
-                throw UnprocessableEntityException(
-                    ALIAS_TEMPLATE_COLLISION_ERROR.format(alias)
-                )
+            templateAliasRegexes.forEach {
+                if (alias.matches(it)) {
+                    throw UnprocessableEntityException(
+                        ALIAS_TEMPLATE_COLLISION_ERROR.format(alias)
+                    )
+                }
             }
         } else {
             if (shortLinkService.doesAliasExist(alias)) {
