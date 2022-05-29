@@ -18,6 +18,7 @@ package dev.d1s.linda.controller.impl
 
 import dev.d1s.linda.configuration.properties.SslConfigurationProperties
 import dev.d1s.linda.controller.ShortLinkController
+import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
@@ -108,5 +109,13 @@ class ShortLinkControllerImpl : ShortLinkController {
         shortLinkService.removeById(identifier)
 
         return noContent
+    }
+
+    @Secured
+    override fun resolveAlias(alias: String): ResponseEntity<ResolvedAliasDto> {
+        val (_, resolvedAlias) =
+            shortLinkService.resolveAlias(alias, true)
+
+        return ok(resolvedAlias)
     }
 }
