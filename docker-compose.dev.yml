@@ -27,7 +27,6 @@ services:
       - db-data-mariadb:/var/lib/mysql
       - db-data-mariadb-config:/etc/mysql
 
-
   linda:
     image: linda:0.7.0-beta.0
     container_name: linda
@@ -40,6 +39,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://linda-mariadb:3306/linda_data
       SPRING_PROFILES_ACTIVE: dev
+    restart: on-failure
 
 networks:
   linda-net:

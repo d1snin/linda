@@ -257,6 +257,7 @@ class AvailabilityChangeServiceImpl : AvailabilityChangeService {
     }
 
     // using runBlocking {} because I don't want coroutines to be used anywhere else, yet.
+    @Transactional
     override fun checkAvailabilityOfAllShortLinks(): EntityWithDtoSet<AvailabilityChange, AvailabilityChangeDto> =
         runBlocking {
             log.debug {
