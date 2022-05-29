@@ -16,7 +16,8 @@
 
 package dev.d1s.linda.strategy.shortLink
 
-import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType.*
+import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType.BY_ALIAS
+import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType.BY_ID
 import dev.d1s.linda.util.thisOrDefaultType
 
 sealed interface ShortLinkFindingStrategy {

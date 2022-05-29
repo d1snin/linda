@@ -30,9 +30,6 @@ class AvailabilityCheckingTask {
 
     @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.SECONDS)
     fun checkAvailability() {
-        // ignoring exceptions
-        runCatching {
-            availabilityChangeService.checkAvailabilityOfAllShortLinks()
-        }
+        availabilityChangeService.checkAvailabilityOfAllShortLinks()
     }
 }
