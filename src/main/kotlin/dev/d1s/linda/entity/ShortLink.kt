@@ -19,6 +19,7 @@ package dev.d1s.linda.entity
 import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.common.Identifiable
+import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.util.mapToIdSet
 import java.time.Duration

@@ -26,7 +26,7 @@ import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
 import dev.d1s.linda.dto.redirect.RedirectDto
-import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.repository.RedirectRepository

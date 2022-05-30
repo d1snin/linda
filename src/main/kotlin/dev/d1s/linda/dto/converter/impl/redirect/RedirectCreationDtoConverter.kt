@@ -17,7 +17,7 @@
 package dev.d1s.linda.dto.converter.impl.redirect
 
 import dev.d1s.linda.dto.redirect.RedirectCreationDto
-import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byId
