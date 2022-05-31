@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.entity
+package dev.d1s.linda.entity.shortLink
 
 import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.linda.entity.availability.AvailabilityChange

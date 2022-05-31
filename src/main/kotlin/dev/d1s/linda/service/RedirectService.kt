@@ -30,6 +30,8 @@ interface RedirectService {
 
     fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
 
+    fun create(rawAlias: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
+
     fun update(id: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
 
     fun assignUtmParametersAndSave(redirect: Redirect, utmParameters: Set<UtmParameter>): Redirect

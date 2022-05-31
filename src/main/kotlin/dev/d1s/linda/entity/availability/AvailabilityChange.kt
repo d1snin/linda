@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.entity.availability
 
-import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.entity.common.Identifiable
 import javax.persistence.*
 

@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.util
 
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+fun String.unwrapTemplateVariable() =
+    this.removePrefix("{").removeSuffix("}")
 
-data class RedirectCreationDto(
-
-    val rawAlias: String?,
-
-    @field:NotBlank
-    val shortLink: String,
-
-    @field:NotNull
-    val utmParameters: Set<String>
-)
+fun String.wrapTemplateVariable() = "{$this}"

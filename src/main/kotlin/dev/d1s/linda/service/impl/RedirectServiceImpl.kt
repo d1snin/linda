@@ -31,6 +31,7 @@ import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.repository.RedirectRepository
 import dev.d1s.linda.service.RedirectService
+import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
@@ -56,6 +57,9 @@ class RedirectServiceImpl : RedirectService {
 
     @set:Autowired
     lateinit var redirectDtoConverter: DtoConverter<RedirectDto, Redirect>
+
+    @set:Autowired
+    lateinit var shortLinkService: ShortLinkService
 
     @Lazy
     @set:Autowired
@@ -99,6 +103,10 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional
     override fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
+        redirect.templateVariables.forEach {
+            it.redirect = redirect
+        }
+
         val createdRedirect = redirectService.assignUtmParametersAndSave(
             redirect.apply {
                 this.validate()
@@ -138,6 +146,25 @@ class RedirectServiceImpl : RedirectService {
         )
 
         return createdRedirect to dto
+    }
+
+    override fun create(rawAlias: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
+        val templateVariables = try {
+            val (_, templateVariables) =
+                shortLinkService.resolveTemplateVariables(rawAlias)
+
+            templateVariables
+        } catch (_: NotFoundException) {
+            null
+        }
+
+        return redirectService.create(
+            redirect.apply {
+                templateVariables?.let {
+                    this.templateVariables = it
+                }
+            }
+        )
     }
 
     @Transactional

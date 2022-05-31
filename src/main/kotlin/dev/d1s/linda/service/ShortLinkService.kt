@@ -18,8 +18,9 @@ package dev.d1s.linda.service
 
 import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.alias.ResolvedAlias
+import dev.d1s.linda.entity.shortLink.ResolvedTemplateVariables
+import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.teabag.dto.EntityWithDto
@@ -55,6 +56,8 @@ interface ShortLinkService {
     fun scheduleAllEphemeralShortLinksForDeletion()
 
     fun initializeTemplateAliasRegexes()
+
+    fun resolveTemplateVariables(alias: String): ResolvedTemplateVariables
 
     fun resolveAlias(
         alias: String,

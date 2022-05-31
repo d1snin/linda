@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.dto.shortLink
 
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
-
-data class RedirectCreationDto(
-
-    val rawAlias: String?,
-
-    @field:NotBlank
-    val shortLink: String,
-
-    @field:NotNull
-    val utmParameters: Set<String>
+data class TemplateVariableDto(
+    val variableName: String,
+    val variableValue: String
 )

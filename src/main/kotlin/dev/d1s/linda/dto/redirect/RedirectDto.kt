@@ -16,11 +16,13 @@
 
 package dev.d1s.linda.dto.redirect
 
+import dev.d1s.linda.dto.shortLink.TemplateVariableDto
 import java.time.Instant
 
 data class RedirectDto(
     val id: String,
     val creationTime: Instant,
     val shortLink: String,
-    val utmParameters: Set<String>
+    val utmParameters: Set<String>,
+    val templateVariables: Set<TemplateVariableDto>,
 )

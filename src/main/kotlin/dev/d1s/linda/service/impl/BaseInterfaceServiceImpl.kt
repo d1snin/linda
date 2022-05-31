@@ -127,7 +127,10 @@ class BaseInterfaceServiceImpl : BaseInterfaceService {
         }
 
         redirectService.create(
-            Redirect(resolvedAlias.shortLink).apply {
+            alias,
+            Redirect(
+                resolvedAlias.shortLink
+            ).apply {
                 this.utmParameters = utmParameters.toMutableSet()
             }
         )

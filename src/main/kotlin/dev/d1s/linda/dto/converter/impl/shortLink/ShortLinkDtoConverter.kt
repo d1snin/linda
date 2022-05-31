@@ -17,7 +17,7 @@
 package dev.d1s.linda.dto.converter.impl.shortLink
 
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.util.mapToIdSet
 import dev.d1s.teabag.dto.DtoConverter
 import org.springframework.stereotype.Component

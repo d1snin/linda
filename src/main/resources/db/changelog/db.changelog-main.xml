@@ -27,17 +27,31 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_availability_change"/>
             </column>
+            <column name="creation_time" type="DATETIME"/>
             <column name="short_link_id" type="VARCHAR(255)"/>
             <column name="unavailability_reason" type="INT"/>
-            <column name="creation_time" type="DATETIME"/>
         </createTable>
 
         <createTable tableName="redirect">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect"/>
             </column>
-            <column name="short_link_id" type="VARCHAR(255)"/>
             <column name="creation_time" type="DATETIME"/>
+            <column name="short_link_id" type="VARCHAR(255)"/>
+        </createTable>
+
+        <createTable tableName="template_variable">
+            <column name="id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_template_variable"/>
+            </column>
+            <column name="creation_time" type="DATETIME"/>
+            <column name="variable_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="variable_value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="redirect_id" type="VARCHAR(255)"/>
         </createTable>
 
         <createTable tableName="redirect_utm_parameter">
@@ -53,6 +67,7 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link"/>
             </column>
+            <column name="creation_time" type="DATETIME"/>
             <column name="alias" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -66,7 +81,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="delete_after" type="BIGINT"/>
-            <column name="creation_time" type="DATETIME"/>
         </createTable>
 
         <createTable tableName="short_link_allowed_utm_parameter">
@@ -91,6 +105,7 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_utm_parameter"/>
             </column>
+            <column name="creation_time" type="DATETIME"/>
             <column name="type" type="INT">
                 <constraints nullable="false"/>
             </column>
@@ -100,7 +115,6 @@
             <column name="allow_override" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="creation_time" type="DATETIME"/>
         </createTable>
 
         <addUniqueConstraint columnNames="alias" constraintName="uc_short_link_alias" tableName="short_link"/>
