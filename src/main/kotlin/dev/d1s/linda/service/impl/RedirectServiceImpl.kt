@@ -18,10 +18,7 @@ package dev.d1s.linda.service.impl
 
 import dev.d1s.advice.exception.BadRequestException
 import dev.d1s.advice.exception.NotFoundException
-import dev.d1s.linda.constant.error.DEFAULT_UTM_PARAMETER_OVERRIDE_ERROR
-import dev.d1s.linda.constant.error.ILLEGAL_UTM_PARAMETERS_ERROR
-import dev.d1s.linda.constant.error.REDIRECT_NOT_FOUND_ERROR
-import dev.d1s.linda.constant.error.UTM_PARAMETERS_NOT_ALLOWED_ERROR
+import dev.d1s.linda.constant.error.*
 import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
@@ -103,6 +100,14 @@ class RedirectServiceImpl : RedirectService {
 
     @Transactional
     override fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto> {
+        val shortLink = redirect.shortLink
+
+        if (!shortLink.allowRedirects) {
+            throw BadRequestException(
+                REDIRECTS_NOT_ALLOWED_ERROR.format(shortLink.id)
+            )
+        }
+
         redirect.templateVariables.forEach {
             it.redirect = redirect
         }

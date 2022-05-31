@@ -221,7 +221,7 @@ class ShortLinkServiceImpl : ShortLinkService {
     }
 
     override fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
-        shortLinkService.checkForCollision(shortLink)
+        shortLinkService.checkForCollision(shortLink, true)
 
         val (foundShortLink, _) = shortLinkService.find(byId(id))
 
@@ -242,6 +242,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.alias = shortLink.alias
         foundShortLink.aliasType = shortLink.aliasType
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
+        foundShortLink.allowRedirects = shortLink.allowRedirects
         foundShortLink.deleteAfter = shortLink.deleteAfter
 
         shortLinkService.assignUtmParameters(
@@ -515,12 +516,20 @@ class ShortLinkServiceImpl : ShortLinkService {
             }
         }
 
-    override fun checkForCollision(shortLink: ShortLink) {
+    override fun checkForCollision(shortLink: ShortLink, updating: Boolean) {
         val alias = shortLink.alias
 
         if (shortLink.aliasType == AliasType.TEMPLATE) {
-            templateAliasRegexes.forEach {
-                if (alias.matches(it)) {
+            for (regex in templateAliasRegexes) {
+                if (alias.matches(regex)) {
+                    if (updating &&
+                        // just in case of update operation.
+                        // we don't want to check for collision with the same shortLink
+                        shortLinkService.buildTemplateAliasRegex(shortLink).pattern == regex.pattern
+                    ) {
+                        continue
+                    }
+
                     throw UnprocessableEntityException(
                         ALIAS_TEMPLATE_COLLISION_ERROR.format(alias)
                     )

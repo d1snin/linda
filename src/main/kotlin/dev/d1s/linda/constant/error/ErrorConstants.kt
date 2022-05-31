@@ -69,6 +69,9 @@ const val AVAILABILITY_CHANGE_NOT_FOUND_ERROR =
 const val REDIRECT_NOT_FOUND_ERROR =
     "Requested redirect (%s) was not found."
 
+const val REDIRECTS_NOT_ALLOWED_ERROR =
+    "Short link (%s) does not allow redirects."
+
 const val SHORT_LINK_NOT_FOUND_ERROR =
     "Requested short link (%s) was not found."
 

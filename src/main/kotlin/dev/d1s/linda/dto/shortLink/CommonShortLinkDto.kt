@@ -29,6 +29,8 @@ interface CommonShortLinkDto {
 
     val allowUtmParameters: Boolean
 
+    val allowRedirects: Boolean
+
     val deleteAfter: Duration?
 
     val defaultUtmParameters: Set<String>

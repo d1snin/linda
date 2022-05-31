@@ -43,6 +43,7 @@ class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> 
             target,
             aliasType,
             allowUtmParameters,
+            allowRedirects,
             deleteAfter,
             defaultUtmParameters.mapToMutableSet {
                 val (utmParameter, _) = utmParameterService.findById(it)

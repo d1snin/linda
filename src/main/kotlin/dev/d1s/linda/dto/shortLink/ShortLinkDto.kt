@@ -27,6 +27,7 @@ data class ShortLinkDto(
     override val target: String,
     override val aliasType: AliasType,
     override val allowUtmParameters: Boolean,
+    override val allowRedirects: Boolean,
     override val deleteAfter: Duration?,
     override val defaultUtmParameters: Set<String>,
     override val allowedUtmParameters: Set<String>,
