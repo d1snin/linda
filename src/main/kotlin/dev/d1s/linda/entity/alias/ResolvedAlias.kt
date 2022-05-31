@@ -16,7 +16,7 @@
 
 package dev.d1s.linda.entity.alias
 
-import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.shortLink.ShortLink
 
 data class ResolvedAlias(
     val target: String,

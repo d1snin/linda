@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.redirect
+package dev.d1s.linda.dto.converter.impl.shortLink
 
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+import dev.d1s.linda.dto.shortLink.TemplateVariableDto
+import dev.d1s.linda.entity.shortLink.TemplateVariable
+import dev.d1s.teabag.dto.DtoConverter
+import org.springframework.stereotype.Component
 
-data class RedirectCreationDto(
+@Component
+class TemplateVariableDtoConverter : DtoConverter<TemplateVariableDto, TemplateVariable> {
 
-    val rawAlias: String?,
-
-    @field:NotBlank
-    val shortLink: String,
-
-    @field:NotNull
-    val utmParameters: Set<String>
-)
+    override fun convertToDto(entity: TemplateVariable): TemplateVariableDto =
+        TemplateVariableDto(
+            entity.variableName,
+            entity.variableValue
+        )
+}

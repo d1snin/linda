@@ -16,8 +16,9 @@
 
 package dev.d1s.linda.dto.converter.impl.redirect
 
+import dev.d1s.advice.exception.NotFoundException
 import dev.d1s.linda.dto.redirect.RedirectCreationDto
-import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.service.UtmParameterService
 import dev.d1s.linda.strategy.shortLink.byId
@@ -39,7 +40,7 @@ class RedirectCreationDtoConverter : DtoConverter<RedirectCreationDto, Redirect>
         val (shortLink, _) = shortLinkService.find(byId(dto.shortLink))
 
         return Redirect(
-            shortLink
+            shortLink,
         ).apply {
             utmParameters = dto.utmParameters.mapToMutableSet {
                 val (utmParameter, _) =
@@ -47,6 +48,16 @@ class RedirectCreationDtoConverter : DtoConverter<RedirectCreationDto, Redirect>
 
                 utmParameter
             }
+
+            templateVariables = dto.rawAlias?.let {
+                try {
+                    val (_, templateVariables) =
+                        shortLinkService.resolveTemplateVariables(it)
+                    templateVariables
+                } catch (_: NotFoundException) {
+                    setOf()
+                }
+            } ?: setOf()
         }
     }
 }

@@ -22,7 +22,7 @@ import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
 import dev.d1s.linda.dto.shortLink.ShortLinkCreationDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.dto.shortLink.ShortLinkUpdateDto
-import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.service.ShortLinkService
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategyType
 import dev.d1s.linda.strategy.shortLink.byType

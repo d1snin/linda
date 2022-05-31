@@ -14,51 +14,54 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.entity.availability
+package dev.d1s.linda.entity.shortLink
 
-import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.entity.common.Identifiable
+import dev.d1s.linda.entity.redirect.Redirect
 import javax.persistence.*
 
 @Entity
-@Table(name = "availability_change")
-data class AvailabilityChange(
+@Table(name = "template_variable")
+data class TemplateVariable(
 
-    @ManyToOne(cascade = [CascadeType.MERGE])
-    var shortLink: ShortLink,
+    @Column(nullable = false)
+    var variableName: String,
 
-    @Column
-    var unavailabilityReason: UnavailabilityReason?
+    @Column(nullable = false)
+    var variableValue: String
 
 ) : Identifiable() {
 
-    val available get() = unavailabilityReason == null
+    @ManyToOne(cascade = [CascadeType.MERGE])
+    lateinit var redirect: Redirect
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as AvailabilityChange
+        other as TemplateVariable
 
         if (id != other.id) return false
-        if (shortLink != other.shortLink) return false
-        if (unavailabilityReason != other.unavailabilityReason) return false
+        if (variableName != other.variableName) return false
+        if (variableValue != other.variableValue) return false
+        if (redirect != other.redirect) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = id.hashCode()
-        result = 31 * result + shortLink.hashCode()
-        result = 31 * result + (unavailabilityReason?.hashCode() ?: 0)
+        result = 31 * result + variableName.hashCode()
+        result = 31 * result + variableValue.hashCode()
+        result = 31 * result + redirect.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "AvailabilityChange(id=$id, " +
+        return "TemplateVariable(id=$id, " +
                 "creationTime=$creationTime, " +
-                "shortLink=${shortLink.id}, " +
-                "unavailabilityReason=$unavailabilityReason, " +
-                "available=$available)"
+                "variableName='$variableName', " +
+                "variableValue='$variableValue', " +
+                "redirect=${redirect.id})"
     }
 }

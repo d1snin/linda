@@ -17,7 +17,7 @@
 package dev.d1s.linda.service
 
 import dev.d1s.linda.dto.redirect.RedirectDto
-import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import dev.d1s.teabag.dto.EntityWithDto
 import dev.d1s.teabag.dto.EntityWithDtoSet
@@ -29,6 +29,8 @@ interface RedirectService {
     fun findById(id: String, requireDto: Boolean = false): EntityWithDto<Redirect, RedirectDto>
 
     fun create(redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
+
+    fun create(rawAlias: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
 
     fun update(id: String, redirect: Redirect): EntityWithDto<Redirect, RedirectDto>
 

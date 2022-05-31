@@ -21,7 +21,7 @@ import dev.d1s.linda.controller.RedirectController
 import dev.d1s.linda.dto.redirect.RedirectCreationDto
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.dto.redirect.RedirectUpdateDto
-import dev.d1s.linda.entity.Redirect
+import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.service.RedirectService
 import dev.d1s.security.configuration.annotation.Secured
 import dev.d1s.teabag.dto.DtoConverter

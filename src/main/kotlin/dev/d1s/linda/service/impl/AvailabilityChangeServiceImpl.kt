@@ -29,7 +29,7 @@ import dev.d1s.linda.constant.lp.AVAILABILITY_CHECK_PERFORMED_GROUP
 import dev.d1s.linda.constant.lp.GLOBAL_AVAILABILITY_CHECK_PERFORMED_GROUP
 import dev.d1s.linda.dto.availability.AvailabilityChangeDto
 import dev.d1s.linda.dto.availability.UnsavedAvailabilityChangeDto
-import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.availability.UnavailabilityReason

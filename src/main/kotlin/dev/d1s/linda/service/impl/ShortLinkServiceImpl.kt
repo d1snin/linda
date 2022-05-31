@@ -32,9 +32,11 @@ import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_SEPARATOR_ESCAPE
 import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_SEPARATOR_REGEX
 import dev.d1s.linda.dto.shortLink.ResolvedAliasDto
 import dev.d1s.linda.dto.shortLink.ShortLinkDto
-import dev.d1s.linda.entity.ShortLink
 import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.linda.entity.alias.ResolvedAlias
+import dev.d1s.linda.entity.shortLink.ResolvedTemplateVariables
+import dev.d1s.linda.entity.shortLink.ShortLink
+import dev.d1s.linda.entity.shortLink.TemplateVariable
 import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
 import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.repository.ShortLinkRepository
@@ -44,6 +46,8 @@ import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
 import dev.d1s.linda.util.mapToIdSet
+import dev.d1s.linda.util.unwrapTemplateVariable
+import dev.d1s.linda.util.wrapTemplateVariable
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.teabag.dto.DtoConverter
 import dev.d1s.teabag.dto.EntityWithDto
@@ -423,6 +427,41 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
     }
 
+    override fun resolveTemplateVariables(alias: String): ResolvedTemplateVariables {
+        val triggeredRegex = templateAliasRegexes.firstOrNull {
+            it.matches(alias)
+        } ?: throw NotFoundException(
+            ALIAS_UNRESOLVED_ERROR.format(alias)
+        )
+
+        val foundShortLink = shortLinkService.findAllByAlias(
+            triggeredRegex.pattern
+        ).firstOrNull() ?: throw NotFoundException(
+            ALIAS_UNRESOLVED_ERROR.format(alias)
+        )
+
+        val aliasSegments = alias.split(templateVariableSeparatorRegex).map {
+            it.replace(templateVariableSeparatorEscapeRegex, "")
+        }
+
+        val originAliasSegments = foundShortLink.alias.split(templateVariableSeparatorRegex)
+
+        val valueMap = buildMap {
+            originAliasSegments.zip(aliasSegments).forEach {
+                if (it.first != it.second) {
+                    put(it.first, it.second)
+                }
+            }
+        }
+
+        return ResolvedTemplateVariables(
+            foundShortLink,
+            valueMap.map {
+                TemplateVariable(it.key.unwrapTemplateVariable(), it.value)
+            }.toSet()
+        )
+    }
+
     override fun resolveAlias(
         alias: String,
         requireDto: Boolean
@@ -435,38 +474,18 @@ class ShortLinkServiceImpl : ShortLinkService {
             shortLink = foundShortLink
             target = foundShortLink.target
         } catch (_: NotFoundException) {
-            val triggeredRegex = templateAliasRegexes.firstOrNull {
-                it.matches(alias)
-            } ?: throw NotFoundException(
-                ALIAS_UNRESOLVED_ERROR.format(alias)
-            )
-
-            val foundShortLink = shortLinkService.findAllByAlias(
-                triggeredRegex.pattern
-            ).firstOrNull() ?: throw NotFoundException(
-                ALIAS_UNRESOLVED_ERROR.format(alias)
-            )
+            val (foundShortLink, templateVariables) =
+                shortLinkService.resolveTemplateVariables(alias)
 
             shortLink = foundShortLink
 
-            val aliasSegments = alias.split(templateVariableSeparatorRegex).map {
-                it.replace(templateVariableSeparatorEscapeRegex, "")
-            }
-
-            val originAliasSegments = foundShortLink.alias.split(templateVariableSeparatorRegex)
-
-            val valueMap = buildMap {
-                originAliasSegments.zip(aliasSegments).forEach {
-                    if (it.first != it.second) {
-                        put(it.first, it.second)
-                    }
-                }
-            }
-
             var result = foundShortLink.target
 
-            valueMap.forEach {
-                result = result.replace(it.key, it.value)
+            templateVariables.forEach {
+                result = result.replace(
+                    it.variableName.wrapTemplateVariable(),
+                    it.variableValue
+                )
             }
 
             target = result

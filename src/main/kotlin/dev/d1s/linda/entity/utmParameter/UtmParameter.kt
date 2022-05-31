@@ -16,8 +16,8 @@
 
 package dev.d1s.linda.entity.utmParameter
 
-import dev.d1s.linda.entity.Redirect
-import dev.d1s.linda.entity.ShortLink
+import dev.d1s.linda.entity.redirect.Redirect
+import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.entity.common.Identifiable
 import javax.persistence.Column
 import javax.persistence.Entity

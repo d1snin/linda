@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.entity
+package dev.d1s.linda.entity.redirect
 
 import dev.d1s.linda.entity.common.Identifiable
+import dev.d1s.linda.entity.shortLink.ShortLink
+import dev.d1s.linda.entity.shortLink.TemplateVariable
 import dev.d1s.linda.entity.utmParameter.UtmParameter
 import javax.persistence.*
 
@@ -36,6 +38,9 @@ data class Redirect(
         inverseJoinColumns = [JoinColumn(name = "utm_parameter_id")]
     )
     var utmParameters: MutableSet<UtmParameter> = mutableSetOf()
+
+    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "redirect")
+    var templateVariables: Set<TemplateVariable> = setOf()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
