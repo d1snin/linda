@@ -66,5 +66,5 @@ interface ShortLinkService {
 
     fun buildTemplateAliasRegex(shortLink: ShortLink): Regex
 
-    fun checkForCollision(shortLink: ShortLink)
+    fun checkForCollision(shortLink: ShortLink, updating: Boolean = false)
 }

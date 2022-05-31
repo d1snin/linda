@@ -80,6 +80,9 @@
             <column name="allow_utm_parameters" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="allow_redirects" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
             <column name="delete_after" type="BIGINT"/>
         </createTable>
 

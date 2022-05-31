@@ -33,6 +33,7 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
             entity.target,
             entity.aliasType,
             entity.allowUtmParameters,
+            entity.allowRedirects,
             entity.deleteAfter,
             entity.defaultUtmParameters.mapToIdSet(),
             entity.allowedUtmParameters.mapToIdSet(),

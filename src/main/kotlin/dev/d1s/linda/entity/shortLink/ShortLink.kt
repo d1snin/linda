@@ -41,6 +41,9 @@ data class ShortLink(
     @Column(nullable = false)
     var allowUtmParameters: Boolean,
 
+    @Column(nullable = false)
+    var allowRedirects: Boolean,
+
     @Column
     var deleteAfter: Duration?,
 
@@ -79,6 +82,7 @@ data class ShortLink(
         if (target != other.target) return false
         if (aliasType != other.aliasType) return false
         if (allowUtmParameters != other.allowUtmParameters) return false
+        if (allowRedirects != other.allowRedirects) return false
         if (deleteAfter != other.deleteAfter) return false
 
         return true
@@ -90,6 +94,7 @@ data class ShortLink(
         result = 31 * result + target.hashCode()
         result = 31 * result + aliasType.hashCode()
         result = 31 * result + allowUtmParameters.hashCode()
+        result = 31 * result + allowRedirects.hashCode()
         result = 31 * result + (deleteAfter?.hashCode() ?: 0)
         return result
     }
@@ -101,6 +106,7 @@ data class ShortLink(
                 "target='$target', " +
                 "aliasType='$aliasType', " +
                 "allowUtmParameters=$allowUtmParameters, " +
+                "allowRedirects=$allowRedirects, " +
                 "deleteAfter=$deleteAfter, " +
                 "defaultUtmParameters=${defaultUtmParameters.mapToIdSet(false)}, " +
                 "allowedUtmParameters=${allowedUtmParameters.mapToIdSet(false)}, " +

@@ -37,6 +37,9 @@ data class ShortLinkUpdateDto(
     @field:NotNull
     override val allowUtmParameters: Boolean,
 
+    @field:NotNull
+    override val allowRedirects: Boolean,
+
     override val deleteAfter: Duration?,
 
     @field:NotNull
