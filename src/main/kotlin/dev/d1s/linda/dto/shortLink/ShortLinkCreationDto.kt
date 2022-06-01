@@ -40,6 +40,8 @@ data class ShortLinkCreationDto(
     @field:NotNull
     override val allowRedirects: Boolean,
 
+    override val maxRedirects: Int?,
+
     override val deleteAfter: Duration?,
 
     @field:NotNull

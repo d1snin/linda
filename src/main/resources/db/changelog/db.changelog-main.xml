@@ -83,6 +83,7 @@
             <column name="allow_redirects" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
+            <column name="max_redirects" type="INT"/>
             <column name="delete_after" type="BIGINT"/>
         </createTable>
 

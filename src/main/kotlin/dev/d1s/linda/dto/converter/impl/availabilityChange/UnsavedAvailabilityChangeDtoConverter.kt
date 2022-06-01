@@ -24,9 +24,11 @@ import org.springframework.stereotype.Component
 @Component
 class UnsavedAvailabilityChangeDtoConverter : DtoConverter<UnsavedAvailabilityChangeDto, AvailabilityChange> {
 
-    override fun convertToDto(entity: AvailabilityChange): UnsavedAvailabilityChangeDto = UnsavedAvailabilityChangeDto(
-        requireNotNull(entity.shortLink.id),
-        entity.unavailabilityReason,
-        entity.available
-    )
+    override fun convertToDto(entity: AvailabilityChange): UnsavedAvailabilityChangeDto = entity.run {
+        UnsavedAvailabilityChangeDto(
+            requireNotNull(shortLink.id),
+            unavailabilityReason,
+            available
+        )
+    }
 }

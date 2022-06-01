@@ -36,6 +36,7 @@ class CommonShortLinkDtoValidator : DtoValidator<CommonShortLinkDto> {
         dto.run {
             checkUtmParameters()
             checkAlias()
+            checkMaxRedirects()
         }
     }
 
@@ -94,6 +95,16 @@ class CommonShortLinkDtoValidator : DtoValidator<CommonShortLinkDto> {
             if (!targetTemplateVars.contains(templateVar)) {
                 throw BadRequestException(
                     UNUSED_TEMPLATE_VARIABLE_ERROR.format(templateVar)
+                )
+            }
+        }
+    }
+
+    private fun CommonShortLinkDto.checkMaxRedirects() {
+        maxRedirects?.let {
+            if (it <= 0) {
+                throw BadRequestException(
+                    ILLEGAL_SHORT_LINK_MAX_REDIRECTS_ERROR
                 )
             }
         }

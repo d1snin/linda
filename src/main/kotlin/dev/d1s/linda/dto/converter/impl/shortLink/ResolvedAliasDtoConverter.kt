@@ -24,8 +24,10 @@ import org.springframework.stereotype.Component
 @Component
 class ResolvedAliasDtoConverter : DtoConverter<ResolvedAliasDto, ResolvedAlias> {
 
-    override fun convertToDto(entity: ResolvedAlias): ResolvedAliasDto = ResolvedAliasDto(
-        entity.target,
-        requireNotNull(entity.shortLink.id)
-    )
+    override fun convertToDto(entity: ResolvedAlias): ResolvedAliasDto = entity.run {
+        ResolvedAliasDto(
+            target,
+            requireNotNull(shortLink.id)
+        )
+    }
 }

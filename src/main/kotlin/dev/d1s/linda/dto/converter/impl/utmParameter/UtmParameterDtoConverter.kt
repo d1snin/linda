@@ -25,15 +25,16 @@ import org.springframework.stereotype.Component
 @Component
 class UtmParameterDtoConverter : DtoConverter<UtmParameterDto, UtmParameter> {
 
-    override fun convertToDto(entity: UtmParameter): UtmParameterDto =
+    override fun convertToDto(entity: UtmParameter): UtmParameterDto = entity.run {
         UtmParameterDto(
-            requireNotNull(entity.id),
-            requireNotNull(entity.creationTime),
-            entity.type,
-            entity.parameterValue,
-            entity.allowOverride,
-            entity.redirects.mapToIdSet(),
-            entity.defaultForShortLinks.mapToIdSet(),
-            entity.allowedForShortLinks.mapToIdSet()
+            requireNotNull(id),
+            requireNotNull(creationTime),
+            type,
+            parameterValue,
+            allowOverride,
+            redirects.mapToIdSet(),
+            defaultForShortLinks.mapToIdSet(),
+            allowedForShortLinks.mapToIdSet()
         )
+    }
 }

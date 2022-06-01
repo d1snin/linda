@@ -31,16 +31,17 @@ class RedirectDtoConverter : DtoConverter<RedirectDto, Redirect> {
     @set:Autowired
     lateinit var templateVariableDtoConverter: DtoConverter<TemplateVariableDto, TemplateVariable>
 
-    override fun convertToDto(entity: Redirect): RedirectDto =
+    override fun convertToDto(entity: Redirect): RedirectDto = entity.run {
         RedirectDto(
-            requireNotNull(entity.id),
-            requireNotNull(entity.creationTime),
-            requireNotNull(entity.shortLink.id),
-            entity.utmParameters.mapToSet {
+            requireNotNull(id),
+            requireNotNull(creationTime),
+            requireNotNull(shortLink.id),
+            utmParameters.mapToSet {
                 requireNotNull(it.id)
             },
-            entity.templateVariables.mapToSet {
+            templateVariables.mapToSet {
                 templateVariableDtoConverter.convertToDto(it)
             }
         )
+    }
 }

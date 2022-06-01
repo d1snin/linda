@@ -544,6 +544,13 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
     }
 
+    @Transactional
+    override fun disallowRedirects(shortLink: ShortLink) {
+        shortLink.allowRedirects = false
+        shortLink.maxRedirects = null
+        shortLinkRepository.save(shortLink)
+    }
+
     private fun ShortLink.chooseUtmParameters(purpose: UtmParameterPurpose) = when (purpose) {
         UtmParameterPurpose.DEFAULT -> this.defaultUtmParameters
         UtmParameterPurpose.ALLOWED -> this.allowedUtmParameters
