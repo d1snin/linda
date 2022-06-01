@@ -75,6 +75,8 @@ const val REDIRECTS_NOT_ALLOWED_ERROR =
 const val SHORT_LINK_NOT_FOUND_ERROR =
     "Requested short link (%s) was not found."
 
+const val ILLEGAL_SHORT_LINK_MAX_REDIRECTS_ERROR = "'maxRedirects' field must be null or greater than 0."
+
 const val UTM_PARAMETER_NOT_FOUND_ERROR =
     "Requested UTM parameter (%s) was not found."
 

@@ -108,6 +108,12 @@ class RedirectServiceImpl : RedirectService {
             )
         }
 
+        shortLink.maxRedirects?.let {
+            if (it == shortLink.redirects.size + 1) {
+                shortLinkService.disallowRedirects(shortLink)
+            }
+        }
+
         redirect.templateVariables.forEach {
             it.redirect = redirect
         }

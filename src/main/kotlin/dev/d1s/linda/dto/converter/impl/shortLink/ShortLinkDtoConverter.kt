@@ -25,19 +25,21 @@ import org.springframework.stereotype.Component
 @Component
 class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
 
-    override fun convertToDto(entity: ShortLink): ShortLinkDto =
+    override fun convertToDto(entity: ShortLink): ShortLinkDto = entity.run {
         ShortLinkDto(
-            requireNotNull(entity.id),
-            requireNotNull(entity.creationTime),
-            entity.alias,
-            entity.target,
-            entity.aliasType,
-            entity.allowUtmParameters,
-            entity.allowRedirects,
-            entity.deleteAfter,
-            entity.defaultUtmParameters.mapToIdSet(),
-            entity.allowedUtmParameters.mapToIdSet(),
-            entity.redirects.mapToIdSet(),
-            entity.availabilityChanges.mapToIdSet()
+            requireNotNull(id),
+            requireNotNull(creationTime),
+            alias,
+            target,
+            aliasType,
+            allowUtmParameters,
+            allowRedirects,
+            maxRedirects,
+            deleteAfter,
+            defaultUtmParameters.mapToIdSet(),
+            allowedUtmParameters.mapToIdSet(),
+            redirects.mapToIdSet(),
+            availabilityChanges.mapToIdSet()
         )
+    }
 }

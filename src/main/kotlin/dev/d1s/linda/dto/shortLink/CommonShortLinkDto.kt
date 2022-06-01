@@ -31,6 +31,8 @@ interface CommonShortLinkDto {
 
     val allowRedirects: Boolean
 
+    val maxRedirects: Int?
+
     val deleteAfter: Duration?
 
     val defaultUtmParameters: Set<String>

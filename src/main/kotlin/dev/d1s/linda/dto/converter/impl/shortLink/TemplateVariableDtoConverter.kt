@@ -24,9 +24,10 @@ import org.springframework.stereotype.Component
 @Component
 class TemplateVariableDtoConverter : DtoConverter<TemplateVariableDto, TemplateVariable> {
 
-    override fun convertToDto(entity: TemplateVariable): TemplateVariableDto =
+    override fun convertToDto(entity: TemplateVariable): TemplateVariableDto = entity.run {
         TemplateVariableDto(
-            entity.variableName,
-            entity.variableValue
+            variableName,
+            variableValue
         )
+    }
 }

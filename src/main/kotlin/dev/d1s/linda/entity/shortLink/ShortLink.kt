@@ -45,6 +45,9 @@ data class ShortLink(
     var allowRedirects: Boolean,
 
     @Column
+    var maxRedirects: Int?,
+
+    @Column
     var deleteAfter: Duration?,
 
     @ManyToMany
@@ -83,6 +86,7 @@ data class ShortLink(
         if (aliasType != other.aliasType) return false
         if (allowUtmParameters != other.allowUtmParameters) return false
         if (allowRedirects != other.allowRedirects) return false
+        if (maxRedirects != other.maxRedirects) return false
         if (deleteAfter != other.deleteAfter) return false
 
         return true
@@ -95,6 +99,7 @@ data class ShortLink(
         result = 31 * result + aliasType.hashCode()
         result = 31 * result + allowUtmParameters.hashCode()
         result = 31 * result + allowRedirects.hashCode()
+        result = 31 * result + (maxRedirects?.hashCode() ?: 0)
         result = 31 * result + (deleteAfter?.hashCode() ?: 0)
         return result
     }
@@ -107,6 +112,7 @@ data class ShortLink(
                 "aliasType='$aliasType', " +
                 "allowUtmParameters=$allowUtmParameters, " +
                 "allowRedirects=$allowRedirects, " +
+                "maxRedirects=$maxRedirects, " +
                 "deleteAfter=$deleteAfter, " +
                 "defaultUtmParameters=${defaultUtmParameters.mapToIdSet(false)}, " +
                 "allowedUtmParameters=${allowedUtmParameters.mapToIdSet(false)}, " +
