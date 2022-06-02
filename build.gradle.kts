@@ -37,12 +37,7 @@ dependencies {
     implementation("org.lighthousegames:logging-jvm:$kmLogVersion")
     implementation("dev.d1s:spring-boot-starter-advice:$starterAdviceVersion")
     implementation("dev.d1s:spring-boot-starter-simple-security:$starterSimpleSecurityVersion")
-    implementation("org.springframework.boot:spring-boot-starter-web") {
-        exclude(
-            group = "org.springframework.boot",
-            module = "spring-boot-starter-tomcat"
-        )
-    }
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -63,6 +58,11 @@ dependencies {
 //    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
 //    testImplementation("io.strikt:strikt-jvm:$striktVersion")
 }
+
+configurations["implementation"].exclude(
+    "org.springframework.boot",
+    "spring-boot-starter-tomcat"
+)
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
