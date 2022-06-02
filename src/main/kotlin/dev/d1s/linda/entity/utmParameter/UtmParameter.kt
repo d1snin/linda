@@ -16,13 +16,10 @@
 
 package dev.d1s.linda.entity.utmParameter
 
+import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.entity.shortLink.ShortLink
-import dev.d1s.linda.entity.common.Identifiable
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.ManyToMany
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "utm_parameter")
@@ -42,10 +39,11 @@ data class UtmParameter(
     @ManyToMany(mappedBy = "utmParameters")
     var redirects: MutableSet<Redirect> = mutableSetOf()
 
-    @ManyToMany(mappedBy = "defaultUtmParameters")
+    // eager fetching is fine for these two fields
+    @ManyToMany(mappedBy = "defaultUtmParameters", fetch = FetchType.EAGER)
     var defaultForShortLinks: MutableSet<ShortLink> = mutableSetOf()
 
-    @ManyToMany(mappedBy = "allowedUtmParameters")
+    @ManyToMany(mappedBy = "allowedUtmParameters", fetch = FetchType.EAGER)
     var allowedForShortLinks: MutableSet<ShortLink> = mutableSetOf()
 
     override fun equals(other: Any?): Boolean {

@@ -193,11 +193,11 @@ class ShortLinkServiceImpl : ShortLinkService {
                     = availabilityChangeService.checkAvailability(savedShortLink)
 
             shortLink.availabilityChanges += availabilityChange
-        }
 
-        savedShortLink = shortLinkService.save(
-            shortLink
-        )
+            savedShortLink = shortLinkService.save(
+                shortLink
+            )
+        }
 
         shortLinkService.scheduleForDeletion(
             savedShortLink
@@ -243,6 +243,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.aliasType = shortLink.aliasType
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
         foundShortLink.allowRedirects = shortLink.allowRedirects
+        foundShortLink.maxRedirects = shortLink.maxRedirects
         foundShortLink.deleteAfter = shortLink.deleteAfter
 
         shortLinkService.assignUtmParameters(
