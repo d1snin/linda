@@ -59,7 +59,7 @@ class FriendlyAliasGenerator : AliasGenerator {
     @PostConstruct
     private fun initAliases() {
         aliases = objectMapper.readValue(
-            resourceLoader.getResource(WORDLIST_LOCATION).file,
+            resourceLoader.getResource(WORDLIST_LOCATION).inputStream,
             FriendlyAliases::class.java
         )
     }
