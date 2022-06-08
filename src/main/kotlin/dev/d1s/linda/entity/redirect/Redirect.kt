@@ -31,7 +31,7 @@ data class Redirect(
 
 ) : Identifiable() {
 
-    @ManyToMany
+    @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
         name = "redirect_utm_parameter",
         joinColumns = [JoinColumn(name = "redirect_id")],

@@ -37,7 +37,6 @@ import dev.d1s.linda.entity.alias.ResolvedAlias
 import dev.d1s.linda.entity.shortLink.ResolvedTemplateVariables
 import dev.d1s.linda.entity.shortLink.ShortLink
 import dev.d1s.linda.entity.shortLink.TemplateVariable
-import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
 import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService
@@ -170,18 +169,6 @@ class ShortLinkServiceImpl : ShortLinkService {
             templateAliasRegexes += shortLinkService.buildTemplateAliasRegex(shortLink)
         }
 
-        shortLinkService.assignUtmParameters(
-            shortLink,
-            shortLink,
-            UtmParameterPurpose.DEFAULT
-        )
-
-        shortLinkService.assignUtmParameters(
-            shortLink,
-            shortLink,
-            UtmParameterPurpose.ALLOWED
-        )
-
         var savedShortLink = shortLinkService.save(
             shortLink
         )
@@ -245,18 +232,8 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.allowRedirects = shortLink.allowRedirects
         foundShortLink.maxRedirects = shortLink.maxRedirects
         foundShortLink.deleteAfter = shortLink.deleteAfter
-
-        shortLinkService.assignUtmParameters(
-            foundShortLink,
-            shortLink,
-            UtmParameterPurpose.DEFAULT
-        )
-
-        shortLinkService.assignUtmParameters(
-            foundShortLink,
-            shortLink,
-            UtmParameterPurpose.ALLOWED
-        )
+        foundShortLink.defaultUtmParameters = shortLink.defaultUtmParameters
+        foundShortLink.allowedUtmParameters = shortLink.allowedUtmParameters
 
         val savedShortLink = shortLinkService.save(foundShortLink)
 
@@ -288,43 +265,6 @@ class ShortLinkServiceImpl : ShortLinkService {
 
         return savedShortLink to shortLinkDtoConverter
             .convertToDto(savedShortLink)
-    }
-
-    override fun assignUtmParameters(
-        shortLink: ShortLink,
-        associatedShortLink: ShortLink,
-        purpose: UtmParameterPurpose
-    ) {
-        val utmParameters = associatedShortLink.chooseUtmParameters(purpose)
-        val originUtmParameters = shortLink.chooseUtmParameters(purpose)
-
-        originUtmParameters.forEach {
-            if (!utmParameters.contains(it)) {
-                originUtmParameters.remove(it)
-            }
-        }
-
-        when (purpose) {
-            UtmParameterPurpose.DEFAULT -> {
-                shortLink.defaultUtmParameters = utmParameters.toMutableSet()
-            }
-
-            UtmParameterPurpose.ALLOWED -> {
-                shortLink.allowedUtmParameters = utmParameters.toMutableSet()
-            }
-        }
-
-        utmParameters.forEach {
-            when (purpose) {
-                UtmParameterPurpose.DEFAULT -> {
-                    it.defaultForShortLinks += shortLink
-                }
-
-                UtmParameterPurpose.ALLOWED -> {
-                    it.allowedForShortLinks += shortLink
-                }
-            }
-        }
     }
 
     @Transactional
@@ -550,11 +490,6 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLink.allowRedirects = false
         shortLink.maxRedirects = null
         shortLinkRepository.save(shortLink)
-    }
-
-    private fun ShortLink.chooseUtmParameters(purpose: UtmParameterPurpose) = when (purpose) {
-        UtmParameterPurpose.DEFAULT -> this.defaultUtmParameters
-        UtmParameterPurpose.ALLOWED -> this.allowedUtmParameters
     }
 
     @Scheduled(fixedDelay = 10, timeUnit = TimeUnit.SECONDS)

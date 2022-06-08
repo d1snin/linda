@@ -50,7 +50,7 @@ data class ShortLink(
     @Column
     var deleteAfter: Duration?,
 
-    @ManyToMany
+    @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
         name = "short_link_default_utm_parameter",
         joinColumns = [JoinColumn(name = "short_link_id")],
@@ -58,7 +58,7 @@ data class ShortLink(
     )
     var defaultUtmParameters: MutableSet<UtmParameter>,
 
-    @ManyToMany
+    @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
         name = "short_link_allowed_utm_parameter",
         joinColumns = [JoinColumn(name = "short_link_id")],

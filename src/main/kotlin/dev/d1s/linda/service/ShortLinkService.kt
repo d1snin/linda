@@ -21,7 +21,6 @@ import dev.d1s.linda.dto.shortLink.ShortLinkDto
 import dev.d1s.linda.entity.alias.ResolvedAlias
 import dev.d1s.linda.entity.shortLink.ResolvedTemplateVariables
 import dev.d1s.linda.entity.shortLink.ShortLink
-import dev.d1s.linda.entity.utmParameter.UtmParameterPurpose
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.teabag.dto.EntityWithDto
 import dev.d1s.teabag.dto.EntityWithDtoSet
@@ -42,8 +41,6 @@ interface ShortLinkService {
     fun create(shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto>
 
     fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto>
-
-    fun assignUtmParameters(shortLink: ShortLink, associatedShortLink: ShortLink, purpose: UtmParameterPurpose)
 
     fun removeById(id: String)
 
