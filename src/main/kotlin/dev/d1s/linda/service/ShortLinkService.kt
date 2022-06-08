@@ -48,9 +48,9 @@ interface ShortLinkService {
 
     fun isExpired(shortLink: ShortLink): Boolean
 
-    fun scheduleForDeletion(shortLink: ShortLink)
+    fun scheduleForDisabling(shortLink: ShortLink)
 
-    fun scheduleAllEphemeralShortLinksForDeletion()
+    fun scheduleAllEphemeralShortLinksForDisabling()
 
     fun initializeTemplateAliasRegexes()
 

@@ -21,6 +21,7 @@ import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
+import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
 import dev.d1s.linda.util.mapToIdSet
 import java.time.Duration
 import javax.persistence.*
@@ -48,7 +49,10 @@ data class ShortLink(
     var maxRedirects: Int?,
 
     @Column
-    var deleteAfter: Duration?,
+    var disableAfter: Duration?,
+
+    @Column(nullable = false)
+    var disablingStrategy: ShortLinkDisablingStrategy,
 
     @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(
@@ -87,7 +91,7 @@ data class ShortLink(
         if (allowUtmParameters != other.allowUtmParameters) return false
         if (allowRedirects != other.allowRedirects) return false
         if (maxRedirects != other.maxRedirects) return false
-        if (deleteAfter != other.deleteAfter) return false
+        if (disableAfter != other.disableAfter) return false
 
         return true
     }
@@ -100,7 +104,7 @@ data class ShortLink(
         result = 31 * result + allowUtmParameters.hashCode()
         result = 31 * result + allowRedirects.hashCode()
         result = 31 * result + (maxRedirects?.hashCode() ?: 0)
-        result = 31 * result + (deleteAfter?.hashCode() ?: 0)
+        result = 31 * result + (disableAfter?.hashCode() ?: 0)
         return result
     }
 
@@ -113,7 +117,7 @@ data class ShortLink(
                 "allowUtmParameters=$allowUtmParameters, " +
                 "allowRedirects=$allowRedirects, " +
                 "maxRedirects=$maxRedirects, " +
-                "deleteAfter=$deleteAfter, " +
+                "disableAfter=$disableAfter, " +
                 "defaultUtmParameters=${defaultUtmParameters.mapToIdSet(false)}, " +
                 "allowedUtmParameters=${allowedUtmParameters.mapToIdSet(false)}, " +
                 "redirects=${redirects.mapToIdSet(false)}, " +

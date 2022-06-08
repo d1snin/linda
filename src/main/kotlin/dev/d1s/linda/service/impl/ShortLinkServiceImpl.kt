@@ -41,6 +41,7 @@ import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
+import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
@@ -186,7 +187,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             )
         }
 
-        shortLinkServiceImpl.scheduleForDeletion(
+        shortLinkServiceImpl.scheduleForDisabling(
             savedShortLink
         )
 
@@ -214,7 +215,7 @@ class ShortLinkServiceImpl : ShortLinkService {
 
         val oldShortLinkDto = shortLinkDtoConverter.convertToDto(foundShortLink)
 
-        val willSchedule = foundShortLink.deleteAfter != shortLink.deleteAfter
+        val willSchedule = foundShortLink.disableAfter != shortLink.disableAfter
 
         val willReplaceRegex = foundShortLink.alias != shortLink.alias
                 && shortLink.aliasType == AliasType.TEMPLATE
@@ -229,7 +230,8 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.allowUtmParameters = shortLink.allowUtmParameters
         foundShortLink.allowRedirects = shortLink.allowRedirects
         foundShortLink.maxRedirects = shortLink.maxRedirects
-        foundShortLink.deleteAfter = shortLink.deleteAfter
+        foundShortLink.disableAfter = shortLink.disableAfter
+        foundShortLink.disablingStrategy = shortLink.disablingStrategy
         foundShortLink.defaultUtmParameters = shortLink.defaultUtmParameters
         foundShortLink.allowedUtmParameters = shortLink.allowedUtmParameters
 
@@ -240,12 +242,11 @@ class ShortLinkServiceImpl : ShortLinkService {
         }
 
         if (willSchedule) {
-            shortLinkServiceImpl.scheduleForDeletion(savedShortLink)
+            shortLinkServiceImpl.scheduleForDisabling(savedShortLink)
         }
 
         if (willReplaceRegex) {
-            templateAliasRegexes +=
-                shortLinkServiceImpl.buildTemplateAliasRegex(shortLink)
+            templateAliasRegexes += shortLinkServiceImpl.buildTemplateAliasRegex(shortLink)
         }
 
         val dto = shortLinkDtoConverter.convertToDto(
@@ -292,26 +293,34 @@ class ShortLinkServiceImpl : ShortLinkService {
     }
 
     override fun isExpired(shortLink: ShortLink): Boolean =
-        (shortLink.deleteAfter?.let { deleteAfter ->
-            (shortLink.creationTime!! + deleteAfter) < Instant.now()
+        (shortLink.disableAfter?.let { disableAfter ->
+            (shortLink.creationTime!! + disableAfter) < Instant.now()
         } ?: false).also {
             log.debug {
                 "isExpired: $it; shortLink: $shortLink"
             }
         }
 
-    override fun scheduleForDeletion(shortLink: ShortLink) {
+    override fun scheduleForDisabling(shortLink: ShortLink) {
         val id = shortLink.id!!
 
         log.debug {
             "scheduling $id for deletion"
         }
 
-        shortLink.deleteAfter?.let { deleteAfter ->
+        shortLink.disableAfter?.let { disableAfter ->
             scheduledDeletions.put(
                 id, scheduler.schedule({
-                    shortLinkServiceImpl.removeById(id)
-                }, shortLink.creationTime!! + deleteAfter)
+                    when (shortLink.disablingStrategy) {
+                        ShortLinkDisablingStrategy.DELETE -> {
+                            shortLinkServiceImpl.removeById(id)
+                        }
+
+                        ShortLinkDisablingStrategy.DISALLOW_REDIRECTS -> {
+                            shortLinkServiceImpl.disallowRedirects(shortLink)
+                        }
+                    }
+                }, shortLink.creationTime!! + disableAfter)
             )?.let {
                 if (!it.isDone) {
                     it.cancel(true)
@@ -323,19 +332,19 @@ class ShortLinkServiceImpl : ShortLinkService {
             }
         } ?: run {
             log.debug {
-                "deleteAfter is null, won't schedule for deletion."
+                "disableAfter is null, won't schedule for deletion."
             }
         }
     }
 
     @Transactional(readOnly = true)
-    override fun scheduleAllEphemeralShortLinksForDeletion() {
+    override fun scheduleAllEphemeralShortLinksForDisabling() {
         log.debug {
             "scheduling all ephemeral short links for deletion"
         }
 
-        shortLinkRepository.findByDeleteAfterIsNotNull()
-            .forEach(shortLinkServiceImpl::scheduleForDeletion)
+        shortLinkRepository.findByDisableAfterIsNotNull()
+            .forEach(shortLinkServiceImpl::scheduleForDisabling)
 
         log.debug {
             "scheduled all ephemeral short links for deletion."
@@ -484,7 +493,6 @@ class ShortLinkServiceImpl : ShortLinkService {
     @Transactional
     override fun disallowRedirects(shortLink: ShortLink) {
         shortLink.allowRedirects = false
-        shortLink.maxRedirects = null
         shortLinkRepository.save(shortLink)
     }
 
@@ -498,8 +506,10 @@ class ShortLinkServiceImpl : ShortLinkService {
     }
 
     private fun removeTemplateAliasRegexFor(shortLink: ShortLink) {
-        templateAliasRegexes.removeIf {
-            it.pattern == shortLinkServiceImpl.buildTemplateAliasRegex(shortLink).pattern
+        if (shortLink.aliasType == AliasType.TEMPLATE) {
+            templateAliasRegexes.removeIf {
+                it.pattern == shortLinkServiceImpl.buildTemplateAliasRegex(shortLink).pattern
+            }
         }
     }
 }
