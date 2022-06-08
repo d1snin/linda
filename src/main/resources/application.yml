@@ -22,3 +22,6 @@ spring:
   main:
     allow-circular-references: true
     banner-mode: off
+
+server:
+  port: 9292
