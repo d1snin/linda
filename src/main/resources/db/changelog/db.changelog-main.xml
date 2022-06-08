@@ -27,8 +27,12 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_availability_change"/>
             </column>
-            <column name="creation_time" type="DATETIME"/>
-            <column name="short_link_id" type="VARCHAR(255)"/>
+            <column name="creation_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="short_link_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="unavailability_reason" type="INT"/>
         </createTable>
 
@@ -36,30 +40,39 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect"/>
             </column>
-            <column name="creation_time" type="DATETIME"/>
-            <column name="short_link_id" type="VARCHAR(255)"/>
+            <column name="creation_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="short_link_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="template_variable">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_template_variable"/>
             </column>
-            <column name="creation_time" type="DATETIME"/>
+            <column name="creation_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
             <column name="variable_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="variable_value" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="redirect_id" type="VARCHAR(255)"/>
+            <column name="redirect_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="redirect_utm_parameter">
             <column name="redirect_id" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect_utm_parameter"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect_utm_parameter_redirect"/>
             </column>
             <column name="utm_parameter_id" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_redirect_utm_parameter"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_redirect_utm_parameter_utm_parameter"/>
             </column>
         </createTable>
 
@@ -67,7 +80,9 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link"/>
             </column>
-            <column name="creation_time" type="DATETIME"/>
+            <column name="creation_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
             <column name="alias" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -89,19 +104,23 @@
 
         <createTable tableName="short_link_allowed_utm_parameter">
             <column name="short_link_id" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_allowed_utm_parameter"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_short_link_allowed_utm_parameter_short_link"/>
             </column>
             <column name="utm_parameter_id" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_allowed_utm_parameter"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_short_link_allowed_utm_parameter_utm_parameter"/>
             </column>
         </createTable>
 
         <createTable tableName="short_link_default_utm_parameter">
             <column name="short_link_id" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_default_utm_parameter"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_short_link_default_utm_parameter_short_link"/>
             </column>
             <column name="utm_parameter_id" type="VARCHAR(255)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_short_link_default_utm_parameter"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_short_link_default_utm_parameter_utm_parameter"/>
             </column>
         </createTable>
 
@@ -109,7 +128,9 @@
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_utm_parameter"/>
             </column>
-            <column name="creation_time" type="DATETIME"/>
+            <column name="creation_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
             <column name="type" type="INT">
                 <constraints nullable="false"/>
             </column>
@@ -123,36 +144,45 @@
 
         <addUniqueConstraint columnNames="alias" constraintName="uc_short_link_alias" tableName="short_link"/>
 
-        <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="availability_change"
-                                 constraintName="FK_AVAILABILITY_CHANGE_ON_SHORTLINK" referencedColumnNames="id"
-                                 referencedTableName="short_link"/>
+        <addForeignKeyConstraint baseTableName="availability_change" baseColumnNames="short_link_id"
+                                 constraintName="fk_availability_change_on_short_link" referencedTableName="short_link"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="redirect"
-                                 constraintName="FK_REDIRECT_ON_SHORTLINK" referencedColumnNames="id"
-                                 referencedTableName="short_link"/>
+        <addForeignKeyConstraint baseTableName="redirect" baseColumnNames="short_link_id"
+                                 constraintName="fk_redirect_on_short_link" referencedTableName="short_link"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseColumnNames="redirect_id" baseTableName="redirect_utm_parameter"
-                                 constraintName="fk_redutmpar_on_redirect" referencedColumnNames="id"
-                                 referencedTableName="redirect"/>
+        <addForeignKeyConstraint baseTableName="template_variable" baseColumnNames="redirect_id"
+                                 constraintName="fk_template_variable_on_redirect" referencedTableName="redirect"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseColumnNames="utm_parameter_id" baseTableName="redirect_utm_parameter"
-                                 constraintName="fk_redutmpar_on_utm_parameter" referencedColumnNames="id"
-                                 referencedTableName="utm_parameter"/>
+        <addForeignKeyConstraint baseTableName="redirect_utm_parameter" baseColumnNames="redirect_id"
+                                 constraintName="fk_redirect_utm_parameter_on_redirect" referencedTableName="redirect"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="short_link_allowed_utm_parameter"
-                                 constraintName="fk_sholinallutmpar_on_short_link" referencedColumnNames="id"
-                                 referencedTableName="short_link"/>
+        <addForeignKeyConstraint baseTableName="redirect_utm_parameter" baseColumnNames="utm_parameter_id"
+                                 constraintName="fk_redirect_utm_parameter_on_utm_parameter"
+                                 referencedTableName="utm_parameter"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseColumnNames="utm_parameter_id" baseTableName="short_link_allowed_utm_parameter"
-                                 constraintName="fk_sholinallutmpar_on_utm_parameter" referencedColumnNames="id"
-                                 referencedTableName="utm_parameter"/>
+        <addForeignKeyConstraint baseTableName="short_link_allowed_utm_parameter" baseColumnNames="short_link_id"
+                                 constraintName="fk_short_link_allowed_utm_parameter_on_short_link"
+                                 referencedTableName="short_link"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseColumnNames="short_link_id" baseTableName="short_link_default_utm_parameter"
-                                 constraintName="fk_sholindefutmpar_on_short_link" referencedColumnNames="id"
-                                 referencedTableName="short_link"/>
+        <addForeignKeyConstraint baseTableName="short_link_allowed_utm_parameter" baseColumnNames="utm_parameter_id"
+                                 constraintName="fk_short_link_allowed_utm_parameter_on_utm_parameter"
+                                 referencedTableName="utm_parameter"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseColumnNames="utm_parameter_id" baseTableName="short_link_default_utm_parameter"
-                                 constraintName="fk_sholindefutmpar_on_utm_parameter" referencedColumnNames="id"
-                                 referencedTableName="utm_parameter"/>
+        <addForeignKeyConstraint baseTableName="short_link_default_utm_parameter" baseColumnNames="short_link_id"
+                                 constraintName="fk_short_link_default_utm_parameter_on_short_link"
+                                 referencedTableName="short_link"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="short_link_default_utm_parameter" baseColumnNames="utm_parameter_id"
+                                 constraintName="fk_short_link_default_utm_parameter_on_utm_parameter"
+                                 referencedTableName="utm_parameter"
+                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

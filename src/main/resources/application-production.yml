@@ -3,10 +3,3 @@ management:
     web:
       exposure:
         exclude: "*"
-
-springdoc:
-  api-docs:
-    enabled: false
-
-  swagger-ui:
-    enabled: false

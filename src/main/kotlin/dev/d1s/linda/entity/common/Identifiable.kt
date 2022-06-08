@@ -16,7 +16,6 @@
 
 package dev.d1s.linda.entity.common
 
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.GenericGenerator
 import java.time.Instant
 import javax.persistence.*
@@ -30,12 +29,11 @@ abstract class Identifiable {
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     var id: String? = null
 
-    @Column
-    @CreationTimestamp
+    @Column(nullable = false)
     var creationTime: Instant? = null
 
     @PrePersist
-    fun setCreationTime() {
+    private fun setCreationTime() {
         creationTime = Instant.now()
     }
 }
