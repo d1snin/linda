@@ -33,7 +33,7 @@ services:
     networks:
       - linda-net
     ports:
-      - "8080:8080"
+      - "9292:9292"
     depends_on:
       - linda-mariadb
     environment:
