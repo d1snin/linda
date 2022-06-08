@@ -14,31 +14,8 @@
  * limitations under the License.
  */
 
-package dev.d1s.linda.dto.shortLink
+package dev.d1s.linda.strategy.shortLink
 
-import dev.d1s.linda.entity.alias.AliasType
-import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
-import java.time.Duration
-
-interface CommonShortLinkDto {
-
-    val alias: String?
-
-    val target: String
-
-    val aliasType: AliasType
-
-    val allowUtmParameters: Boolean
-
-    val allowRedirects: Boolean
-
-    val maxRedirects: Int?
-
-    val disableAfter: Duration?
-
-    val disablingStrategy: ShortLinkDisablingStrategy
-
-    val defaultUtmParameters: Set<String>
-
-    val allowedUtmParameters: Set<String>
+enum class ShortLinkDisablingStrategy {
+    DELETE, DISALLOW_REDIRECTS
 }

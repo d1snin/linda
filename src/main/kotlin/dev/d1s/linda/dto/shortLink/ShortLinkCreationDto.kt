@@ -18,6 +18,7 @@ package dev.d1s.linda.dto.shortLink
 
 import dev.d1s.linda.constant.regex.HTTP_URL_REGEX
 import dev.d1s.linda.entity.alias.AliasType
+import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
 import java.time.Duration
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
@@ -42,7 +43,10 @@ data class ShortLinkCreationDto(
 
     override val maxRedirects: Int?,
 
-    override val deleteAfter: Duration?,
+    override val disableAfter: Duration?,
+
+    @field:NotNull
+    override val disablingStrategy: ShortLinkDisablingStrategy,
 
     @field:NotNull
     override val defaultUtmParameters: Set<String>,

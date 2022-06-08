@@ -33,5 +33,5 @@ interface ShortLinkRepository : JpaRepository<ShortLink, String> {
     )
     fun findByAliasMatches(regex: String): Set<ShortLink>
 
-    fun findByDeleteAfterIsNotNull(): Set<ShortLink>
+    fun findByDisableAfterIsNotNull(): Set<ShortLink>
 }

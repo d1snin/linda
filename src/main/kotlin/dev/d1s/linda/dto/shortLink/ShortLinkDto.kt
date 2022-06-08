@@ -17,6 +17,7 @@
 package dev.d1s.linda.dto.shortLink
 
 import dev.d1s.linda.entity.alias.AliasType
+import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
 import java.time.Duration
 import java.time.Instant
 
@@ -29,7 +30,8 @@ data class ShortLinkDto(
     override val allowUtmParameters: Boolean,
     override val allowRedirects: Boolean,
     override val maxRedirects: Int?,
-    override val deleteAfter: Duration?,
+    override val disableAfter: Duration?,
+    override val disablingStrategy: ShortLinkDisablingStrategy,
     override val defaultUtmParameters: Set<String>,
     override val allowedUtmParameters: Set<String>,
     val redirects: Set<String>,
