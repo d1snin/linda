@@ -33,7 +33,7 @@ data class TemplateVariable(
 ) : Identifiable() {
 
     @ManyToOne(cascade = [CascadeType.MERGE])
-    lateinit var redirect: Redirect
+    var redirect: Redirect? = null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -62,6 +62,6 @@ data class TemplateVariable(
                 "creationTime=$creationTime, " +
                 "variableName='$variableName', " +
                 "variableValue='$variableValue', " +
-                "redirect=${redirect.id})"
+                "redirect=${redirect?.id})"
     }
 }
