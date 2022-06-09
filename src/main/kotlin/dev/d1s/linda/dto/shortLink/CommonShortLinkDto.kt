@@ -17,7 +17,6 @@
 package dev.d1s.linda.dto.shortLink
 
 import dev.d1s.linda.entity.alias.AliasType
-import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
 import java.time.Duration
 
 interface CommonShortLinkDto {
@@ -35,8 +34,6 @@ interface CommonShortLinkDto {
     val maxRedirects: Int?
 
     val disableAfter: Duration?
-
-    val disablingStrategy: ShortLinkDisablingStrategy
 
     val defaultUtmParameters: Set<String>
 

@@ -36,7 +36,6 @@ class ShortLinkDtoConverter : DtoConverter<ShortLinkDto, ShortLink> {
             allowRedirects,
             maxRedirects,
             disableAfter,
-            disablingStrategy,
             defaultUtmParameters.mapToIdSet(),
             allowedUtmParameters.mapToIdSet(),
             redirects.mapToIdSet(),

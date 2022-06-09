@@ -46,7 +46,6 @@ class ShortLinkUpdateDtoConverter : DtoConverter<ShortLinkUpdateDto, ShortLink> 
             allowRedirects,
             maxRedirects,
             disableAfter,
-            disablingStrategy,
             defaultUtmParameters.mapToMutableSet {
                 val (utmParameter, _) = utmParameterService.findById(it)
                 utmParameter

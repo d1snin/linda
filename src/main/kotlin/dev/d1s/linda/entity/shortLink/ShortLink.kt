@@ -21,7 +21,6 @@ import dev.d1s.linda.entity.availability.AvailabilityChange
 import dev.d1s.linda.entity.common.Identifiable
 import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.entity.utmParameter.UtmParameter
-import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
 import dev.d1s.linda.util.mapToIdSet
 import java.time.Duration
 import javax.persistence.*
@@ -50,9 +49,6 @@ data class ShortLink(
 
     @Column
     var disableAfter: Duration?,
-
-    @Column(nullable = false)
-    var disablingStrategy: ShortLinkDisablingStrategy,
 
     @ManyToMany(cascade = [CascadeType.PERSIST])
     @JoinTable(

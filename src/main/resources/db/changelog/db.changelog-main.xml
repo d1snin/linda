@@ -100,9 +100,6 @@
             </column>
             <column name="max_redirects" type="INT"/>
             <column name="disable_after" type="BIGINT"/>
-            <column name="disabling_strategy" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
 
         <createTable tableName="short_link_allowed_utm_parameter">

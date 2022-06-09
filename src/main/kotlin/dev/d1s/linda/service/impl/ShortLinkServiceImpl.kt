@@ -42,7 +42,6 @@ import dev.d1s.linda.event.data.EntityUpdatedEventData
 import dev.d1s.linda.repository.ShortLinkRepository
 import dev.d1s.linda.service.AvailabilityChangeService
 import dev.d1s.linda.service.ShortLinkService
-import dev.d1s.linda.strategy.shortLink.ShortLinkDisablingStrategy
 import dev.d1s.linda.strategy.shortLink.ShortLinkFindingStrategy
 import dev.d1s.linda.strategy.shortLink.byAlias
 import dev.d1s.linda.strategy.shortLink.byId
@@ -232,7 +231,6 @@ class ShortLinkServiceImpl : ShortLinkService {
         foundShortLink.allowRedirects = shortLink.allowRedirects
         foundShortLink.maxRedirects = shortLink.maxRedirects
         foundShortLink.disableAfter = shortLink.disableAfter
-        foundShortLink.disablingStrategy = shortLink.disablingStrategy
         foundShortLink.defaultUtmParameters = shortLink.defaultUtmParameters
         foundShortLink.allowedUtmParameters = shortLink.allowedUtmParameters
 
@@ -312,15 +310,7 @@ class ShortLinkServiceImpl : ShortLinkService {
         shortLink.disableAfter?.let { disableAfter ->
             scheduledDeletions.put(
                 id, scheduler.schedule({
-                    when (shortLink.disablingStrategy) {
-                        ShortLinkDisablingStrategy.DELETE -> {
-                            shortLinkServiceImpl.removeById(id)
-                        }
-
-                        ShortLinkDisablingStrategy.DISALLOW_REDIRECTS -> {
-                            shortLinkServiceImpl.disallowRedirects(shortLink)
-                        }
-                    }
+                    shortLinkServiceImpl.disallowRedirects(shortLink)
 
                     publisher.publish(
                         SHORT_LINK_EXPIRED_GROUP,
