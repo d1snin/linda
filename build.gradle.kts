@@ -23,8 +23,6 @@ val starterSimpleSecurityVersion: String by project
 val liquibaseVersion: String by project
 val longPollingStarterVersion: String by project
 val coroutinesVersion: String by project
-//val striktVersion: String by project
-//val springMockkVersion: String by project
 val jsoupVersion: String by project
 val kotlinxHtmlVersion: String by project
 
@@ -55,8 +53,6 @@ dependencies {
     testImplementation("dev.d1s.teabags:teabag-testing:$teabagsVersion")
     testImplementation("dev.d1s.teabags:teabag-testing-spring-web:$teabagsVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-//    testImplementation("com.ninja-squad:springmockk:$springMockkVersion")
-//    testImplementation("io.strikt:strikt-jvm:$striktVersion")
 }
 
 configurations["implementation"].exclude(
@@ -66,8 +62,8 @@ configurations["implementation"].exclude(
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "17"
+        freeCompilerArgs = listOf("-Xjsr305=strict")
     }
 }
 
