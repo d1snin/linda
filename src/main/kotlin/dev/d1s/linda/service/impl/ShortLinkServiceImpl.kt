@@ -55,6 +55,7 @@ import dev.d1s.teabag.dto.EntityWithDtoSet
 import dev.d1s.teabag.dto.util.convertToDtoIf
 import dev.d1s.teabag.dto.util.convertToDtoSetIf
 import dev.d1s.teabag.dto.util.converterForSet
+import dev.d1s.teabag.stdlib.collection.mapToMutableSet
 import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
@@ -65,6 +66,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import javax.persistence.EntityManager
 import kotlin.properties.Delegates
 
 @Service
@@ -90,6 +92,9 @@ class ShortLinkServiceImpl : ShortLinkService {
 
     @set:Autowired
     lateinit var publisher: AsyncLongPollingEventPublisher
+
+    @set:Autowired
+    lateinit var entityManager: EntityManager
 
     @Lazy
     @set:Autowired
@@ -166,6 +171,8 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun create(shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
         shortLinkServiceImpl.checkForCollision(shortLink)
 
+        shortLinkServiceImpl.reattachUtmParameteres(shortLink)
+
         if (shortLink.aliasType == AliasType.TEMPLATE) {
             templateAliasRegexes += shortLinkServiceImpl.buildTemplateAliasRegex(shortLink)
         }
@@ -209,8 +216,6 @@ class ShortLinkServiceImpl : ShortLinkService {
     }
 
     override fun update(id: String, shortLink: ShortLink): EntityWithDto<ShortLink, ShortLinkDto> {
-        shortLinkServiceImpl.checkForCollision(shortLink, true)
-
         val (foundShortLink, _) = shortLinkServiceImpl.find(byId(id))
 
         val oldShortLinkDto = shortLinkDtoConverter.convertToDto(foundShortLink)
@@ -223,6 +228,12 @@ class ShortLinkServiceImpl : ShortLinkService {
         if (willReplaceRegex) {
             shortLinkServiceImpl.removeTemplateAliasRegexFor(shortLink)
         }
+
+        shortLinkServiceImpl.checkForCollision(
+            shortLink,
+            foundShortLink.alias == shortLink.alias,
+            true
+        )
 
         foundShortLink.target = shortLink.target
         foundShortLink.alias = shortLink.alias
@@ -459,7 +470,7 @@ class ShortLinkServiceImpl : ShortLinkService {
             }
         }
 
-    override fun checkForCollision(shortLink: ShortLink, updating: Boolean) {
+    override fun checkForCollision(shortLink: ShortLink, sameAlias: Boolean, updating: Boolean) {
         val alias = shortLink.alias
 
         if (shortLink.aliasType == AliasType.TEMPLATE) {
@@ -479,7 +490,7 @@ class ShortLinkServiceImpl : ShortLinkService {
                 }
             }
         } else {
-            if (shortLinkServiceImpl.doesAliasExist(alias)) {
+            if (shortLinkServiceImpl.doesAliasExist(alias) && !sameAlias) {
                 throw UnprocessableEntityException(
                     ALIAS_ALREADY_EXISTS_ERROR.format(alias)
                 )
@@ -491,6 +502,17 @@ class ShortLinkServiceImpl : ShortLinkService {
     override fun disallowRedirects(shortLink: ShortLink) {
         shortLink.allowRedirects = false
         shortLinkRepository.save(shortLink)
+    }
+
+    @Transactional
+    override fun reattachUtmParameteres(shortLink: ShortLink) {
+        shortLink.defaultUtmParameters = shortLink.defaultUtmParameters.mapToMutableSet {
+            entityManager.merge(it)
+        }
+
+        shortLink.allowedUtmParameters = shortLink.allowedUtmParameters.mapToMutableSet {
+            entityManager.merge(it)
+        }
     }
 
     @Scheduled(fixedDelay = 10, timeUnit = TimeUnit.SECONDS)
