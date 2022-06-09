@@ -23,6 +23,7 @@ import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_REGEX
 import dev.d1s.linda.dto.shortLink.CommonShortLinkDto
 import dev.d1s.linda.entity.alias.AliasType
 import dev.d1s.teabag.dto.DtoValidator
+import dev.d1s.teabag.stdlib.collection.hasDuplicates
 import org.springframework.stereotype.Component
 
 @Component
@@ -85,7 +86,7 @@ class CommonShortLinkDtoValidator : DtoValidator<CommonShortLinkDto> {
             )
         }
 
-        if (aliasTemplateVars.size != aliasTemplateVars.toSet().size) {
+        if (aliasTemplateVars.hasDuplicates()) {
             throw BadRequestException(
                 DUPLICATED_TEMPLATE_VARIABLES_ERROR.format(alias)
             )
