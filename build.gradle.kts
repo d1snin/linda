@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.d1s"
-version = "0.7.0-beta.0"
+version = "0.8.0-beta.0"
 java.targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
