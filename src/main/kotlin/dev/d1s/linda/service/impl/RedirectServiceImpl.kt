@@ -22,6 +22,7 @@ import dev.d1s.linda.constant.error.*
 import dev.d1s.linda.constant.lp.REDIRECT_CREATED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.REDIRECT_UPDATED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_MAX_REDIRECTS_REACHED_GROUP
 import dev.d1s.linda.dto.redirect.RedirectDto
 import dev.d1s.linda.entity.redirect.Redirect
 import dev.d1s.linda.event.data.EntityUpdatedEventData
@@ -111,6 +112,12 @@ class RedirectServiceImpl : RedirectService {
             if (it == shortLink.redirects.size + 1) {
                 shortLinkService.disallowRedirects(shortLink)
             }
+
+            publisher.publish(
+                SHORT_LINK_MAX_REDIRECTS_REACHED_GROUP,
+                shortLink.id!!,
+                null
+            )
         }
 
         redirect.templateVariables.forEach {
