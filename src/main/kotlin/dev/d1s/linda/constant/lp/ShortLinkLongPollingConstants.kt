@@ -19,3 +19,5 @@ package dev.d1s.linda.constant.lp
 const val SHORT_LINK_CREATED_GROUP = "short-link-created"
 const val SHORT_LINK_UPDATED_GROUP = "short-link-updated"
 const val SHORT_LINK_REMOVED_GROUP = "short-link-removed"
+const val SHORT_LINK_MAX_REDIRECTS_REACHED_GROUP = "short-link-max-redirects-reached"
+const val SHORT_LINK_EXPIRED_GROUP = "short-link-expired"

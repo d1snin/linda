@@ -24,6 +24,7 @@ import dev.d1s.linda.constant.error.ALIAS_TEMPLATE_COLLISION_ERROR
 import dev.d1s.linda.constant.error.ALIAS_UNRESOLVED_ERROR
 import dev.d1s.linda.constant.error.SHORT_LINK_NOT_FOUND_ERROR
 import dev.d1s.linda.constant.lp.SHORT_LINK_CREATED_GROUP
+import dev.d1s.linda.constant.lp.SHORT_LINK_EXPIRED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_REMOVED_GROUP
 import dev.d1s.linda.constant.lp.SHORT_LINK_UPDATED_GROUP
 import dev.d1s.linda.constant.regex.TEMPLATE_VARIABLE_REGEX
@@ -320,6 +321,12 @@ class ShortLinkServiceImpl : ShortLinkService {
                             shortLinkServiceImpl.disallowRedirects(shortLink)
                         }
                     }
+
+                    publisher.publish(
+                        SHORT_LINK_EXPIRED_GROUP,
+                        shortLink.id!!,
+                        null
+                    )
                 }, shortLink.creationTime!! + disableAfter)
             )?.let {
                 if (!it.isDone) {
