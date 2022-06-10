@@ -479,13 +479,13 @@ class ShortLinkServiceImpl : ShortLinkService {
                     if (updating &&
                         // just in case of update operation.
                         // we don't want to check for collision with the same shortLink
-                        shortLinkServiceImpl.buildTemplateAliasRegex(shortLink).pattern == regex.pattern
+                        regex.pattern == shortLinkServiceImpl.buildTemplateAliasRegex(shortLink).pattern
                     ) {
                         continue
                     }
 
                     throw UnprocessableEntityException(
-                        ALIAS_TEMPLATE_COLLISION_ERROR.format(alias)
+                        ALIAS_TEMPLATE_COLLISION_ERROR.format(alias, regex.pattern)
                     )
                 }
             }

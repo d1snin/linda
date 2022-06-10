@@ -31,7 +31,7 @@ const val ALIAS_UNRESOLVED_ERROR =
     "Alias (%s) was not resolved."
 
 const val ALIAS_TEMPLATE_COLLISION_ERROR =
-    "Alias (%s) collides with other ones."
+    "Alias (%s) collides with other ones. Triggered regex: %s"
 
 const val NO_ALIAS_TEMPLATE_VARIABLES_DEFINED_ERROR =
     "Alias (%s) must contain at least one template variable."
