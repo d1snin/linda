@@ -42,7 +42,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine")
-    implementation("org.mariadb.jdbc:mariadb-java-client")
+    implementation("org.postgresql:postgresql")
     implementation("org.liquibase:liquibase-core:$liquibaseVersion")
     implementation("dev.d1s.long-polling:spring-boot-starter-lp-server-web:$longPollingStarterVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

@@ -1,29 +1,29 @@
 version: '3'
 
 volumes:
-  db-data-mariadb:
+  db-data-postgres:
     driver: local
 
-  db-data-mariadb-config:
+  db-data-postgres-config:
     driver: local
 
 services:
-  linda-mariadb:
-    image: mariadb:10.8.2-rc-focal
-    container_name: linda-mariadb
+  linda-postgres:
+    image: postgres:15beta2-bullseye
+    container_name: linda-postgres
     environment:
-      MARIADB_DATABASE: "linda_data"
-      MARIADB_USER: "linda_data"
-      MARIADB_PASSWORD: "linda_data"
-      MARIADB_ROOT_PASSWORD: "root"
+      POSTGRES_DB: "linda_data"
+      POSTGRES_USER: "linda_data"
+      POSTGRES_PASSWORD: "linda_data"
+      PGDATA: /var/lib/postgresql/data/pgdata
     restart: always
+    expose:
+      - 5432
     networks:
       - linda-net
-    expose:
-      - 3306
     volumes:
-      - db-data-mariadb:/var/lib/mysql
-      - db-data-mariadb-config:/etc/mysql
+      - db-data-postgres:/var/lib/postgresql/data
+      - db-data-postgres-config:/var/lib/postgresql/dataConfig
 
   linda:
     image: linda:0.8.0-beta.0
@@ -33,9 +33,9 @@ services:
     ports:
       - "9292:9292"
     depends_on:
-      - linda-mariadb
+      - linda-postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://linda-mariadb:3306/linda_data
+      SPRING_DATASOURCE_URL: jdbc:postgresql://linda-postgres:5432/linda_data
     restart: on-failure
 
 networks:

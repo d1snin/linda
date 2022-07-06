@@ -6,13 +6,13 @@ spring:
     name: "linda"
 
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/linda_data
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/linda_data
     username: linda_data
     password: linda_data
 
   jpa:
-    database-platform: org.hibernate.dialect.MariaDB106Dialect
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
     hibernate:
       ddl-auto: none # required for liquibase migrations
 
